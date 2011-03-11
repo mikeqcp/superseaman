@@ -12,6 +12,6 @@ struct Vertex{
 struct Face{
 
 	vector<int > vertices;
-	int normalIndex;
+	vector<int > normalIndex;
 
 };

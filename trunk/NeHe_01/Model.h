@@ -10,8 +10,8 @@ using namespace std;
 class Model
 {
 private:
-	vector<Vertex> vertices;
-	vector<Vertex> normals;
+	Vertex *verticesTab;
+	Vertex *normalsTab;
 
 public:
 

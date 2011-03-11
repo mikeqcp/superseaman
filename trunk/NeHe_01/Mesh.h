@@ -10,18 +10,26 @@ private:
 	
 	string name;
 
-	vector<Vertex> *vertices;
-	vector<Vertex> *normals;
+	Vertex *vertices;
+	Vertex *normals;
+	int noVertices;
+	int noNormals;
 
 	Face *faces;
 	unsigned noFaces;
 
+	GLuint meshCL;
+
 public:
-	Mesh(vector<Vertex> *verticesVector, vector<Vertex> *normalsVector, vector<Face> facesVector, string name);
+	Mesh(vector<Face> facesVector, string name);
 
 	~Mesh(void);
 
 	void Draw();
+
+	void UpdateVerticesNormals(Vertex *vertices, Vertex *normals);
+
+	void BuildLists();
 
 };
 

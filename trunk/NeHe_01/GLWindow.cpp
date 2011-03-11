@@ -376,9 +376,9 @@ void GLWindow::StartLoop(){
 void GLWindow::Update(){
 
 	KeyboardHandle();
-	rotx += 0.1f;
-	roty += 0.1f;
-	rotz += 0.1f;
+	rotx += 0.3f;
+	roty += 0.3f;
+	rotz += 0.3f;
 	 
 }
 
