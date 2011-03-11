@@ -274,6 +274,7 @@ void GLWindow::LoadContent(){
 	LoadBitMap(L"Glass.bmp", textureImage[0]);
 	LoadFont(L"Courier New");
 	boat.Load("boat.obj");
+	mikeBoat.Load("mikeBoat.obj");
 
 }
 
@@ -411,7 +412,7 @@ int GLWindow::DrawGLScene(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glLoadIdentity();
-	glTranslatef(0.0f, 0.0f, -12.0f);
+	glTranslatef(-5.0f, -1.0f, -20.0f);
 
 	glRotatef(rotx, 1.0f, 0.0f, 0.0f);
 	glRotatef(roty, 0.0f, 1.0f, 0.0f);
@@ -419,11 +420,21 @@ int GLWindow::DrawGLScene(){
 
 	glColor3f(0.392f, 0.584f, 0.929f);
 
-	for(unsigned i = 0; i < boat.meshes.size(); i++){
-
+	
+	for(unsigned i = 0; i < boat.meshes.size(); i++)
 		boat.meshes[i].Draw();
 
-	}
+	glLoadIdentity();
+	glTranslatef(5.0f, -1.0f, -20.0f);
+
+	glRotatef(rotx, 1.0f, 0.0f, 0.0f);
+	glRotatef(roty, 0.0f, 1.0f, 0.0f);
+	glRotatef(rotz, 0.0f, 0.0f, 1.0f);
+
+	glColor3f(0.392f, 0.584f, 0.929f);
+
+	for(unsigned i = 0; i < mikeBoat.meshes.size(); i++)
+		mikeBoat.meshes[i].Draw();
 
 	return 0;
 

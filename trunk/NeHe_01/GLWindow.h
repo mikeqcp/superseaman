@@ -40,7 +40,7 @@ private:
 
 	GLUquadricObj *quadratic;
 
-	Model boat;
+	Model boat, mikeBoat;
 
 	GLfloat rotx, roty, rotz;
 
