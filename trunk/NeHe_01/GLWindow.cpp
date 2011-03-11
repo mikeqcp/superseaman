@@ -417,9 +417,6 @@ int GLWindow::DrawGLScene(){
 	glRotatef(rotx, 1.0f, 0.0f, 0.0f);
 	glRotatef(roty, 0.0f, 1.0f, 0.0f);
 	glRotatef(rotz, 0.0f, 0.0f, 1.0f);
-
-	glColor3f(0.392f, 0.584f, 0.929f);
-
 	
 	for(unsigned i = 0; i < boat.meshes.size(); i++)
 		boat.meshes[i].Draw();
@@ -430,8 +427,6 @@ int GLWindow::DrawGLScene(){
 	glRotatef(rotx, 1.0f, 0.0f, 0.0f);
 	glRotatef(roty, 0.0f, 1.0f, 0.0f);
 	glRotatef(rotz, 0.0f, 0.0f, 1.0f);
-
-	glColor3f(0.392f, 0.584f, 0.929f);
 
 	for(unsigned i = 0; i < mikeBoat.meshes.size(); i++)
 		mikeBoat.meshes[i].Draw();

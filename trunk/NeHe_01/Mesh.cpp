@@ -47,17 +47,17 @@ void Mesh::BuildLists(){
 			glBegin(GL_QUADS);
 		else if(f.vertices.size() == 3)
 			glBegin(GL_TRIANGLES);
+		else
+			glBegin(GL_POLYGON);
 
 		{
-			
-
 			for(unsigned j = 0; j < f.vertices.size(); j++){
 
 				Vertex v = vertices[f.vertices[j]-1];
 				Vertex n = normals[f.normalIndex[j]-1];
 
-				glNormal3f(n.x, n.y, n.z);
-				glVertex3f(v.x, v.y, v.z);
+				glNormal3d(n.x, n.y, n.z);
+				glVertex3d(v.x, v.y, v.z);
 
 			}
 		}

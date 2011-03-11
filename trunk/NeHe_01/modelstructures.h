@@ -5,7 +5,7 @@ using namespace std;
 
 struct Vertex{
 
-	GLfloat x, y, z;
+	GLdouble x, y, z;
 
 };
 
