@@ -12,6 +12,8 @@ private:
 
 	Vertex *vertices;
 	Vertex *normals;
+	Texture * textureCoords;
+
 	int noVertices;
 	int noNormals;
 
@@ -27,7 +29,7 @@ public:
 
 	void Draw();
 
-	void UpdateVerticesNormals(Vertex *vertices, Vertex *normals);
+	void UpdateVerticesNormalsTextures(Vertex *vertices, Vertex *normals, Texture * textureCoords);
 
 	void BuildLists();
 

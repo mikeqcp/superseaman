@@ -271,7 +271,7 @@ void GLWindow::Initialize(){
 
 void GLWindow::LoadContent(){
 	
-	LoadBitMap(L"Glass.bmp", textureImage[0]);
+	//LoadBitMap(L"Glass.bmp", textureImage[0]);
 	LoadFont(L"Courier New");
 	boat.Load("boat.obj");
 	mikeBoat.Load("mikeBoat.obj");

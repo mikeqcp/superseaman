@@ -12,6 +12,7 @@ class Model
 private:
 	Vertex *verticesTab;
 	Vertex *normalsTab;
+	Texture *textureCoordsTab;
 
 public:
 

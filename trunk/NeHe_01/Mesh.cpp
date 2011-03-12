@@ -25,12 +25,11 @@ void Mesh::Draw(){
 
 }
 
-void Mesh::UpdateVerticesNormals(Vertex *vertices, Vertex *normals){
+void Mesh::UpdateVerticesNormalsTextures(Vertex *vertices, Vertex *normals, Texture * textureCoords){
 
 	this -> vertices = vertices;
 	this -> normals = normals;
-	this -> noVertices = noVertices;
-	this -> noNormals = noNormals;
+	this -> textureCoords = textureCoords;
 
 }
 
@@ -53,10 +52,20 @@ void Mesh::BuildLists(){
 		{
 			for(unsigned j = 0; j < f.vertices.size(); j++){
 
-				Vertex v = vertices[f.vertices[j]-1];
-				Vertex n = normals[f.normalIndex[j]-1];
+				if(f.textures[j] > 0){
+					Texture t = textureCoords[f.textures[j]-1];
+					glEnable(GL_TEXTURE_2D);
+					glTexCoord2d(t.u, t.v);
+				} else 
+					glDisable(GL_TEXTURE_2D);
+				
 
-				glNormal3d(n.x, n.y, n.z);
+				if(f.normalIndex[j] > 0){
+					Vertex n = normals[f.normalIndex[j]-1];
+					glNormal3d(n.x, n.y, n.z);
+				}
+
+				Vertex v = vertices[f.vertices[j]-1];
 				glVertex3d(v.x, v.y, v.z);
 
 			}

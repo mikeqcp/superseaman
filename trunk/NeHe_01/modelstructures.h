@@ -9,9 +9,16 @@ struct Vertex{
 
 };
 
+struct Texture{
+
+	GLdouble u, v;
+
+};
+
 struct Face{
 
 	vector<int > vertices;
 	vector<int > normalIndex;
+	vector<int > textures;
 
 };
