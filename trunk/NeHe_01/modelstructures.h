@@ -3,15 +3,23 @@
 #include <vector>
 using namespace std;
 
+
 struct Vertex{
 
-	GLdouble x, y, z;
+	GLfloat x, y, z;
+
+};
+
+struct TextureUV{
+
+	GLfloat u, v;
 
 };
 
 struct Texture{
 
-	GLdouble u, v;
+	GLuint tex;
+	string name;
 
 };
 
@@ -20,5 +28,6 @@ struct Face{
 	vector<int > vertices;
 	vector<int > normalIndex;
 	vector<int > textures;
+	string materialName;
 
 };

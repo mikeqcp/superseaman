@@ -12,17 +12,21 @@ class Model
 private:
 	Vertex *verticesTab;
 	Vertex *normalsTab;
-	Texture *textureCoordsTab;
+	TextureUV *textureCoordsTab;
+	Material *materials;
+	Texture *textures;
+
+	int textureCount;
 
 public:
 
 	Model();
 
-	Model(string fileName);
+	Model(string fileName, Texture *textures, int textureCount);
 
 	~Model(void);
 
-	void Load(string fileName);
+	void Load(string fileName, Texture *textures, int textureCount);
 
 	vector<Mesh> meshes;
 };

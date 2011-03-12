@@ -22,8 +22,9 @@ GLWindow::GLWindow(LPCWSTR title, int width, int height, int bits, bool fullscre
 	hWnd = NULL;
 	GLWindow::fullscreen = fullscreen;
 	GLWindow::active = active;
-	p1 = 0;
-	p2 = 0;
+
+	textureCount = 1;
+	textureImage = new Texture[textureCount];
 
 	rotx = 0;
 	roty = 0;
@@ -271,20 +272,24 @@ void GLWindow::Initialize(){
 
 void GLWindow::LoadContent(){
 	
-	//LoadBitMap(L"Glass.bmp", textureImage[0]);
+	LoadBitMap(L"wood.bmp", &(textureImage[0]), "wood.png");
 	LoadFont(L"Courier New");
-	boat.Load("boat.obj");
-	mikeBoat.Load("mikeBoat.obj");
+	boat.Load("boat.obj", textureImage, textureCount);
+	mikeBoat.Load("mikeBoat.obj", textureImage, textureCount);
 
 }
 
-void GLWindow::LoadBitMap(LPTSTR fileName, GLuint &texid){
+void GLWindow::LoadBitMap(LPTSTR fileName, Texture *texture, string name){
 
 	HBITMAP hBMP;
 	BITMAP	BMP;
 
+	GLuint texid;
 	glGenTextures(1, &texid);
 	hBMP=(HBITMAP)LoadImage(GetModuleHandle(NULL), fileName, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_LOADFROMFILE );
+
+	texture -> tex = texid;
+	texture -> name = name;
 
 	if (!hBMP) return;	
 
@@ -299,6 +304,7 @@ void GLWindow::LoadBitMap(LPTSTR fileName, GLuint &texid){
 
 	DeleteObject(hBMP);
 
+	
 }
 
 void GLWindow::LoadFont(LPCWSTR fontName){
@@ -430,6 +436,7 @@ int GLWindow::DrawGLScene(){
 
 	for(unsigned i = 0; i < mikeBoat.meshes.size(); i++)
 		mikeBoat.meshes[i].Draw();
+
 
 	return 0;
 

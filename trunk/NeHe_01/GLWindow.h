@@ -1,8 +1,9 @@
 #pragma once
 
+using namespace std;
+
 class GLWindow
 {
-
 
 private:
 
@@ -20,7 +21,8 @@ private:
 	int height;
 	int bits;
 
-	GLuint textureImage[1];
+	Texture *textureImage;
+	int textureCount;
 
 	static bool *keys;
 	static bool *previousKeys;
@@ -32,13 +34,6 @@ private:
 	bool fullscreenChanged;
 
 	GLfloat fps;
-
-	int part1;
-	int part2;
-	int p1;
-	int p2;
-
-	GLUquadricObj *quadratic;
 
 	Model boat, mikeBoat;
 
@@ -70,7 +65,7 @@ private:
 
 	void LoadContent();
 
-	void LoadBitMap(LPTSTR fileName, GLuint &textid);
+	void LoadBitMap(LPTSTR fileName, Texture *texture, string name);
 
 	void LoadFont(LPCWSTR fontName);
 

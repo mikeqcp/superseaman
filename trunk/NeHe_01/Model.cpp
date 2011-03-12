@@ -5,9 +5,9 @@
 Model::Model(){
 }
 
-Model::Model(string fileName){
+Model::Model(string fileName, Texture *textures, int textureCount) : textureCount(textureCount){
 
-	Load(fileName);
+	Load(fileName, textures,  textureCount);
 
 }
 
@@ -15,11 +15,13 @@ Model::Model(string fileName){
 Model::~Model(void){
 }
 
-void Model::Load(string fileName){
+void Model::Load(string fileName, Texture *textures, int textureCount){
+
+	this ->textures = textures;
+	this ->textureCount = textureCount;
 
 	Helper helper;
-	ifstream file;
-
+	
 	vector<Face> fs;
 
 	int loaded = 0;
@@ -27,8 +29,13 @@ void Model::Load(string fileName){
 
 	vector<Vertex> vertices;
 	vector<Vertex> normals;
-	vector<Texture> textureCoords;
+	vector<TextureUV> textureCoords;
 
+	materials = NULL;
+	string materialFileName;
+	string currentMaterialName;
+
+	ifstream file;
 	file.open(fileName);
 	{
 		if(file.is_open()){
@@ -87,7 +94,7 @@ void Model::Load(string fileName){
 					sscanf_s(split[1].c_str(), "%f", &u);
 					sscanf_s(split[2].c_str(), "%f", &v);
 
-					Texture t;
+					TextureUV t;
 					
 					t.u = u;
 					t.v = v;
@@ -98,6 +105,7 @@ void Model::Load(string fileName){
 				
 					int ind, normal, tex;
 					Face f;
+					f.materialName = currentMaterialName;
 					for(unsigned i = 1; i < split.size(); i++){
 
 						int first = split[i].find_first_of('/');
@@ -135,11 +143,128 @@ void Model::Load(string fileName){
 					}
 					fs.push_back(f);
 
+				} else if(split[0].compare("mtllib") == 0){
+
+					materialFileName = split[1];
+
+				} else if(split[0].compare("usemtl") == 0){
+				
+					currentMaterialName = split[1];
+
 				}
 			}
 		}
 	}
 	file.close();
+
+	//Materials data
+	ifstream materialFile;
+	int materialCount = 0, currentMaterial = -1;
+	materialFile.open(materialFileName);
+	{
+		if(materialFile.is_open()){
+			while(!materialFile.eof()){
+
+				string read;
+				getline(materialFile, read);
+				vector<string> split = helper.SplitString(read);
+
+				if(split[0].compare("#") == 0){
+
+					if(split.size() == 4 && split[1].compare("Material") == 0 && split[2].compare("Count:") == 0){
+
+						sscanf_s(split[3].c_str(), "%d", &materialCount);
+						if(materialCount > 0)
+							materials = new Material[materialCount];
+
+					}
+
+				} else if (split[0].compare("newmtl") == 0){
+
+					currentMaterial++;
+					materials[currentMaterial].setName(split[1]);
+
+				} else if (split[0].compare("Ns") == 0){
+
+					GLfloat Ns;
+					sscanf_s(split[1].c_str(), "%f", &Ns);
+					materials[currentMaterial].setNs(Ns);
+
+				} else if (split[0].compare("Ni") == 0){
+
+					GLfloat Ni;
+					sscanf_s(split[1].c_str(), "%f", &Ni);
+					materials[currentMaterial].setNi(Ni);
+
+				} else if (split[0].compare("d") == 0){
+
+					GLfloat d;
+					sscanf_s(split[1].c_str(), "%f", &d);
+					materials[currentMaterial].setD(d);
+
+				} else if (split[0].compare("illum") == 0){
+
+					int illum;
+					sscanf_s(split[1].c_str(), "%d", &illum);
+					materials[currentMaterial].setIllum(illum);
+
+				} else if (split[0].compare("Ka") == 0){
+
+					GLfloat x, y, z;
+					
+					sscanf_s(split[1].c_str(), "%f", &x);
+					sscanf_s(split[2].c_str(), "%f", &y);
+					sscanf_s(split[3].c_str(), "%f", &z);
+					
+					Vertex Ka;
+
+					Ka.x = x;
+					Ka.y = y;
+					Ka.z = z;
+
+					materials[currentMaterial].setKa(Ka);
+
+				} else if (split[0].compare("Kd") == 0){
+
+					GLfloat x, y, z;
+					
+					sscanf_s(split[1].c_str(), "%f", &x);
+					sscanf_s(split[2].c_str(), "%f", &y);
+					sscanf_s(split[3].c_str(), "%f", &z);
+					
+					Vertex Kd;
+
+					Kd.x = x;
+					Kd.y = y;
+					Kd.z = z;
+
+					materials[currentMaterial].setKd(Kd);
+
+				} else if (split[0].compare("Ks") == 0){
+
+					GLfloat x, y, z;
+					
+					sscanf_s(split[1].c_str(), "%f", &x);
+					sscanf_s(split[2].c_str(), "%f", &y);
+					sscanf_s(split[3].c_str(), "%f", &z);
+					
+					Vertex Ks;
+
+					Ks.x = x;
+					Ks.y = y;
+					Ks.z = z;
+
+					materials[currentMaterial].setKs(Ks);
+
+				} else if (split[0].compare("map_Kd") == 0){
+
+					materials[currentMaterial].setMap_Kd(split[1]);
+
+				}
+			}
+		}
+	}
+	materialFile.close();
 
 	unsigned nov = vertices.size();
 	unsigned non = normals.size();
@@ -147,7 +272,7 @@ void Model::Load(string fileName){
 
 	verticesTab = new Vertex[nov];
 	normalsTab = new Vertex[non];
-	textureCoordsTab = new Texture[not];
+	textureCoordsTab = new TextureUV[not];
 
 	for(unsigned i = 0; i < nov; i++){
 		verticesTab[i] = vertices[0];
@@ -165,7 +290,16 @@ void Model::Load(string fileName){
 	}
 
 	for(unsigned i = 0; i < meshes.size(); i++){
-		meshes[i].UpdateVerticesNormalsTextures(verticesTab, normalsTab, textureCoordsTab);
+		meshes[i].UpdateVerticesNormalsTexturesMaterials(
+			verticesTab, 
+			normalsTab, 
+			textures, 
+			textureCount, 
+			textureCoordsTab, 
+			materials, 
+			materialCount
+			);
+
 		meshes[i].BuildLists();
 	}
 

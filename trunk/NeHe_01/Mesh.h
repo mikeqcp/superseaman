@@ -1,6 +1,7 @@
 #pragma once
 #include "modelstructures.h"
 #include <vector>
+#include "Material.h"
 
 using namespace std;
 
@@ -12,10 +13,12 @@ private:
 
 	Vertex *vertices;
 	Vertex *normals;
-	Texture * textureCoords;
+	Texture *textures;
+	TextureUV * textureCoords;
+	Material *materials;
 
-	int noVertices;
-	int noNormals;
+	int noMaterials;
+	int noTextures;
 
 	Face *faces;
 	unsigned noFaces;
@@ -29,7 +32,7 @@ public:
 
 	void Draw();
 
-	void UpdateVerticesNormalsTextures(Vertex *vertices, Vertex *normals, Texture * textureCoords);
+	void UpdateVerticesNormalsTexturesMaterials(Vertex *vertices, Vertex *normals, Texture *textures, int textureCount, TextureUV * textureCoords, Material *materials, int mCount);
 
 	void BuildLists();
 
