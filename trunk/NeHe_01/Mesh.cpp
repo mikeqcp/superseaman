@@ -62,8 +62,9 @@ void Mesh::BuildLists(){
 					if(mat.getMap_Kd().compare(textures[l].name) == 0){
 						glEnable(GL_TEXTURE_2D);
 						glBindTexture(GL_TEXTURE_2D, textures[l].tex);
-
-					} else 
+						break;
+					}
+					if(l == noTextures - 1)
 						glDisable(GL_TEXTURE_2D);
 				}
 
