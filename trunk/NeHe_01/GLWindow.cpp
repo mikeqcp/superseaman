@@ -23,7 +23,7 @@ GLWindow::GLWindow(LPCWSTR title, int width, int height, int bits, bool fullscre
 	GLWindow::fullscreen = fullscreen;
 	GLWindow::active = active;
 
-	textureCount = 1;
+	textureCount = 2;
 	textureImage = new Texture[textureCount];
 
 	rotx = 0;
@@ -247,7 +247,7 @@ void GLWindow::InitGL(){
 
 	GLfloat ambientLight[] =  { 0.5f, 0.5f, 0.5f, 1.0f };
 	GLfloat diffuseLight[] =  { 0.8f, 0.8f, 0.8f, 1.0f };
-	GLfloat lightPosition[] = { 0.0f, 0.0f, 2.0f, 1.0f };
+	GLfloat lightPosition[] = { 0.0f, 10.0f, 2.0f, 1.0f };
 
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuseLight);
@@ -273,6 +273,7 @@ void GLWindow::Initialize(){
 void GLWindow::LoadContent(){
 	
 	LoadBitMap(L"wood.bmp", &(textureImage[0]), "wood.png");
+	LoadBitMap(L"woodplanks.bmp", &(textureImage[1]), "woodplanks.jpg");
 	LoadFont(L"Courier New");
 	boat.Load("boat.obj", textureImage, textureCount);
 	mikeBoat.Load("mikeBoat.obj", textureImage, textureCount);
@@ -417,8 +418,9 @@ int GLWindow::DrawGLScene(){
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	
 	glLoadIdentity();
-	glTranslatef(-5.0f, -1.0f, -20.0f);
+	glTranslatef(0.0f, -1.0f, -7.0f);
 
 	glRotatef(rotx, 1.0f, 0.0f, 0.0f);
 	glRotatef(roty, 0.0f, 1.0f, 0.0f);
@@ -426,9 +428,13 @@ int GLWindow::DrawGLScene(){
 	
 	for(unsigned i = 0; i < boat.meshes.size(); i++)
 		boat.meshes[i].Draw();
+	
 
+	//Tu mike Twoja lodka
+	
+	/*
 	glLoadIdentity();
-	glTranslatef(5.0f, -1.0f, -20.0f);
+	glTranslatef(0.0f, -1.0f, -15.0f);
 
 	glRotatef(rotx, 1.0f, 0.0f, 0.0f);
 	glRotatef(roty, 0.0f, 1.0f, 0.0f);
@@ -436,6 +442,7 @@ int GLWindow::DrawGLScene(){
 
 	for(unsigned i = 0; i < mikeBoat.meshes.size(); i++)
 		mikeBoat.meshes[i].Draw();
+	*/
 
 
 	return 0;

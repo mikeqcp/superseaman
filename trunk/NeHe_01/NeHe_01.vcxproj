@@ -105,7 +105,9 @@
     <ClCompile Include="Vector3D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="bitmap2.bmp" />
     <None Include="wood.bmp" />
+    <None Include="woodplanks.bmp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SuperSeaman1.rc" />
