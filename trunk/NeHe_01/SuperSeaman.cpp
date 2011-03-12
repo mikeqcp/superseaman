@@ -6,7 +6,7 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	GLWindow glWindow(L"Dupa", 1024, 768, 32, false);
+	GLWindow glWindow(L"SuperSailor v0.0", 1024, 768, 32, false);
 	glWindow.StartLoop();
 
 	return 0;
