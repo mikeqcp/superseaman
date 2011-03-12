@@ -5,7 +5,8 @@
 Material::Material(void)
 {
 	name = "";
-	Ns = Ni = d = 0;
+	Ns = 1;
+	Ni = d = 0;
 
 	Ka.x = 0;
 	Ka.y = 0;

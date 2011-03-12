@@ -68,6 +68,23 @@ void Mesh::BuildLists(){
 						glDisable(GL_TEXTURE_2D);
 				}
 
+				glColorMaterial(GL_FRONT, GL_SPECULAR);
+
+				Vertex Ks = mat.getKs();
+				GLfloat specular[] = { Ks.x, Ks.y, Ks.z, mat.getNs() };
+
+				glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+
+				Vertex Kd = mat.getKd();
+				GLfloat diffuse[] = { Kd.x, Kd.y, Kd.z, 1.0f };
+
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+
+				Vertex Ka = mat.getKa();
+				GLfloat ambient[] = { Ka.x, Ka.y, Ka.z, 1.0f };
+
+				glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+
 			}
 
 		}
