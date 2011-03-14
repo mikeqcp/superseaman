@@ -9,7 +9,7 @@ using namespace std;
 
 class Model
 {
-private:
+protected:
 	Vertex *verticesTab;
 	Vertex *normalsTab;
 	TextureUV *textureCoordsTab;
@@ -17,6 +17,7 @@ private:
 	Texture *textures;
 
 	int textureCount;
+	int noVertices;
 
 public:
 
@@ -29,5 +30,12 @@ public:
 	void Load(string fileName, Texture *textures, int textureCount);
 
 	vector<Mesh> meshes;
+
+	int VerticesCount(){ return noVertices; }
+
+	vector<Edge> createEdgeList();
+
+	Vertex *getVertices(){ return verticesTab; }
+
 };
 

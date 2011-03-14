@@ -19,6 +19,77 @@ Mesh::~Mesh(void){
 
 }
 
+void Mesh::DirectDraw(){
+
+	for(unsigned i = 0; i < noFaces; i++){
+		Face f = faces[i];
+
+		for(int k = 0; k < noMaterials; k++){
+			Material mat = materials[k];
+			if(mat.getName().compare(f.materialName) == 0){
+
+				for(int l = 0; l < noTextures; l++){
+					if(mat.getMap_Kd().compare(textures[l].name) == 0){
+						glEnable(GL_TEXTURE_2D);
+						glBindTexture(GL_TEXTURE_2D, textures[l].tex);
+						break;
+					}
+					if(l == noTextures - 1)
+						glDisable(GL_TEXTURE_2D);
+				}
+
+				glColorMaterial(GL_FRONT, GL_SPECULAR);
+
+				Vertex Ks = mat.getKs();
+				GLfloat specular[] = { Ks.x, Ks.y, Ks.z, mat.getNs() };
+
+				glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+
+				Vertex Kd = mat.getKd();
+				GLfloat diffuse[] = { Kd.x, Kd.y, Kd.z, 1.0f };
+
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+
+				Vertex Ka = mat.getKa();
+				GLfloat ambient[] = { Ka.x, Ka.y, Ka.z, 1.0f };
+
+				glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+
+			}
+
+		}
+
+		if(f.vertices.size() == 4)
+			glBegin(GL_QUADS);
+		else if(f.vertices.size() == 3)
+			glBegin(GL_TRIANGLES);
+		else
+			glBegin(GL_POLYGON);
+
+		{
+			for(unsigned j = 0; j < f.vertices.size(); j++){
+
+				if(f.textures[j] > 0){
+					TextureUV t = textureCoords[f.textures[j]-1];
+					glTexCoord2f(t.u, t.v);
+				}
+				
+				if(f.normalIndex[j] > 0){
+					Vertex n = normals[f.normalIndex[j]-1];
+					glNormal3f(n.x, n.y, n.z);
+				}
+
+				Vertex v = vertices[f.vertices[j]-1];
+				glVertex3f(v.x, v.y, v.z);
+
+			}
+		}
+		glEnd();
+
+	}
+
+}
+
 void Mesh::Draw(){
 
 	glCallList(meshCL);
@@ -89,6 +160,18 @@ void Mesh::BuildLists(){
 
 		}
 
+		glEnable (GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
+		glPolygonMode (GL_BACK, GL_LINE);
+		glLineWidth (5.0f);
+
+		glCullFace (GL_FRONT);
+
+		glDepthFunc (GL_LEQUAL);
+
+		glColor3f(0.0f, 0.0f, 0.0f);
+
 		if(f.vertices.size() == 4)
 			glBegin(GL_QUADS);
 		else if(f.vertices.size() == 3)
@@ -116,8 +199,71 @@ void Mesh::BuildLists(){
 		}
 		glEnd();
 
+		glDepthFunc (GL_LESS);
+
+		glCullFace (GL_BACK);
+
+		glPolygonMode (GL_BACK, GL_FILL);
+
 	}
 
 	glEndList();
+
+}
+
+vector<Edge> Mesh::createEdgeList(int noVertices){
+
+	vector<Edge> edges;
+
+	bool **incMatrix = new bool*[noVertices];
+	for(int i = 0; i < noVertices; i++)
+		incMatrix[i] = new bool[noVertices];
+
+	for(int i = 0; i < noVertices; i++)
+		for(int j = i; j < noVertices; j++)
+			incMatrix[i][j] = false;
+
+	for(int i = 0; i < noFaces; i++){
+
+		for(int j = 0; j < faces[i].vertices.size(); j++){
+
+			int a, b;
+
+			if(j == faces[i].vertices.size() - 1){
+
+				a = faces[i].vertices[j]-1;
+				b = faces[i].vertices[0]-1;
+
+			} else {
+
+				a = faces[i].vertices[j]-1;
+				b = faces[i].vertices[j+1]-1;
+
+			}
+
+			incMatrix[a][b] = true;
+			incMatrix[b][a] = true;
+
+		}
+
+	}
+
+	for(int i = 0; i < noVertices; i++){
+		for(int j = i; j < noVertices; j++){
+			if(incMatrix[i][j]){
+				Edge edge;
+				edge.v1 = i;
+				edge.v2 = j;
+				edges.push_back(edge);
+			}
+		}
+	}
+
+	for(int i = 0; i < noVertices; i++)
+		delete [] incMatrix[i];
+
+	delete [] incMatrix;
+
+	return edges;
 
 }

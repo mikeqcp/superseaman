@@ -15,5 +15,6 @@
 #include <ctime>
 #include "model.h"
 #include "Helper.h"
+#include "Cloth.h"
 
 // TODO: reference additional headers your program requires here

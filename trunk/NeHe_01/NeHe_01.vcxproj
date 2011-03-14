@@ -76,6 +76,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Cloth.h" />
     <ClInclude Include="GLWindow.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="Material.h" />
@@ -91,6 +92,7 @@
     <ClInclude Include="Vector3D.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Cloth.cpp" />
     <ClCompile Include="GLWindow.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Material.cpp" />

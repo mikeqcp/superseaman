@@ -37,6 +37,8 @@ private:
 
 	Model boat, mikeBoat;
 
+	Cloth cloth;
+
 	GLfloat rotx, roty, rotz;
 
 #pragma endregion

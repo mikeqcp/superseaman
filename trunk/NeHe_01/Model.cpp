@@ -270,6 +270,8 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 	unsigned non = normals.size();
 	unsigned not = textureCoords.size();
 
+	noVertices = nov;
+
 	verticesTab = new Vertex[nov];
 	normalsTab = new Vertex[non];
 	textureCoordsTab = new TextureUV[not];
@@ -302,5 +304,11 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 
 		meshes[i].BuildLists();
 	}
+
+}
+
+vector<Edge> Model::createEdgeList(){
+
+	return meshes[0].createEdgeList(noVertices);
 
 }
