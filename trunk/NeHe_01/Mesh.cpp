@@ -162,18 +162,6 @@ void Mesh::BuildLists(){
 
 		}
 
-		glEnable (GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-		glPolygonMode (GL_BACK, GL_LINE);
-		glLineWidth (5.0f);
-
-		glCullFace (GL_FRONT);
-
-		glDepthFunc (GL_LEQUAL);
-
-		glColor3f(0.0f, 0.0f, 0.0f);
-
 		if(f.vertices.size() == 4)
 			glBegin(GL_QUADS);
 		else if(f.vertices.size() == 3)
@@ -200,12 +188,6 @@ void Mesh::BuildLists(){
 			}
 		}
 		glEnd();
-
-		glDepthFunc (GL_LESS);
-
-		glCullFace (GL_BACK);
-
-		glPolygonMode (GL_BACK, GL_FILL);
 
 	}
 
