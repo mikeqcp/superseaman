@@ -21,6 +21,8 @@ Mesh::~Mesh(void){
 
 void Mesh::DirectDraw(){
 
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 	for(unsigned i = 0; i < noFaces; i++){
 		Face f = faces[i];
 
@@ -87,7 +89,7 @@ void Mesh::DirectDraw(){
 		glEnd();
 
 	}
-
+	glPolygonMode(GL_FRONT, GL_FILL);
 }
 
 void Mesh::Draw(){

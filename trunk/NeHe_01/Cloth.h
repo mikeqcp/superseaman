@@ -5,27 +5,26 @@ class Cloth : public Model
 {
 private:
 
-	Vertex gravity;
+        Vertex gravity;
 
-	void Verlet();
-	void SatisfyConstraints();
-	void AccumulateForces();
+        void Verlet();
+        void SatisfyConstraints();
+        void AccumulateForces();
 
-	vector<Edge> edges;
+        vector<Edge> edges;
 
-	Vertex *oldVertices;
-	Vertex *verticesAcc;
-	GLfloat *constraints;
-	bool *pinned;
+        Vertex *oldVertices;
+        Vertex *verticesAcc;
+        GLfloat *constraints;
+        bool *pinned;
 
 public:
 
-	Cloth();
+        Cloth();
 
-	~Cloth(void);
+        ~Cloth(void);
 
-	void BuildCloth();
+        void BuildCloth();
 
-	void TimeStep();
+        void TimeStep();
 };
-
