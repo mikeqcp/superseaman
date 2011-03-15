@@ -5,9 +5,9 @@
 Cloth::Cloth()
 {
 
-        gravity.x = -0.04;
-        gravity.y = -0.0981f;
-        gravity.z = 0;
+        gravity.x = 0;
+        gravity.y = -2.0f;
+        gravity.z = 0.5;
                 
 }
 
@@ -19,13 +19,19 @@ void Cloth::BuildCloth(){
         oldVertices = new Vertex[noVertices];
         verticesAcc = new Vertex[noVertices];
 
-        pinned = new bool[noVertices];
+        pinned = new int[3];
 
         for(int i = 0; i < noVertices; i++){
 
                 oldVertices[i] = verticesTab[i];
-                pinned[i] = false;
+				if(verticesTab[i].y == -1.0f && verticesTab[i].z == -1.0f)
+					pinned[0] = i;
 
+				else if(verticesTab[i].y == -1.0f && verticesTab[i].z == 1.0f)
+					pinned[1] = i;
+
+				else if(verticesTab[i].y == 1.0f && verticesTab[i].z == -1.0f)
+					pinned[2] = i;
         }
 
         //pinned[noVertices-1] = true;
@@ -74,14 +80,13 @@ void Cloth::Verlet(){
                 Vertex old = oldVertices[i];
                 Vertex a = verticesAcc[i];
 
-                
                 v.x += v.x - old.x + a.x *fTimeStep*fTimeStep;
                 v.y += v.y - old.y + a.y *fTimeStep*fTimeStep;
                 v.z += v.z - old.z + a.z *fTimeStep*fTimeStep;
 
                 verticesTab[i] = v;
                 oldVertices[i] = temp;
-}
+		}
 
 }
 
@@ -114,9 +119,10 @@ void Cloth::SatisfyConstraints(){
                 delta.z = v2.z - v1.z;
 
                 GLfloat dotProduct = delta.x *delta.x + delta.y*delta.y + delta.z * delta.z;
+				GLfloat c = constraints[i++];
 
-                GLfloat deltalength = sqrt(dotProduct);
-                GLfloat c = constraints[i++];
+                //GLfloat deltalength = (c + dotProduct/c)/2;
+				GLfloat deltalength = sqrt(dotProduct);
                 GLfloat diff = (deltalength - c)/deltalength;
 
                 v1.x = v1.x + delta.x*0.5f*diff;
@@ -131,12 +137,17 @@ void Cloth::SatisfyConstraints(){
                 verticesTab[e.v2] = v2;
         }
 
-		verticesTab[2].x = 0;
-		verticesTab[2].y = 1;
-		verticesTab[2].z = 1;
-		verticesTab[3].x = 0;
-		verticesTab[3].y = 1;
-		verticesTab[3].z = -1;
+		verticesTab[pinned[0]].x = 0;
+		verticesTab[pinned[0]].y = -1;
+		verticesTab[pinned[0]].z = -1;
+
+		verticesTab[pinned[1]].x = 0;
+		verticesTab[pinned[1]].y = -1;
+		verticesTab[pinned[1]].z = 1;
+
+		verticesTab[pinned[2]].x = 0;
+		verticesTab[pinned[2]].y = 1;
+		verticesTab[pinned[2]].z = -1;
 
 }
 

@@ -103,6 +103,9 @@
     <None Include="woodplanks.bmp">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="bitmap3.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SuperSeaman1.rc">
