@@ -28,4 +28,7 @@ public:
         void BuildCloth();
 
         void TimeStep();
+
+		void Draw();
+
 };

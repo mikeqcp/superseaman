@@ -21,7 +21,7 @@ Mesh::~Mesh(void){
 
 void Mesh::DirectDraw(){
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_BACK, GL_LINE);
 
 	for(unsigned i = 0; i < noFaces; i++){
 		Face f = faces[i];
@@ -87,6 +87,23 @@ void Mesh::DirectDraw(){
 			}
 		}
 		glEnd();
+
+
+		glBegin(GL_LINES);
+
+		{
+			for(unsigned j = 0; j < f.vertices.size(); j++){
+				
+				Vertex n = normals[f.normalIndex[j]-1];
+				Vertex v = vertices[f.vertices[j]-1];
+				glColor3f(1.0f, 1.0f, 1.0f);
+				glVertex3f(v.x, v.y, v.z);
+				glVertex3f(v.x + n.x, v.y + n.y, v.z+n.z);
+
+			}
+		}
+		glEnd();
+
 
 	}
 	glPolygonMode(GL_FRONT, GL_FILL);
@@ -207,9 +224,9 @@ vector<Edge> Mesh::createEdgeList(int noVertices){
 		for(int j = i; j < noVertices; j++)
 			incMatrix[i][j] = false;
 
-	for(int i = 0; i < noFaces; i++){
+	for(unsigned i = 0; i < noFaces; i++){
 
-		for(int j = 0; j < faces[i].vertices.size(); j++){
+		for(unsigned j = 0; j < faces[i].vertices.size(); j++){
 
 			int a, b;
 
@@ -249,5 +266,49 @@ vector<Edge> Mesh::createEdgeList(int noVertices){
 	delete [] incMatrix;
 
 	return edges;
+
+}
+
+void Mesh::ComputeNormals(int noVertices){
+
+	int counter = 0;
+	normals = new Vertex[noFaces*3];
+	for(unsigned i = 0; i < noFaces; i++){
+
+		faces[i].normalIndex.clear();
+
+		Vertex a = vertices[faces[i].vertices[0]-1];
+		Vertex b = vertices[faces[i].vertices[1]-1];
+		Vertex c = vertices[faces[i].vertices[2]-1];
+
+		Vertex normal;
+		Vertex U, V;
+
+		U.x = a.x - b.x;
+		U.y = a.y - b.y;
+		U.z = a.z - b.z;
+
+		V.x = c.x - b.x;
+		V.y = c.y - b.y;
+		V.z = c.z - b.z;
+
+		normal.x = U.y * V.z - U.z * V.y;
+		normal.y = U.z * V.x - U.x * V.z;
+		normal.z = U.x * V.y - U.y * V.x;
+
+		GLfloat length = sqrt(normal.x * normal.x + normal.y*normal.y + normal.z*normal.z);
+
+		normal.x *= 1.0f/length;
+		normal.y *= 1.0f/length;
+		normal.z *= 1.0f/length;
+
+		normals[counter++] = normal;
+		faces[i].normalIndex.push_back(counter);
+		normals[counter++] = normal;
+		faces[i].normalIndex.push_back(counter);
+		normals[counter++] = normal;
+		faces[i].normalIndex.push_back(counter);
+
+	}
 
 }

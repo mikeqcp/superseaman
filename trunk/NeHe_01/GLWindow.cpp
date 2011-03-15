@@ -247,7 +247,7 @@ void GLWindow::InitGL(){
 
 	GLfloat ambientLight[] =  { 0.5f, 0.5f, 0.5f, 1.0f };
 	GLfloat diffuseLight[] =  { 0.8f, 0.8f, 0.8f, 1.0f };
-	GLfloat lightPosition[] = { 0.0f, 10.0f, 2.0f, 1.0f };
+	GLfloat lightPosition[] = { -10.0f, -10.0f, 0.0f, 1.0f };
 
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuseLight);
@@ -275,8 +275,8 @@ void GLWindow::LoadContent(){
 	LoadBitMap(L"wood.bmp", &(textureImage[0]), "wood.png");
 	LoadBitMap(L"woodplanks.bmp", &(textureImage[1]), "woodplanks.jpg");
 	LoadFont(L"Courier New");
-	boat.Load("boat.obj", textureImage, textureCount);
-	mikeBoat.Load("mikeBoat.obj", textureImage, textureCount);
+	//boat.Load("boat.obj", textureImage, textureCount);
+	//mikeBoat.Load("mikeBoat.obj", textureImage, textureCount);
 	cloth.Load("cloth.obj", textureImage, textureCount);
 	cloth.BuildCloth();
 
@@ -421,12 +421,11 @@ void GLWindow::KeyboardHandle(){
 int GLWindow::DrawGLScene(){
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	
 	glLoadIdentity();
 	glTranslatef(0.0f, 0.0f, -7.0f);
-	glRotatef(-90.0f, 0.0f, 1.0f, 0.0f);
-	cloth.meshes[0].DirectDraw();
+	glRotatef(-45.0f, 0.0f, 1.0f, 0.0f);
+	cloth.Draw();
 	
 	/*
 	glLoadIdentity();

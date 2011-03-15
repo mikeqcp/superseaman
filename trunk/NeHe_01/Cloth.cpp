@@ -5,10 +5,16 @@
 Cloth::Cloth()
 {
 
-        gravity.x = 0;
+        gravity.x = 0.4f;
         gravity.y = -2.0f;
-        gravity.z = 0.5;
+        gravity.z = 0;
                 
+}
+
+void Cloth::Draw(){
+
+	meshes[0].DirectDraw();
+
 }
 
 void Cloth::BuildCloth(){
@@ -33,8 +39,6 @@ void Cloth::BuildCloth(){
 				else if(verticesTab[i].y == 1.0f && verticesTab[i].z == -1.0f)
 					pinned[2] = i;
         }
-
-        //pinned[noVertices-1] = true;
 
         constraints = new GLfloat[edges.size()];
         vector<Edge> ed = edges;
@@ -151,10 +155,12 @@ void Cloth::SatisfyConstraints(){
 
 }
 
+
 void Cloth::TimeStep(){
 
         AccumulateForces();
         Verlet();
         SatisfyConstraints();
+		meshes[0].ComputeNormals(noVertices);
 
 }

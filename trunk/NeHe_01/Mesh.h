@@ -30,15 +30,17 @@ public:
 
 	~Mesh(void);
 
-	void DirectDraw();
-
 	void Draw();
+
+	void DirectDraw();
 
 	void UpdateVerticesNormalsTexturesMaterials(Vertex *vertices, Vertex *normals, Texture *textures, int textureCount, TextureUV * textureCoords, Material *materials, int mCount);
 
 	void BuildLists();
 
 	vector<Edge> createEdgeList(int noVertices);
+
+	void ComputeNormals(int noVertices);
 
 };
 
