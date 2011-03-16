@@ -24,6 +24,8 @@ Mesh::~Mesh(void){
 void Mesh::DirectDraw(bool showNormals){
 
 	//glPolygonMode(GL_BACK, GL_LINE);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 	for(unsigned i = 0; i < noFaces; i++){
 		Face f = faces[i];
 
@@ -62,12 +64,7 @@ void Mesh::DirectDraw(bool showNormals){
 
 		}
 
-		if(f.vertices.size() == 4)
-			glBegin(GL_QUADS);
-		else if(f.vertices.size() == 3)
-			glBegin(GL_TRIANGLES);
-		else
-			glBegin(GL_POLYGON);
+		glBegin(GL_TRIANGLES);
 
 		{
 			for(unsigned j = 0; j < f.vertices.size(); j++){
@@ -86,6 +83,26 @@ void Mesh::DirectDraw(bool showNormals){
 				glVertex3f(v.x, v.y, v.z);
 
 			}
+
+			int vertNum = f.vertices.size()-1;
+
+			for(int j = vertNum; j >= 0; j--){
+
+				if(f.textures[j] > 0){
+					TextureUV t = textureCoords[f.textures[j]-1];
+					glTexCoord2f(t.u, t.v);
+				}
+				
+				if(f.normalIndex[j] > 0){
+					Vertex n = normals[f.normalIndex[j]-1];
+					glNormal3f(n.x*-1.0f, n.y*-1.0f, n.z*-1.0f);
+				}
+
+				Vertex v = vertices[f.vertices[j]-1];
+				glVertex3f(v.x, v.y, v.z);
+
+			}
+
 		}
 		glEnd();
 
@@ -100,7 +117,7 @@ void Mesh::DirectDraw(bool showNormals){
 					Vertex v = vertices[f.vertices[j]-1];
 					glColor3f(1.0f, 1.0f, 1.0f);
 					glVertex3f(v.x, v.y, v.z);
-					glVertex3f(v.x + n.x, v.y + n.y, v.z+n.z);
+					glVertex3f(v.x - n.x, v.y - n.y, v.z - n.z);
 
 				}
 			}
@@ -284,6 +301,16 @@ void Mesh::ComputeNormals(){
 
 		faces[i].normalIndex.clear();
 
+		if(faces[i].vertices.size() < 3){
+
+			faces[i].normalIndex.push_back(-1);
+
+			faces[i].normalIndex.push_back(-1);
+
+			faces[i].normalIndex.push_back(-1);
+			continue;
+		}
+
 		Vertex a = vertices[faces[i].vertices[0]-1];
 		Vertex b = vertices[faces[i].vertices[1]-1];
 		Vertex c = vertices[faces[i].vertices[2]-1];
@@ -305,9 +332,9 @@ void Mesh::ComputeNormals(){
 
 		GLfloat length = sqrt(normal.x * normal.x + normal.y*normal.y + normal.z*normal.z);
 
-		normal.x *= 1.0f/length;
-		normal.y *= 1.0f/length;
-		normal.z *= 1.0f/length;
+		normal.x *= -1.0f/length;
+		normal.y *= -1.0f/length;
+		normal.z *= -1.0f/length;
 
 		normals[counter++] = normal;
 		faces[i].normalIndex.push_back(counter);
@@ -317,5 +344,23 @@ void Mesh::ComputeNormals(){
 		faces[i].normalIndex.push_back(counter);
 
 	}
+
+}
+
+vector<int> Mesh::getOutline(){
+
+	vector<int> outline;
+
+	for(unsigned i = 0; i < noFaces; i++){
+
+		if(faces[i].materialName.compare("pins") == 0){
+			for(unsigned j = 0; j < faces[i].vertices.size(); j++)
+				outline.push_back(faces[i].vertices[j]);
+
+		}
+
+	}
+
+	return outline;
 
 }

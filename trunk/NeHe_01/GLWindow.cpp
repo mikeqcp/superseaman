@@ -275,9 +275,9 @@ void GLWindow::LoadContent(){
 	LoadBitMap(L"wood.bmp", &(textureImage[0]), "wood.png");
 	LoadBitMap(L"woodplanks.bmp", &(textureImage[1]), "woodplanks.jpg");
 	LoadFont(L"Courier New");
-	//boat.Load("boat.obj", textureImage, textureCount);
+	boat.Load("boat.obj", textureImage, textureCount);
 	//mikeBoat.Load("mikeBoat.obj", textureImage, textureCount);
-	cloth.Load("cloth.obj", textureImage, textureCount);
+	cloth.Load("sail.obj", textureImage, textureCount);
 	cloth.BuildCloth();
 
 }
@@ -428,17 +428,12 @@ int GLWindow::DrawGLScene(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glLoadIdentity();
-	glTranslatef(0.0f, 0.0f, -4.0f);
-	glRotatef(-45.0f, 0.0f, 1.0f, 0.0f);
-	cloth.Draw();
-	
-	/*
-	glLoadIdentity();
 	glTranslatef(0.0f, -1.0f, -7.0f);
 
-	glRotatef(rotx, 1.0f, 0.0f, 0.0f);
+	//glRotatef(rotx, 1.0f, 0.0f, 0.0f);
 	glRotatef(roty, 0.0f, 1.0f, 0.0f);
-	glRotatef(rotz, 0.0f, 0.0f, 1.0f);
+	//glRotatef(rotz, 0.0f, 0.0f, 1.0f);
+	cloth.Draw();
 	
 	for(unsigned i = 0; i < boat.meshes.size(); i++)
 		boat.meshes[i].Draw();

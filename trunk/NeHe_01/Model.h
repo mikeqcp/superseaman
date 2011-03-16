@@ -35,6 +35,8 @@ public:
 
 	vector<Edge> createEdgeList();
 
+	vector<int> Model::getOutline();
+
 	Vertex *getVertices(){ return verticesTab; }
 
 };

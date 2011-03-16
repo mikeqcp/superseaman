@@ -42,6 +42,8 @@ public:
 
 	vector<Edge> createEdgeList(int noVertices);
 
+	vector<int> getOutline();
+
 	void ComputeNormals();
 
 };

@@ -312,3 +312,9 @@ vector<Edge> Model::createEdgeList(){
 	return meshes[0].createEdgeList(noVertices);
 
 }
+
+vector<int> Model::getOutline(){
+
+	return meshes[0].getOutline();
+
+}

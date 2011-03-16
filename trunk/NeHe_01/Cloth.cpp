@@ -5,9 +5,9 @@
 Cloth::Cloth()
 {
 	showNormals = false;	
-    gravity.x = 10.0f;
+    gravity.x = 0.0f;
     gravity.y = -4.0f;
-    gravity.z = 0;
+    gravity.z = 10.0f;
                 
 }
 
@@ -31,27 +31,22 @@ void Cloth::BuildCloth(){
                 oldVertices[i] = verticesTab[i];
 				masses[i] = 1;
 
-				if(verticesTab[i].y == -1.0f || verticesTab[i].z == -1.0f || verticesTab[i].y == 1.0f || verticesTab[i].z == 1.0f){
-					if(count % 3 == 0 )masses[i] = 0;
-					count++;
-				}
-
-				if(verticesTab[i].y == -1.0f && verticesTab[i].z == -1.0f){
-					masses[i] = 0;
-				}
-
-				else if(verticesTab[i].y == -1.0f && verticesTab[i].z == 1.0f){
-					masses[i] = 0;
-				}
-
-				else if(verticesTab[i].y == 1.0f && verticesTab[i].z == -1.0f){
-					masses[i] = 0;
-				}
         }
+
+		vector<int> outline = getOutline();
+        while(!outline.empty()){
+
+			int e = outline.at(0);
+            outline.erase(outline.begin());
+
+			masses[e-1] = 0;
+
+		}
+
 
         constraints = new GLfloat[edges.size()];
         vector<Edge> ed = edges;
-        int i = 0;
+		        int i = 0;
         while(!ed.empty()){
 
                 Edge e = ed.at(0);
@@ -172,6 +167,6 @@ void Cloth::ToogleNormals(){
 
 void Cloth::FlipWind(){
 
-	gravity.x *= -1;
+	gravity.z *= -1;
 
 }
