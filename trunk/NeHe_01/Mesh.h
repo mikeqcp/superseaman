@@ -32,7 +32,7 @@ public:
 
 	void Draw();
 
-	void DirectDraw();
+	void DirectDraw(bool showNormals);
 
 	void UpdateVerticesNormalsTexturesMaterials(Vertex *vertices, Vertex *normals, Texture *textures, int textureCount, TextureUV * textureCoords, Material *materials, int mCount);
 

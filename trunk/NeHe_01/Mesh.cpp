@@ -19,7 +19,7 @@ Mesh::~Mesh(void){
 
 }
 
-void Mesh::DirectDraw(){
+void Mesh::DirectDraw(bool showNormals){
 
 	//glPolygonMode(GL_BACK, GL_LINE);
 
@@ -88,21 +88,24 @@ void Mesh::DirectDraw(){
 		}
 		glEnd();
 
+		if(showNormals){
 
-		glBegin(GL_LINES);
+			glBegin(GL_LINES);
 
-		{
-			for(unsigned j = 0; j < f.vertices.size(); j++){
+			{
+				for(unsigned j = 0; j < f.vertices.size(); j++){
 				
-				Vertex n = normals[f.normalIndex[j]-1];
-				Vertex v = vertices[f.vertices[j]-1];
-				glColor3f(1.0f, 1.0f, 1.0f);
-				glVertex3f(v.x, v.y, v.z);
-				glVertex3f(v.x + n.x, v.y + n.y, v.z+n.z);
+					Vertex n = normals[f.normalIndex[j]-1];
+					Vertex v = vertices[f.vertices[j]-1];
+					glColor3f(1.0f, 1.0f, 1.0f);
+					glVertex3f(v.x, v.y, v.z);
+					glVertex3f(v.x + n.x, v.y + n.y, v.z+n.z);
 
+				}
 			}
+			glEnd();
+
 		}
-		glEnd();
 
 
 	}

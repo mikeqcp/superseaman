@@ -1,10 +1,10 @@
 # Blender MTL File: 'untitled.blend'
 # Material Count: 1
-newmtl Material.001_wood.png.001
-Ns 96.078431
+newmtl Material.001_wood.png_wood.png
+Ns 92.156863
 Ka 0.000000 0.000000 0.000000
-Kd 0.640000 0.619483 0.232896
-Ks 0.078717 0.017410 0.056286
+Kd 0.512000 0.495586 0.186317
+Ks 0.039359 0.008705 0.028143
 Ni 1.000000
 d 1.000000
 illum 2

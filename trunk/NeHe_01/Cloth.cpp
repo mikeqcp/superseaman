@@ -4,16 +4,16 @@
 
 Cloth::Cloth()
 {
-
-        gravity.x = 0.4f;
-        gravity.y = -2.0f;
-        gravity.z = 0;
+	showNormals = false;	
+    gravity.x = 2.0f;
+    gravity.y = -2.0f;
+    gravity.z = 0;
                 
 }
 
 void Cloth::Draw(){
 
-	meshes[0].DirectDraw();
+	meshes[0].DirectDraw(showNormals);
 
 }
 
@@ -162,5 +162,17 @@ void Cloth::TimeStep(){
         Verlet();
         SatisfyConstraints();
 		meshes[0].ComputeNormals(noVertices);
+
+}
+
+void Cloth::ToogleNormals(){
+
+	showNormals = !showNormals;
+
+}
+
+void Cloth::FlipWind(){
+
+	gravity.x *= -1;
 
 }

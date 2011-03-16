@@ -408,6 +408,11 @@ void GLWindow::KeyboardHandle(){
 	if(keyboard[VK_ESCAPE])
 		done = true;
 
+	if(keyboard[VK_SPACE] && !previousKeyboard[VK_SPACE]) 
+		cloth.FlipWind();
+
+	if(keyboard[78] && !previousKeyboard[78]) 
+		cloth.ToogleNormals();
 
 	for(int i = 0; i < 256; i++)
 		GLWindow::previousKeys[i] = GLWindow::keys[i];

@@ -19,6 +19,8 @@ private:
         int *pinned;
 		Vertex *pins;
 
+		bool showNormals;
+
 public:
 
         Cloth();
@@ -30,5 +32,9 @@ public:
         void TimeStep();
 
 		void Draw();
+
+		void ToogleNormals();
+
+		void FlipWind();
 
 };
