@@ -25,6 +25,8 @@ private:
 
 	GLuint meshCL;
 
+	bool normalsInitialized;
+
 public:
 	Mesh(vector<Face> facesVector, string name);
 
@@ -40,7 +42,7 @@ public:
 
 	vector<Edge> createEdgeList(int noVertices);
 
-	void ComputeNormals(int noVertices);
+	void ComputeNormals();
 
 };
 

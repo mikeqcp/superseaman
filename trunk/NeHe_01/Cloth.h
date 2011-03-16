@@ -16,8 +16,8 @@ private:
         Vertex *oldVertices;
         Vertex *verticesAcc;
         GLfloat *constraints;
-        int *pinned;
-		Vertex *pins;
+		short *masses;
+
 
 		bool showNormals;
 

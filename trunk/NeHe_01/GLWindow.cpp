@@ -247,7 +247,7 @@ void GLWindow::InitGL(){
 
 	GLfloat ambientLight[] =  { 0.5f, 0.5f, 0.5f, 1.0f };
 	GLfloat diffuseLight[] =  { 0.8f, 0.8f, 0.8f, 1.0f };
-	GLfloat lightPosition[] = { -10.0f, 0.0f, 20.0f, 1.0f };
+	GLfloat lightPosition[] = { 10.0f, 0.0f, 10.0f, 1.0f };
 
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuseLight);
@@ -428,7 +428,7 @@ int GLWindow::DrawGLScene(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glLoadIdentity();
-	glTranslatef(0.0f, 0.0f, -7.0f);
+	glTranslatef(0.0f, 0.0f, -4.0f);
 	glRotatef(-45.0f, 0.0f, 1.0f, 0.0f);
 	cloth.Draw();
 	

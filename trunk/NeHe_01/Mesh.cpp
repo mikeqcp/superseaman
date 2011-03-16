@@ -11,6 +11,8 @@ Mesh::Mesh(vector<Face> facesVector, string name)
 	for(unsigned i = 0; i < noFaces; i++)
 		faces[i] = facesVector[i];
 
+	normalsInitialized = false;
+
 }
 
 
@@ -22,7 +24,6 @@ Mesh::~Mesh(void){
 void Mesh::DirectDraw(bool showNormals){
 
 	//glPolygonMode(GL_BACK, GL_LINE);
-
 	for(unsigned i = 0; i < noFaces; i++){
 		Face f = faces[i];
 
@@ -272,10 +273,13 @@ vector<Edge> Mesh::createEdgeList(int noVertices){
 
 }
 
-void Mesh::ComputeNormals(int noVertices){
+void Mesh::ComputeNormals(){
 
 	int counter = 0;
-	normals = new Vertex[noFaces*3];
+	if(!normalsInitialized){
+		normals = new Vertex[noFaces*3];
+		normalsInitialized = true;
+	}
 	for(unsigned i = 0; i < noFaces; i++){
 
 		faces[i].normalIndex.clear();

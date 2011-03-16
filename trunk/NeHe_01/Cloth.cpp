@@ -5,8 +5,8 @@
 Cloth::Cloth()
 {
 	showNormals = false;	
-    gravity.x = 2.0f;
-    gravity.y = -2.0f;
+    gravity.x = 10.0f;
+    gravity.y = -4.0f;
     gravity.z = 0;
                 
 }
@@ -24,20 +24,29 @@ void Cloth::BuildCloth(){
 
         oldVertices = new Vertex[noVertices];
         verticesAcc = new Vertex[noVertices];
-
-        pinned = new int[3];
-
+		masses = new short[noVertices];
+		int count = 0;
         for(int i = 0; i < noVertices; i++){
 
                 oldVertices[i] = verticesTab[i];
-				if(verticesTab[i].y == -1.0f && verticesTab[i].z == -1.0f)
-					pinned[0] = i;
+				masses[i] = 1;
 
-				else if(verticesTab[i].y == -1.0f && verticesTab[i].z == 1.0f)
-					pinned[1] = i;
+				if(verticesTab[i].y == -1.0f || verticesTab[i].z == -1.0f || verticesTab[i].y == 1.0f || verticesTab[i].z == 1.0f){
+					if(count % 3 == 0 )masses[i] = 0;
+					count++;
+				}
 
-				else if(verticesTab[i].y == 1.0f && verticesTab[i].z == -1.0f)
-					pinned[2] = i;
+				if(verticesTab[i].y == -1.0f && verticesTab[i].z == -1.0f){
+					masses[i] = 0;
+				}
+
+				else if(verticesTab[i].y == -1.0f && verticesTab[i].z == 1.0f){
+					masses[i] = 0;
+				}
+
+				else if(verticesTab[i].y == 1.0f && verticesTab[i].z == -1.0f){
+					masses[i] = 0;
+				}
         }
 
         constraints = new GLfloat[edges.size()];
@@ -64,18 +73,18 @@ void Cloth::BuildCloth(){
 
         }
 
-
-
 }
 
 Cloth::~Cloth(void)
 {
 
+	delete [] masses;
+
 }
 
 void Cloth::Verlet(){
 
-        GLfloat fTimeStep = 0.02f;
+        GLfloat fTimeStep = 0.01f;
 
         for(int i = 0; i < noVertices; i++){
 
@@ -84,9 +93,9 @@ void Cloth::Verlet(){
                 Vertex old = oldVertices[i];
                 Vertex a = verticesAcc[i];
 
-                v.x += v.x - old.x + a.x *fTimeStep*fTimeStep;
-                v.y += v.y - old.y + a.y *fTimeStep*fTimeStep;
-                v.z += v.z - old.z + a.z *fTimeStep*fTimeStep;
+                v.x += v.x - old.x + a.x *fTimeStep*fTimeStep*(GLfloat)masses[i];
+                v.y += v.y - old.y + a.y *fTimeStep*fTimeStep*(GLfloat)masses[i];
+                v.z += v.z - old.z + a.z *fTimeStep*fTimeStep*(GLfloat)masses[i];
 
                 verticesTab[i] = v;
                 oldVertices[i] = temp;
@@ -124,34 +133,24 @@ void Cloth::SatisfyConstraints(){
 
                 GLfloat dotProduct = delta.x *delta.x + delta.y*delta.y + delta.z * delta.z;
 				GLfloat c = constraints[i++];
+				short m1 = masses[e.v1];
+				short m2 = masses[e.v2];
 
                 //GLfloat deltalength = (c + dotProduct/c)/2;
 				GLfloat deltalength = sqrt(dotProduct);
                 GLfloat diff = (deltalength - c)/deltalength;
 
-                v1.x = v1.x + delta.x*0.5f*diff;
-                v1.y = v1.y + delta.y*0.5f*diff;
-                v1.z = v1.z + delta.z*0.5f*diff;
+                v1.x = v1.x + delta.x*0.5f*diff*(GLfloat)m1;
+                v1.y = v1.y + delta.y*0.5f*diff*(GLfloat)m1;
+                v1.z = v1.z + delta.z*0.5f*diff*(GLfloat)m1;
 
-                v2.x = v2.x - delta.x*0.5f*diff;
-                v2.y = v2.y - delta.y*0.5f*diff;
-                v2.z = v2.z - delta.z*0.5f*diff;
+                v2.x = v2.x - delta.x*0.5f*diff*(GLfloat)m2;
+                v2.y = v2.y - delta.y*0.5f*diff*(GLfloat)m2;
+                v2.z = v2.z - delta.z*0.5f*diff*(GLfloat)m2;
 
                 verticesTab[e.v1] = v1;
                 verticesTab[e.v2] = v2;
         }
-
-		verticesTab[pinned[0]].x = 0;
-		verticesTab[pinned[0]].y = -1;
-		verticesTab[pinned[0]].z = -1;
-
-		verticesTab[pinned[1]].x = 0;
-		verticesTab[pinned[1]].y = -1;
-		verticesTab[pinned[1]].z = 1;
-
-		verticesTab[pinned[2]].x = 0;
-		verticesTab[pinned[2]].y = 1;
-		verticesTab[pinned[2]].z = -1;
 
 }
 
@@ -161,7 +160,7 @@ void Cloth::TimeStep(){
         AccumulateForces();
         Verlet();
         SatisfyConstraints();
-		meshes[0].ComputeNormals(noVertices);
+		meshes[0].ComputeNormals();
 
 }
 
