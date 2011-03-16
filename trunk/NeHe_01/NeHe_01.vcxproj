@@ -108,12 +108,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="bitmap2.bmp" />
-    <None Include="bitmap3.bmp" />
     <None Include="wood.bmp" />
     <None Include="woodplanks.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="SuperSeaman1.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

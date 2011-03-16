@@ -428,7 +428,7 @@ int GLWindow::DrawGLScene(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glLoadIdentity();
-	glTranslatef(0.0f, -1.0f, -7.0f);
+	glTranslatef(0.0f, -1.5f, -7.0f);
 
 	//glRotatef(rotx, 1.0f, 0.0f, 0.0f);
 	glRotatef(roty, 0.0f, 1.0f, 0.0f);

@@ -12,6 +12,7 @@ Mesh::Mesh(vector<Face> facesVector, string name)
 		faces[i] = facesVector[i];
 
 	normalsInitialized = false;
+	directMeshCLcreated = false;
 
 }
 
@@ -23,50 +24,79 @@ Mesh::~Mesh(void){
 
 void Mesh::DirectDraw(bool showNormals){
 
-	//glPolygonMode(GL_BACK, GL_LINE);
+	if(!directMeshCLcreated){
+		GLuint current;
+		directMeshCL = glGenLists(noFaces);
+		current = directMeshCL;
+
+		for(unsigned i = 0; i < noFaces; i++){
+
+			glNewList(current, GL_COMPILE);
+			Face f = faces[i];
+			bool skip = false;
+			if(f.materialName.compare("pins") == 0) continue;
+			if(f.materialName.compare("(null)") == 0) skip = true;
+
+			if(!skip){
+				for(int k = 0; k < noMaterials; k++){
+					Material mat = materials[k];
+					if(mat.getName().compare(f.materialName) == 0){
+
+						for(int l = 0; l < noTextures; l++){
+							if(mat.getMap_Kd().compare(textures[l].name) == 0){
+								glEnable(GL_TEXTURE_2D);
+								glBindTexture(GL_TEXTURE_2D, textures[l].tex);
+								break;
+							}
+							if(l == noTextures - 1)
+								glDisable(GL_TEXTURE_2D);
+						}
+
+						glColorMaterial(GL_FRONT, GL_SPECULAR);
+
+						Vertex Ks = mat.getKs();
+						GLfloat specular[] = { Ks.x, Ks.y, Ks.z, mat.getNs() };
+
+						glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+
+						Vertex Kd = mat.getKd();
+						GLfloat diffuse[] = { Kd.x, Kd.y, Kd.z, 1.0f };
+
+						glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+
+						Vertex Ka = mat.getKa();
+						GLfloat ambient[] = { Ka.x, Ka.y, Ka.z, 1.0f };
+
+						glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+
+					}
+
+				}
+			}
+
+			glEndList();
+			current++;
+		}
+		
+
+		directMeshCLcreated = true;
+
+	}
+
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+	GLuint current = directMeshCL;
 	for(unsigned i = 0; i < noFaces; i++){
 		Face f = faces[i];
 
-		for(int k = 0; k < noMaterials; k++){
-			Material mat = materials[k];
-			if(mat.getName().compare(f.materialName) == 0){
+		if(f.materialName.compare("pins") == 0) continue;
 
-				for(int l = 0; l < noTextures; l++){
-					if(mat.getMap_Kd().compare(textures[l].name) == 0){
-						glEnable(GL_TEXTURE_2D);
-						glBindTexture(GL_TEXTURE_2D, textures[l].tex);
-						break;
-					}
-					if(l == noTextures - 1)
-						glDisable(GL_TEXTURE_2D);
-				}
-
-				glColorMaterial(GL_FRONT, GL_SPECULAR);
-
-				Vertex Ks = mat.getKs();
-				GLfloat specular[] = { Ks.x, Ks.y, Ks.z, mat.getNs() };
-
-				glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
-
-				Vertex Kd = mat.getKd();
-				GLfloat diffuse[] = { Kd.x, Kd.y, Kd.z, 1.0f };
-
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
-
-				Vertex Ka = mat.getKa();
-				GLfloat ambient[] = { Ka.x, Ka.y, Ka.z, 1.0f };
-
-				glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
-
-			}
-
-		}
+		glCallList(current++);
 
 		glBegin(GL_TRIANGLES);
 
 		{
+
 			for(unsigned j = 0; j < f.vertices.size(); j++){
 
 				if(f.textures[j] > 0){
@@ -139,6 +169,7 @@ void Mesh::Draw(){
 
 void Mesh::UpdateVerticesNormalsTexturesMaterials(
 	Vertex *vertices, 
+	int noVertices,
 	Vertex *normals, 
 	Texture *textures, 
 	int textureCount, 
@@ -147,6 +178,7 @@ void Mesh::UpdateVerticesNormalsTexturesMaterials(
 	int mCount ){
 
 	this -> vertices = vertices;
+	this -> noVertices = noVertices;
 	this -> normals = normals;
 	this -> textures = textures;
 	this -> noTextures = textureCount;
@@ -294,9 +326,17 @@ void Mesh::ComputeNormals(){
 
 	int counter = 0;
 	if(!normalsInitialized){
-		normals = new Vertex[noFaces*3];
+		normals = new Vertex[noVertices];
+		for(unsigned i = 0; i < noVertices; i++){
+			Vertex normal;
+			normal.x = 0;
+			normal.y = 0;
+			normal.z = 0;
+		}
+
 		normalsInitialized = true;
 	}
+
 	for(unsigned i = 0; i < noFaces; i++){
 
 		faces[i].normalIndex.clear();
@@ -311,9 +351,13 @@ void Mesh::ComputeNormals(){
 			continue;
 		}
 
-		Vertex a = vertices[faces[i].vertices[0]-1];
-		Vertex b = vertices[faces[i].vertices[1]-1];
-		Vertex c = vertices[faces[i].vertices[2]-1];
+		int ind1 = faces[i].vertices[0]-1;
+		int ind2 = faces[i].vertices[1]-1;
+		int ind3 = faces[i].vertices[2]-1;
+
+		Vertex a = vertices[ind1];
+		Vertex b = vertices[ind2];
+		Vertex c = vertices[ind3];
 
 		Vertex normal;
 		Vertex U, V;
@@ -335,13 +379,37 @@ void Mesh::ComputeNormals(){
 		normal.x *= -1.0f/length;
 		normal.y *= -1.0f/length;
 		normal.z *= -1.0f/length;
+		
+		int index;
+		for(int j = 0; j < 3; j++){
+			switch(j){
+			case 0:
+				index = ind1;
+				break;
+			case 1:
+				index = ind2;
+				break;
+			case 2: 
+				index = ind3;
+				break;
+			}
+			if(normals[index].x == 0 && normals[index].y == 0 && normals[index].z == 0)
+				normals[index] = normal;
+			else {
+				normals[index].x += normal.x;
+				normals[index].y += normal.y;
+				normals[index].z += normal.z;
 
-		normals[counter++] = normal;
-		faces[i].normalIndex.push_back(counter);
-		normals[counter++] = normal;
-		faces[i].normalIndex.push_back(counter);
-		normals[counter++] = normal;
-		faces[i].normalIndex.push_back(counter);
+				normals[index].x /= 2.0f;
+				normals[index].y /= 2.0f;
+				normals[index].z /= 2.0f;
+
+			}
+		}
+
+		faces[i].normalIndex.push_back(ind1);
+		faces[i].normalIndex.push_back(ind2);
+		faces[i].normalIndex.push_back(ind3);
 
 	}
 

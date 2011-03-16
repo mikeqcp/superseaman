@@ -294,6 +294,7 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 	for(unsigned i = 0; i < meshes.size(); i++){
 		meshes[i].UpdateVerticesNormalsTexturesMaterials(
 			verticesTab, 
+			nov,
 			normalsTab, 
 			textures, 
 			textureCount, 

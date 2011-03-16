@@ -22,9 +22,12 @@ private:
 
 	Face *faces;
 	unsigned noFaces;
+	unsigned noVertices;
 
 	GLuint meshCL;
 
+	GLuint directMeshCL;
+	bool directMeshCLcreated;
 	bool normalsInitialized;
 
 public:
@@ -36,7 +39,7 @@ public:
 
 	void DirectDraw(bool showNormals);
 
-	void UpdateVerticesNormalsTexturesMaterials(Vertex *vertices, Vertex *normals, Texture *textures, int textureCount, TextureUV * textureCoords, Material *materials, int mCount);
+	void UpdateVerticesNormalsTexturesMaterials(Vertex *vertices, int noVertices, Vertex *normals, Texture *textures, int textureCount, TextureUV * textureCoords, Material *materials, int mCount);
 
 	void BuildLists();
 
