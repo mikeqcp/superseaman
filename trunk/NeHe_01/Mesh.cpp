@@ -34,7 +34,6 @@ void Mesh::DirectDraw(bool showNormals){
 			glNewList(current, GL_COMPILE);
 			Face f = faces[i];
 			bool skip = false;
-			if(f.materialName.compare("pins") == 0) continue;
 			if(f.materialName.compare("(null)") == 0) skip = true;
 
 			if(!skip){
@@ -89,7 +88,14 @@ void Mesh::DirectDraw(bool showNormals){
 	for(unsigned i = 0; i < noFaces; i++){
 		Face f = faces[i];
 
-		if(f.materialName.compare("pins") == 0) continue;
+		if(f.materialName.compare("pins") == 0) {
+			current++;
+			continue;
+		}
+		if(f.materialName.compare("bompins") == 0){
+			current++;
+			continue;
+		}
 
 		glCallList(current++);
 
@@ -421,7 +427,25 @@ vector<int> Mesh::getOutline(){
 
 	for(unsigned i = 0; i < noFaces; i++){
 
-		if(faces[i].materialName.compare("pins") == 0){
+		if(faces[i].materialName.compare("pins") == 0 || faces[i].materialName.compare("bompins") == 0){
+			for(unsigned j = 0; j < faces[i].vertices.size(); j++)
+				outline.push_back(faces[i].vertices[j]);
+
+		}
+
+	}
+
+	return outline;
+
+}
+
+vector<int> Mesh::getBomPins(){
+
+	vector<int> outline;
+
+	for(unsigned i = 0; i < noFaces; i++){
+
+		if(faces[i].materialName.compare("bompins") == 0){
 			for(unsigned j = 0; j < faces[i].vertices.size(); j++)
 				outline.push_back(faces[i].vertices[j]);
 

@@ -47,6 +47,8 @@ public:
 
 	vector<int> getOutline();
 
+	vector<int> getBomPins();
+
 	void ComputeNormals();
 
 };
