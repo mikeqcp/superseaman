@@ -1,32 +1,13 @@
-# Material Count: 10
-newmtl Material.007
-Ns 1.960784
+# Material Count: 11
+newmtl Material.009_burta.jpg
+Ns 221.568627
 Ka 0.000000 0.000000 0.000000
-Kd 0.800000 0.800000 0.800000
-Ks 0.782895 0.782895 0.782895
+Kd 0.325333 0.325333 0.325333
+Ks 0.073333 0.073333 0.073333
 Ni 1.000000
 d 1.000000
 illum 2
-
-
-newmtl Material.004
-Ns 96.078431
-Ka 0.000000 0.000000 0.000000
-Kd 0.235429 0.009417 0.009417
-Ks 0.280000 0.280000 0.280000
-Ni 1.000000
-d 1.000000
-illum 2
-
-
-newmtl Material
-Ns 133.333333
-Ka 0.000000 0.000000 0.000000
-Kd 0.371217 0.160452 0.069132
-Ks 0.044118 0.044118 0.044118
-Ni 1.000000
-d 1.000000
-illum 2
+map_Kd D:\Dokumenty\Grafika\3D modelling\SuperSeaman\tex\burta.jpg
 
 
 newmtl Material.005
@@ -39,6 +20,17 @@ d 1.000000
 illum 2
 
 
+newmtl Material.004_burta.jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.235429 0.009417 0.009417
+Ks 0.280000 0.280000 0.280000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\Dokumenty\Grafika\3D modelling\SuperSeaman\tex\burta.jpg
+
+
 newmtl Material.006
 Ns 96.078431
 Ka 0.000000 0.000000 0.000000
@@ -49,14 +41,15 @@ d 1.000000
 illum 2
 
 
-newmtl stal
-Ns 96.078431
+newmtl Material.007_burta.jpg
+Ns 1.960784
 Ka 0.000000 0.000000 0.000000
-Kd 0.640000 0.640000 0.640000
-Ks 0.500000 0.500000 0.500000
+Kd 0.800000 0.800000 0.800000
+Ks 0.782895 0.782895 0.782895
 Ni 1.000000
 d 1.000000
 illum 2
+map_Kd D:\Dokumenty\Grafika\3D modelling\SuperSeaman\tex\burta.jpg
 
 
 newmtl Material.008
@@ -79,6 +72,17 @@ d 1.000000
 illum 2
 
 
+newmtl Material_burta.jpg
+Ns 133.333333
+Ka 0.000000 0.000000 0.000000
+Kd 0.371217 0.160452 0.069132
+Ks 0.044118 0.044118 0.044118
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd D:\Dokumenty\Grafika\3D modelling\SuperSeaman\tex\burta.jpg
+
+
 newmtl Material.002
 Ns 96.078431
 Ka 0.000000 0.000000 0.000000
@@ -94,6 +98,16 @@ Ns 133.333333
 Ka 0.000000 0.000000 0.000000
 Kd 0.326339 0.323828 0.367676
 Ks 0.241486 0.241486 0.241486
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl stal
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000
 illum 2

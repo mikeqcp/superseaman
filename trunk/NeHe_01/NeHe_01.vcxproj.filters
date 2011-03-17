@@ -16,6 +16,9 @@
     <Filter Include="Header Files\Physics">
       <UniqueIdentifier>{7bbba50b-e0e6-4a7c-b3f0-9fa0aeeb31c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Phisics">
+      <UniqueIdentifier>{4f470dfc-29d5-48ef-9dc4-d3061b3856df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -51,13 +54,16 @@
     <ClInclude Include="resource2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vector3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Cloth.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Phisics.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3D.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Boat.h">
       <Filter>Header Files\Physics</Filter>
     </ClInclude>
   </ItemGroup>
@@ -83,14 +89,17 @@
     <ClCompile Include="Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Phisics.cpp">
+    <ClCompile Include="Cloth.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Vector3D.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Phisics</Filter>
     </ClCompile>
-    <ClCompile Include="Cloth.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Phisics.cpp">
+      <Filter>Source Files\Phisics</Filter>
+    </ClCompile>
+    <ClCompile Include="Boat.cpp">
+      <Filter>Source Files\Phisics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

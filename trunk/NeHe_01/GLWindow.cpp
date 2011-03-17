@@ -442,7 +442,7 @@ int GLWindow::DrawGLScene(){
 	//Tu mike Twoja lodka
 	
 	/*
-	
+	/*glLoadIdentity();
 	glLoadIdentity();
 	glTranslatef(0.0f, -1.0f, -15.0f);
 
@@ -451,8 +451,8 @@ int GLWindow::DrawGLScene(){
 	glRotatef(rotz, 0.0f, 0.0f, 1.0f);
 
 	for(unsigned i = 0; i < mikeBoat.meshes.size(); i++)
-		mikeBoat.meshes[i].Draw();
-	*/
+		mikeBoat.meshes[i].Draw();*/
+	
 
 
 	return 0;
