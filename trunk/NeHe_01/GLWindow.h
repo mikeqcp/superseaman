@@ -41,6 +41,7 @@ private:
 
 	GLfloat rotx, roty, rotz;
 
+
 #pragma endregion
 
 #pragma region Methods

@@ -30,6 +30,8 @@ GLWindow::GLWindow(LPCWSTR title, int width, int height, int bits, bool fullscre
 	roty = 0;
 	rotz = 0;
 
+	MatrixBase<GLfloat> matrix; 
+
 	for(int i = 0; i < 256; i++){
 		GLWindow::keys[i] = false;
 		GLWindow::previousKeys[i] = false;
