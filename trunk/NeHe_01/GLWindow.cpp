@@ -23,7 +23,7 @@ GLWindow::GLWindow(LPCWSTR title, int width, int height, int bits, bool fullscre
 	GLWindow::fullscreen = fullscreen;
 	GLWindow::active = active;
 
-	textureCount = 2;
+	textureCount = 3;
 	textureImage = new Texture[textureCount];
 
 	rotx = 0;
@@ -274,6 +274,8 @@ void GLWindow::LoadContent(){
 	
 	LoadBitMap(L"wood.bmp", &(textureImage[0]), "wood.png");
 	LoadBitMap(L"woodplanks.bmp", &(textureImage[1]), "woodplanks.jpg");
+	LoadBitMap(L"fabric.bmp", &(textureImage[2]), "fabric.jpg");
+
 	LoadFont(L"Courier New");
 	boat.Load("boat.obj", textureImage, textureCount);
 	//mikeBoat.Load("mikeBoat.obj", textureImage, textureCount);

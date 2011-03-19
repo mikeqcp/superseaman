@@ -19,6 +19,7 @@ private:
 
 	int noMaterials;
 	int noTextures;
+	short *dividers;
 
 	Face *faces;
 	unsigned noFaces;

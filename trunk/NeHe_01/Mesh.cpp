@@ -43,7 +43,7 @@ void Mesh::DirectDraw(bool showNormals){
 
 						for(int l = 0; l < noTextures; l++){
 							if(mat.getMap_Kd().compare(textures[l].name) == 0){
-								//glEnable(GL_TEXTURE_2D);
+								glEnable(GL_TEXTURE_2D);
 								glBindTexture(GL_TEXTURE_2D, textures[l].tex);
 								break;
 							}
@@ -331,8 +331,28 @@ vector<Edge> Mesh::createEdgeList(int noVertices){
 void Mesh::ComputeNormals(){
 
 	int counter = 0;
+
 	if(!normalsInitialized){
 		normals = new Vector3D[noVertices];
+		dividers = new short[noVertices];
+		for(unsigned i = 0; i < noVertices; i++)
+			dividers[i] = 1;
+
+		for(unsigned i = 0; i < noFaces; i++){
+
+			if(faces[i].materialName.compare("pins") == 0 || faces[i].materialName.compare("bompins") == 0)
+			continue;
+
+			int ind1 = faces[i].vertices[0]-1;
+			int ind2 = faces[i].vertices[1]-1;
+			int ind3 = faces[i].vertices[2]-1;
+
+			dividers[ind1]++;
+			dividers[ind2]++;
+			dividers[ind3]++;
+
+		}
+
 		normalsInitialized = true;
 	}
 
@@ -371,7 +391,7 @@ void Mesh::ComputeNormals(){
 		normal.y = U.z * V.x - U.x * V.z;
 		normal.z = U.x * V.y - U.y * V.x;
 
-		normal.scaleTo(1.0f);
+		normal.normalize();
 		normal.negate();
 		
 		int index;
@@ -389,17 +409,22 @@ void Mesh::ComputeNormals(){
 			}
 			if(normals[index] == 0)
 				normals[index] = normal;
-			else {
-
+			else 
 				normals[index] += normal;
-				normals[index] /= 2.0f;
-
-			}
 		}
 
-		faces[i].normalIndex.push_back(ind1);
-		faces[i].normalIndex.push_back(ind2);
-		faces[i].normalIndex.push_back(ind3);
+		faces[i].normalIndex.push_back(ind1+1);
+		faces[i].normalIndex.push_back(ind2+1);
+		faces[i].normalIndex.push_back(ind3+1);
+
+	}
+
+	for(unsigned i = 0; i < noVertices; i++){
+
+		normals[i] /= (GLfloat)dividers[i];
+
+		normals[i].normalize();
+		GLfloat length = normals[i].length();
 
 	}
 

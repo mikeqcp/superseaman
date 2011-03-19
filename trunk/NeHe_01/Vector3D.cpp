@@ -169,6 +169,7 @@ GLfloat Vector3D::length()
 void Vector3D::normalize() 
 {
 	GLfloat l = length();
+	if(l == 0) return;
 	x /= l;
 	y /= l;
 	z /= l;
