@@ -116,13 +116,49 @@ Vector3D Vector3D::operator/=(GLfloat w){
 	return *this;
 }
 
+bool Vector3D::operator==(Vector3D v){
+
+	if(this ->x == v.x && this->y == v.y && this->z == v.z)
+		return true;
+
+	return false;
+
+}
+
+bool Vector3D::operator==(GLfloat w){
+
+	if(this ->x == w && this->y == w && this->z == w)
+		return true;
+
+	return false;
+
+}
+
+bool Vector3D::operator!=(Vector3D v){
+
+	if(this ->x != v.x || this->y != v.y || this->z != v.z)
+		return true;
+
+	return false;
+
+}
+
+bool Vector3D::operator!=(GLfloat w){
+
+	if(this ->x != w || this->y != w || this->z != w)
+		return true;
+
+	return false;
+
+}
+
 #pragma endregion
 
 void Vector3D::negate() 
 {
- x *=-1;
- y *=-1;
- z *=-1;
+ this ->x *=-1;
+ this ->y *=-1;
+ this ->z *=-1;
 }
 
 GLfloat Vector3D::length() 

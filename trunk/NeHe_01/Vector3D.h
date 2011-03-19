@@ -29,6 +29,11 @@ public:
 	Vector3D operator*=(GLfloat w);
 	Vector3D operator/=(GLfloat w);
 
+	bool operator==(Vector3D v);
+	bool operator==(GLfloat w);
+	bool operator!=(Vector3D v);
+	bool operator!=(GLfloat w);
+
 	void assign(GLfloat x, GLfloat y, GLfloat z);
 
 	void negate();

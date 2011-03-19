@@ -43,7 +43,7 @@ void Mesh::DirectDraw(bool showNormals){
 
 						for(int l = 0; l < noTextures; l++){
 							if(mat.getMap_Kd().compare(textures[l].name) == 0){
-								glEnable(GL_TEXTURE_2D);
+								//glEnable(GL_TEXTURE_2D);
 								glBindTexture(GL_TEXTURE_2D, textures[l].tex);
 								break;
 							}
@@ -387,7 +387,7 @@ void Mesh::ComputeNormals(){
 				index = ind3;
 				break;
 			}
-			if(normals[index].x == 0 && normals[index].y == 0 && normals[index].z == 0)
+			if(normals[index] == 0)
 				normals[index] = normal;
 			else {
 
