@@ -10,7 +10,7 @@ Vector3D::Vector3D(void)
    this->z=0;
 }
 
-Vector3D::Vector3D(double x, double y, double z) 
+Vector3D::Vector3D(GLfloat x, GLfloat y, GLfloat z) 
 {
 	this->x = x;
 	this->y = y;
@@ -40,6 +40,16 @@ Vector3D Vector3D::operator-(Vector3D v) {
  return Vector3D((x - v.x), (y - v.y), (z - v.z));
 }
 
+Vector3D Vector3D::operator+(GLfloat w) 
+{
+ return Vector3D((x + w), (y + w), (z + w));
+}
+
+Vector3D Vector3D::operator-(GLfloat w) 
+{
+ return Vector3D((x - w), (y - w), (z - w));
+}
+
 Vector3D Vector3D::operator*(GLfloat w) 
 {
  return Vector3D((x * w), (y * w), (z * w));
@@ -48,6 +58,62 @@ Vector3D Vector3D::operator*(GLfloat w)
 Vector3D Vector3D::operator/(GLfloat w) 
 {
  return Vector3D((x / w), (y / w), (z / w));
+}
+
+Vector3D Vector3D::operator+=(Vector3D v){
+	this->x += v.x;
+	this->y += v.y;
+	this->z += v.z;
+	return *this;
+}
+
+Vector3D Vector3D::operator-=(Vector3D v){
+	this->x -= v.x;
+	this->y -= v.y;
+	this->z -= v.z;
+	return *this;
+}
+
+Vector3D Vector3D::operator*=(Vector3D v){
+	this->x *= v.x;
+	this->y *= v.y;
+	this->z *= v.z;
+	return *this;
+}
+
+Vector3D Vector3D::operator/=(Vector3D v){
+	this->x /= v.x;
+	this->y /= v.y;
+	this->z /= v.z;
+	return *this;
+}
+
+Vector3D Vector3D::operator+=(GLfloat w){
+	this->x += w;
+	this->y += w;
+	this->z += w;
+	return *this;
+}
+
+Vector3D Vector3D::operator-=(GLfloat w){
+	this->x -= w;
+	this->y -= w;
+	this->z -= w;
+	return *this;
+}
+
+Vector3D Vector3D::operator*=(GLfloat w){
+	this->x *= w;
+	this->y *= w;
+	this->z *= w;
+	return *this;
+}
+
+Vector3D Vector3D::operator/=(GLfloat w){
+	this->x /= w;
+	this->y /= w;
+	this->z /= w;
+	return *this;
 }
 
 #pragma endregion
@@ -66,7 +132,7 @@ GLfloat Vector3D::length()
 
 void Vector3D::normalize() 
 {
-	double l = length();
+	GLfloat l = length();
 	x /= l;
 	y /= l;
 	z /= l;
@@ -76,16 +142,16 @@ Vector3D* Vector3D::crossWith(Vector3D *b)
 {
 	Vector3D *a = this;
 
-	int i = a->y*b->z - a->z*b->y;
-	int j = a->z*b->x - a->x*b->z;
-	int k = a->x*b->y - a->y*b->x;
+	GLfloat i = a->y*b->z - a->z*b->y; //tutaj byly inty, jesli rzeczywiscie maja byc to dodaj jawne rzutowanie
+	GLfloat j = a->z*b->x - a->x*b->z;
+	GLfloat k = a->x*b->y - a->y*b->x;
 
 	return new Vector3D(i, j, k);
 }
 
 void Vector3D::scaleTo(GLfloat l)
 {
-	double div = l/length();
+	GLfloat div = l/length();
 
 	this->x*=div;
 	this->y*=div;

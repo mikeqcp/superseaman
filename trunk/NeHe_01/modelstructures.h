@@ -4,13 +4,6 @@
 using namespace std;
 
 
-
-struct Vertex{
-
-	GLfloat x, y, z;
-
-};
-
 struct Edge{
 
 	int v1, v2;

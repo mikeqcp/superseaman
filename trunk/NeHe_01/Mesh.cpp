@@ -53,17 +53,17 @@ void Mesh::DirectDraw(bool showNormals){
 
 						glColorMaterial(GL_FRONT, GL_SPECULAR);
 
-						Vertex Ks = mat.getKs();
+						Vector3D Ks = mat.getKs();
 						GLfloat specular[] = { Ks.x, Ks.y, Ks.z, mat.getNs() };
 
 						glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
 
-						Vertex Kd = mat.getKd();
+						Vector3D Kd = mat.getKd();
 						GLfloat diffuse[] = { Kd.x, Kd.y, Kd.z, 1.0f };
 
 						glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
 
-						Vertex Ka = mat.getKa();
+						Vector3D Ka = mat.getKa();
 						GLfloat ambient[] = { Ka.x, Ka.y, Ka.z, 1.0f };
 
 						glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
@@ -111,11 +111,11 @@ void Mesh::DirectDraw(bool showNormals){
 				}
 				
 				if(f.normalIndex[j] > 0){
-					Vertex n = normals[f.normalIndex[j]-1];
+					Vector3D n = normals[f.normalIndex[j]-1];
 					glNormal3f(n.x, n.y, n.z);
 				}
 
-				Vertex v = vertices[f.vertices[j]-1];
+				Vector3D v = vertices[f.vertices[j]-1];
 				glVertex3f(v.x, v.y, v.z);
 
 			}
@@ -130,11 +130,11 @@ void Mesh::DirectDraw(bool showNormals){
 				}
 				
 				if(f.normalIndex[j] > 0){
-					Vertex n = normals[f.normalIndex[j]-1];
+					Vector3D n = normals[f.normalIndex[j]-1];
 					glNormal3f(n.x*-1.0f, n.y*-1.0f, n.z*-1.0f);
 				}
 
-				Vertex v = vertices[f.vertices[j]-1];
+				Vector3D v = vertices[f.vertices[j]-1];
 				glVertex3f(v.x, v.y, v.z);
 
 			}
@@ -149,8 +149,8 @@ void Mesh::DirectDraw(bool showNormals){
 			{
 				for(unsigned j = 0; j < f.vertices.size(); j++){
 				
-					Vertex n = normals[f.normalIndex[j]-1];
-					Vertex v = vertices[f.vertices[j]-1];
+					Vector3D n = normals[f.normalIndex[j]-1];
+					Vector3D v = vertices[f.vertices[j]-1];
 					glColor3f(1.0f, 1.0f, 1.0f);
 					glVertex3f(v.x, v.y, v.z);
 					glVertex3f(v.x - n.x, v.y - n.y, v.z - n.z);
@@ -174,9 +174,9 @@ void Mesh::Draw(){
 }
 
 void Mesh::UpdateVerticesNormalsTexturesMaterials(
-	Vertex *vertices, 
+	Vector3D *vertices, 
 	int noVertices,
-	Vertex *normals, 
+	Vector3D *normals, 
 	Texture *textures, 
 	int textureCount, 
 	TextureUV * textureCoords, 
@@ -219,17 +219,17 @@ void Mesh::BuildLists(){
 
 				glColorMaterial(GL_FRONT, GL_SPECULAR);
 
-				Vertex Ks = mat.getKs();
+				Vector3D Ks = mat.getKs();
 				GLfloat specular[] = { Ks.x, Ks.y, Ks.z, mat.getNs() };
 
 				glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
 
-				Vertex Kd = mat.getKd();
+				Vector3D Kd = mat.getKd();
 				GLfloat diffuse[] = { Kd.x, Kd.y, Kd.z, 1.0f };
 
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
 
-				Vertex Ka = mat.getKa();
+				Vector3D Ka = mat.getKa();
 				GLfloat ambient[] = { Ka.x, Ka.y, Ka.z, 1.0f };
 
 				glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
@@ -254,11 +254,11 @@ void Mesh::BuildLists(){
 				}
 				
 				if(f.normalIndex[j] > 0){
-					Vertex n = normals[f.normalIndex[j]-1];
+					Vector3D n = normals[f.normalIndex[j]-1];
 					glNormal3f(n.x, n.y, n.z);
 				}
 
-				Vertex v = vertices[f.vertices[j]-1];
+				Vector3D v = vertices[f.vertices[j]-1];
 				glVertex3f(v.x, v.y, v.z);
 
 			}
@@ -332,18 +332,14 @@ void Mesh::ComputeNormals(){
 
 	int counter = 0;
 	if(!normalsInitialized){
-		normals = new Vertex[noVertices];
-		for(unsigned i = 0; i < noVertices; i++){
-			Vertex normal;
-			normal.x = 0;
-			normal.y = 0;
-			normal.z = 0;
-		}
-
+		normals = new Vector3D[noVertices];
 		normalsInitialized = true;
 	}
 
 	for(unsigned i = 0; i < noFaces; i++){
+
+		if(faces[i].materialName.compare("pins") == 0 || faces[i].materialName.compare("bompins") == 0)
+			continue;
 
 		faces[i].normalIndex.clear();
 
@@ -361,30 +357,22 @@ void Mesh::ComputeNormals(){
 		int ind2 = faces[i].vertices[1]-1;
 		int ind3 = faces[i].vertices[2]-1;
 
-		Vertex a = vertices[ind1];
-		Vertex b = vertices[ind2];
-		Vertex c = vertices[ind3];
+		Vector3D a = vertices[ind1];
+		Vector3D b = vertices[ind2];
+		Vector3D c = vertices[ind3];
 
-		Vertex normal;
-		Vertex U, V;
+		Vector3D normal;
+		Vector3D U, V;
 
-		U.x = a.x - b.x;
-		U.y = a.y - b.y;
-		U.z = a.z - b.z;
-
-		V.x = c.x - b.x;
-		V.y = c.y - b.y;
-		V.z = c.z - b.z;
+		U = a - b;
+		V = c - b;
 
 		normal.x = U.y * V.z - U.z * V.y;
 		normal.y = U.z * V.x - U.x * V.z;
 		normal.z = U.x * V.y - U.y * V.x;
 
-		GLfloat length = sqrt(normal.x * normal.x + normal.y*normal.y + normal.z*normal.z);
-
-		normal.x *= -1.0f/length;
-		normal.y *= -1.0f/length;
-		normal.z *= -1.0f/length;
+		normal.scaleTo(1.0f);
+		normal.negate();
 		
 		int index;
 		for(int j = 0; j < 3; j++){
@@ -402,13 +390,9 @@ void Mesh::ComputeNormals(){
 			if(normals[index].x == 0 && normals[index].y == 0 && normals[index].z == 0)
 				normals[index] = normal;
 			else {
-				normals[index].x += normal.x;
-				normals[index].y += normal.y;
-				normals[index].z += normal.z;
 
-				normals[index].x /= 2.0f;
-				normals[index].y /= 2.0f;
-				normals[index].z /= 2.0f;
+				normals[index] += normal;
+				normals[index] /= 2.0f;
 
 			}
 		}

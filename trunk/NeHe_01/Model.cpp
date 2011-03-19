@@ -27,8 +27,8 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 	int loaded = 0;
 	string name;
 
-	vector<Vertex> vertices;
-	vector<Vertex> normals;
+	vector<Vector3D> vertices;
+	vector<Vector3D> normals;
 	vector<TextureUV> textureCoords;
 
 	materials = NULL;
@@ -67,11 +67,7 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 					sscanf_s(split[2].c_str(), "%f", &y);
 					sscanf_s(split[3].c_str(), "%f", &z);
 
-					Vertex v;
-					v.x = x;
-					v.y = y;
-					v.z = z;
-
+					Vector3D v(x, y, z);
 					vertices.push_back(v);
 
 				} else if(split[0].compare("vn") == 0){
@@ -81,11 +77,7 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 					sscanf_s(split[2].c_str(), "%f", &y);
 					sscanf_s(split[3].c_str(), "%f", &z);
 
-					Vertex v;
-					v.x = x;
-					v.y = y;
-					v.z = z;
-
+					Vector3D v(x, y, z);
 					normals.push_back(v);
 
 				} else if(split[0].compare("vt") == 0){
@@ -216,12 +208,7 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 					sscanf_s(split[2].c_str(), "%f", &y);
 					sscanf_s(split[3].c_str(), "%f", &z);
 					
-					Vertex Ka;
-
-					Ka.x = x;
-					Ka.y = y;
-					Ka.z = z;
-
+					Vector3D Ka(x, y, z);
 					materials[currentMaterial].setKa(Ka);
 
 				} else if (split[0].compare("Kd") == 0){
@@ -232,12 +219,7 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 					sscanf_s(split[2].c_str(), "%f", &y);
 					sscanf_s(split[3].c_str(), "%f", &z);
 					
-					Vertex Kd;
-
-					Kd.x = x;
-					Kd.y = y;
-					Kd.z = z;
-
+					Vector3D Kd(x, y, z);
 					materials[currentMaterial].setKd(Kd);
 
 				} else if (split[0].compare("Ks") == 0){
@@ -248,12 +230,7 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 					sscanf_s(split[2].c_str(), "%f", &y);
 					sscanf_s(split[3].c_str(), "%f", &z);
 					
-					Vertex Ks;
-
-					Ks.x = x;
-					Ks.y = y;
-					Ks.z = z;
-
+					Vector3D Ks(x, y, z);
 					materials[currentMaterial].setKs(Ks);
 
 				} else if (split[0].compare("map_Kd") == 0){
@@ -272,8 +249,8 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 
 	noVertices = nov;
 
-	verticesTab = new Vertex[nov];
-	normalsTab = new Vertex[non];
+	verticesTab = new Vector3D[nov];
+	normalsTab = new Vector3D[non];
 	textureCoordsTab = new TextureUV[not];
 
 	for(unsigned i = 0; i < nov; i++){

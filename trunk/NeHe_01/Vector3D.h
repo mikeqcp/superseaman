@@ -7,14 +7,27 @@ public:
 	GLfloat x, y, z;	//coordinates
 
 	Vector3D(void);
-	Vector3D::Vector3D(double a, double b, double c);
+	Vector3D::Vector3D(GLfloat a, GLfloat b, GLfloat c);
 	Vector3D::Vector3D(const Vector3D &c);
 	~Vector3D(void);
 
 	Vector3D operator+(Vector3D v);
 	Vector3D operator-(Vector3D v);
+
+	Vector3D operator+(GLfloat v);
+	Vector3D operator-(GLfloat v);
 	Vector3D operator*(GLfloat w);
 	Vector3D operator/(GLfloat w);
+
+	Vector3D operator+=(Vector3D v);
+	Vector3D operator-=(Vector3D v);
+	Vector3D operator*=(Vector3D v);
+	Vector3D operator/=(Vector3D v);
+
+	Vector3D operator+=(GLfloat w);
+	Vector3D operator-=(GLfloat w);
+	Vector3D operator*=(GLfloat w);
+	Vector3D operator/=(GLfloat w);
 
 	void assign(GLfloat x, GLfloat y, GLfloat z);
 

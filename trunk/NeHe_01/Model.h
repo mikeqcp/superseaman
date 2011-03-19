@@ -10,8 +10,8 @@ using namespace std;
 class Model
 {
 protected:
-	Vertex *verticesTab;
-	Vertex *normalsTab;
+	Vector3D *verticesTab;
+	Vector3D *normalsTab;
 	TextureUV *textureCoordsTab;
 	Material *materials;
 	Texture *textures;
@@ -37,7 +37,7 @@ public:
 
 	vector<int> Model::getOutline();
 
-	Vertex *getVertices(){ return verticesTab; }
+	Vector3D *getVertices(){ return verticesTab; }
 
 };
 

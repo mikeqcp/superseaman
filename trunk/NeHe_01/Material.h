@@ -1,10 +1,12 @@
 #pragma once
+#include "Vector3D.h"
+
 class Material
 {
 private:
 	string name;
 	GLfloat Ns, Ni, d;
-	Vertex Ka, Kd, Ks;
+	Vector3D Ka, Kd, Ks;
 	int illum;
 	string map_Kd;
 
@@ -22,11 +24,11 @@ public:
 
 	void setD(GLfloat d){ this -> d = d; }
 
-	void setKa(Vertex Ka){ this -> Ka = Ka; }
+	void setKa(Vector3D Ka){ this -> Ka = Ka; }
 
-	void setKd(Vertex Kd){ this -> Kd = Kd; }
+	void setKd(Vector3D Kd){ this -> Kd = Kd; }
 
-	void setKs(Vertex Ks){ this -> Ks = Ks; }
+	void setKs(Vector3D Ks){ this -> Ks = Ks; }
 
 	void setIllum(int illum){ this -> illum = illum; }
 
@@ -40,11 +42,11 @@ public:
 
 	GLfloat getD(){ return d; }
 
-	Vertex getKa(){ return Ka; }
+	Vector3D getKa(){ return Ka; }
 
-	Vertex getKd(){ return Kd; }
+	Vector3D getKd(){ return Kd; }
 
-	Vertex getKs(){ return Ks; }
+	Vector3D getKs(){ return Ks; }
 
 	int getIllum(){ return illum; }
 

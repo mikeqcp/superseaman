@@ -11,8 +11,8 @@ private:
 	
 	string name;
 
-	Vertex *vertices;
-	Vertex *normals;
+	Vector3D *vertices;
+	Vector3D *normals;
 	Texture *textures;
 	TextureUV * textureCoords;
 	Material *materials;
@@ -39,7 +39,7 @@ public:
 
 	void DirectDraw(bool showNormals);
 
-	void UpdateVerticesNormalsTexturesMaterials(Vertex *vertices, int noVertices, Vertex *normals, Texture *textures, int textureCount, TextureUV * textureCoords, Material *materials, int mCount);
+	void UpdateVerticesNormalsTexturesMaterials(Vector3D *vertices, int noVertices, Vector3D *normals, Texture *textures, int textureCount, TextureUV * textureCoords, Material *materials, int mCount);
 
 	void BuildLists();
 

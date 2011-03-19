@@ -5,7 +5,7 @@ class Cloth : public Model
 {
 private:
 
-        Vertex gravity;
+        Vector3D gravity;
 
         void Verlet();
         void SatisfyConstraints();
@@ -13,8 +13,8 @@ private:
 
         vector<Edge> edges;
 
-        Vertex *oldVertices;
-        Vertex *verticesAcc;
+        Vector3D *oldVertices;
+        Vector3D *verticesAcc;
         GLfloat *constraints;
 		short *masses;
 

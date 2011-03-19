@@ -22,8 +22,8 @@ void Cloth::BuildCloth(){
         edges = createEdgeList();
         noVertices = VerticesCount();
 
-        oldVertices = new Vertex[noVertices];
-        verticesAcc = new Vertex[noVertices];
+        oldVertices = new Vector3D[noVertices];
+        verticesAcc = new Vector3D[noVertices];
 		masses = new short[noVertices];
 		int count = 0;
         for(int i = 0; i < noVertices; i++){
@@ -52,19 +52,11 @@ void Cloth::BuildCloth(){
                 Edge e = ed.at(0);
                 ed.erase(ed.begin());
                 
-                Vertex v1 = verticesTab[e.v1];
-                Vertex v2 = verticesTab[e.v2];
-                Vertex delta;
-                
-                delta.x = v2.x - v1.x;
-                delta.y = v2.y - v1.y;
-                delta.z = v2.z - v1.z;
+                Vector3D v1 = verticesTab[e.v1];
+                Vector3D v2 = verticesTab[e.v2];
+                Vector3D delta = v2 - v1;
 
-                GLfloat dotProduct = delta.x *delta.x + delta.y*delta.y + delta.z * delta.z;
-
-                constraints[i] = sqrt(dotProduct);
-
-                i++;
+				constraints[i++] = delta.length();
 
         }
 
@@ -83,18 +75,17 @@ void Cloth::Verlet(){
 
         for(int i = 0; i < noVertices; i++){
 
-			    Vertex v = verticesTab[i];
-                Vertex temp = v;
-                Vertex old = oldVertices[i];
-                Vertex a = verticesAcc[i];
+			    Vector3D v = verticesTab[i];
+                Vector3D temp = v;
+                Vector3D old = oldVertices[i];
+                Vector3D a = verticesAcc[i];
 
-                v.x += v.x - old.x + a.x *fTimeStep*fTimeStep*(GLfloat)masses[i];
-                v.y += v.y - old.y + a.y *fTimeStep*fTimeStep*(GLfloat)masses[i];
-                v.z += v.z - old.z + a.z *fTimeStep*fTimeStep*(GLfloat)masses[i];
+				v += v - old + a*fTimeStep*fTimeStep*(GLfloat)masses[i];
 
                 verticesTab[i] = v;
                 oldVertices[i] = temp;
 		}
+		
 
 }
 
@@ -114,34 +105,19 @@ void Cloth::SatisfyConstraints(){
                 Edge e = ed.at(0);
                 ed.erase(ed.begin());
 
-                Vertex v1 = verticesTab[e.v1];
-                Vertex v2 = verticesTab[e.v2];
+                Vector3D v1 = verticesTab[e.v1];
+                Vector3D v2 = verticesTab[e.v2];
 
-                Vertex t1 = v1;
-                Vertex t2 = v2;
+                Vector3D delta = v2 - v1;
 
-                Vertex delta;
-
-                delta.x = v2.x - v1.x;
-                delta.y = v2.y - v1.y;
-                delta.z = v2.z - v1.z;
-
-                GLfloat dotProduct = delta.x *delta.x + delta.y*delta.y + delta.z * delta.z;
-				GLfloat c = constraints[i++];
 				short m1 = masses[e.v1];
 				short m2 = masses[e.v2];
 
-                //GLfloat deltalength = (c + dotProduct/c)/2;
-				GLfloat deltalength = sqrt(dotProduct);
-                GLfloat diff = (deltalength - c)/deltalength;
+				GLfloat deltalength = delta.length();
+                GLfloat diff = (deltalength - constraints[i++])/deltalength;
 
-                v1.x = v1.x + delta.x*0.5f*diff*(GLfloat)m1;
-                v1.y = v1.y + delta.y*0.5f*diff*(GLfloat)m1;
-                v1.z = v1.z + delta.z*0.5f*diff*(GLfloat)m1;
-
-                v2.x = v2.x - delta.x*0.5f*diff*(GLfloat)m2;
-                v2.y = v2.y - delta.y*0.5f*diff*(GLfloat)m2;
-                v2.z = v2.z - delta.z*0.5f*diff*(GLfloat)m2;
+				v1 += delta *0.5f*diff*(GLfloat)m1;
+				v2 -= delta *0.5f*diff*(GLfloat)m2;
 
                 verticesTab[e.v1] = v1;
                 verticesTab[e.v2] = v2;
