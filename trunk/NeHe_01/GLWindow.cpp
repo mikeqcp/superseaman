@@ -30,8 +30,6 @@ GLWindow::GLWindow(LPCWSTR title, int width, int height, int bits, bool fullscre
 	roty = 0;
 	rotz = 0;
 
-	MatrixBase<GLfloat> matrix; 
-
 	for(int i = 0; i < 256; i++){
 		GLWindow::keys[i] = false;
 		GLWindow::previousKeys[i] = false;
@@ -265,6 +263,8 @@ void GLWindow::Initialize(){
 
 	InitGL(); 
 	LoadContent();
+
+	boat.meshes[0].createRotation(Vector3D(0,1.0f,0));
 	
 }
 
@@ -395,7 +395,8 @@ void GLWindow::Update(){
 	rotz += 0.3f;
 
 	cloth.TimeStep();
-	 
+	boat.meshes[0].NextKeyFrame();
+ 
 }
 
 void GLWindow::KeyboardHandle(){
@@ -412,8 +413,9 @@ void GLWindow::KeyboardHandle(){
 	if(keyboard[VK_ESCAPE])
 		done = true;
 
-	if(keyboard[VK_SPACE] && !previousKeyboard[VK_SPACE]) 
+	if(keyboard[VK_SPACE] && !previousKeyboard[VK_SPACE]){
 		cloth.FlipWind();
+	}
 
 	if(keyboard[78] && !previousKeyboard[78]) 
 		cloth.ToogleNormals();

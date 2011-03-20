@@ -101,6 +101,9 @@
     <ClCompile Include="Boat.cpp">
       <Filter>Source Files\Phisics</Filter>
     </ClCompile>
+    <ClCompile Include="MatrixBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="wood.bmp">

@@ -14,6 +14,12 @@ Mesh::Mesh(vector<Face> facesVector, string name)
 	normalsInitialized = false;
 	directMeshCLcreated = false;
 
+	currentKeyFrame = 0;
+	noKeyFrames = 1;
+
+	meshCL = glGenLists(noKeyFrames);
+	currentCL = meshCL;
+
 }
 
 
@@ -168,7 +174,7 @@ void Mesh::DirectDraw(bool showNormals){
 
 void Mesh::Draw(){
 
-	glCallList(meshCL);
+	glCallList(currentCL);
 
 
 }
@@ -196,9 +202,8 @@ void Mesh::UpdateVerticesNormalsTexturesMaterials(
 
 void Mesh::BuildLists(){
 
-	meshCL = glGenLists(1);
-
-	glNewList(meshCL, GL_COMPILE);
+	
+	glNewList(currentCL, GL_COMPILE);
 
 	for(unsigned i = 0; i < noFaces; i++){
 		Face f = faces[i];
@@ -343,13 +348,8 @@ void Mesh::ComputeNormals(){
 			if(faces[i].materialName.compare("pins") == 0 || faces[i].materialName.compare("bompins") == 0)
 			continue;
 
-			int ind1 = faces[i].vertices[0]-1;
-			int ind2 = faces[i].vertices[1]-1;
-			int ind3 = faces[i].vertices[2]-1;
-
-			dividers[ind1]++;
-			dividers[ind2]++;
-			dividers[ind3]++;
+			for(unsigned j = 0; j < faces[i].vertices.size(); j++)
+				dividers[j]++;
 
 		}
 
@@ -369,7 +369,6 @@ void Mesh::ComputeNormals(){
 
 			faces[i].normalIndex.push_back(-1);
 
-			faces[i].normalIndex.push_back(-1);
 			continue;
 		}
 
@@ -395,27 +394,21 @@ void Mesh::ComputeNormals(){
 		normal.negate();
 		
 		int index;
-		for(int j = 0; j < 3; j++){
-			switch(j){
-			case 0:
-				index = ind1;
-				break;
-			case 1:
-				index = ind2;
-				break;
-			case 2: 
-				index = ind3;
-				break;
-			}
+		for(unsigned j = 0; j < faces[i].vertices.size(); j++){
+		
+			index = faces[i].vertices[j];
 			if(normals[index] == 0)
 				normals[index] = normal;
 			else 
 				normals[index] += normal;
 		}
 
-		faces[i].normalIndex.push_back(ind1+1);
-		faces[i].normalIndex.push_back(ind2+1);
-		faces[i].normalIndex.push_back(ind3+1);
+		for(unsigned j = 0; j < faces[i].vertices.size(); j++){
+		
+			index = faces[i].vertices[j];
+			faces[i].normalIndex.push_back(index+1);
+
+		}
 
 	}
 
@@ -463,5 +456,74 @@ vector<int> Mesh::getBomPins(){
 	}
 
 	return outline;
+
+}
+
+void Mesh::rotate(GLfloat angle, Vector3D v){
+
+	MatrixBase rotMatrix;
+	rotMatrix.createRotation(v, (int)angle);
+
+	GLfloat **vector = new GLfloat*[1];
+		vector[0] = new GLfloat[4];
+
+	for(int i = 0; i < noVertices; i++){
+
+		vector[0][0] = vertices[i].x;
+		vector[0][1] = vertices[i].y;
+		vector[0][2] = vertices[i].z;
+		vector[0][3] = 1.0f;
+
+		MatrixBase m1(vector, 1, 4);
+
+		MatrixBase result = m1 * rotMatrix;
+
+		vertices[i].x = result.get(0, 0);
+		vertices[i].y = result.get(0, 1);
+		vertices[i].z = result.get(0, 2);
+
+	}
+
+	delete [] vector[0];
+	delete [] vector;
+	
+	ComputeNormals();
+
+}
+
+void Mesh::createRotation(Vector3D v){
+
+	currentKeyFrame = 0;
+	noKeyFrames = 361;
+
+	glDeleteLists(meshCL, 1);
+	meshCL = glGenLists(noKeyFrames);
+	currentCL = meshCL;
+
+	for(int i = 0; i < noKeyFrames; i++){
+
+		BuildLists();
+		rotate(1, v);
+		currentCL++;
+
+	}
+
+	currentCL = meshCL;
+
+}
+
+void Mesh::NextKeyFrame(){
+
+	if(currentKeyFrame == noKeyFrames+1){
+
+		currentKeyFrame = 0;
+		currentCL = meshCL;
+
+	} else {
+
+		currentKeyFrame++;
+		currentCL++;
+
+	}
 
 }

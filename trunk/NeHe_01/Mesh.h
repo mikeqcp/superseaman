@@ -26,17 +26,27 @@ private:
 	unsigned noVertices;
 
 	GLuint meshCL;
+	GLuint currentCL;
 
 	GLuint directMeshCL;
 	bool directMeshCLcreated;
 	bool normalsInitialized;
+
+	int noKeyFrames;
+	int currentKeyFrame;
+
+	void rotate(GLfloat angle, Vector3D v);
 
 public:
 	Mesh(vector<Face> facesVector, string name);
 
 	~Mesh(void);
 
+	string getName(){ return name; }
+
 	void Draw();
+
+	void NextKeyFrame();
 
 	void DirectDraw(bool showNormals);
 
@@ -51,6 +61,9 @@ public:
 	vector<int> getBomPins();
 
 	void ComputeNormals();
+
+	void createRotation(Vector3D v);
+
 
 };
 
