@@ -42,6 +42,9 @@ public:
 	void scaleTo(GLfloat length);	//wyd³u¿a wektor do podanej d³ugoœci, wzdluz aktualnego kierunku
 	Vector3D *crossWith(Vector3D *v);
 
+	GLfloat getHorizontalAngle(Vector3D *a);
+	GLfloat getVerticalAngle(Vector3D *a);
+
 	Vector3D *rotX(GLfloat angle);
 	Vector3D *rotY(GLfloat angle);
 	Vector3D *rotZ(GLfloat angle);

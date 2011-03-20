@@ -74,7 +74,8 @@ Vector3D Vector3D::operator-=(Vector3D v){
 	return *this;
 }
 
-Vector3D Vector3D::operator*=(Vector3D v){
+Vector3D Vector3D::operator*=(Vector3D v)
+{
 	this->x *= v.x;
 	this->y *= v.y;
 	this->z *= v.z;
@@ -203,6 +204,16 @@ void Vector3D::assign(GLfloat x, GLfloat y, GLfloat z)
 }
 
 
+GLfloat Vector3D::getHorizontalAngle(Vector3D *a)
+{
+	return abs(atan(this->y/this->x) - atan(a->y/a->x));
+}
+
+GLfloat Vector3D::getVerticalAngle(Vector3D *a)
+{
+	return abs(atan(this->z/this->x) - atan(a->z/a->x));
+}
+
 Vector3D *Vector3D::rotX(GLfloat alfa)
 {
 	Vector3D *patt = new Vector3D(x, y*cos(alfa)+z*sin(alfa), z*cos(alfa)-y*cos(alfa));
@@ -229,3 +240,4 @@ Vector3D *Vector3D::rotZ(GLfloat alfa)
 	return this;
 
 }
+
