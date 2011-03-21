@@ -35,8 +35,10 @@ private:
 	int noKeyFrames;
 	int currentKeyFrame;
 
-	void rotate(GLfloat angle, Vector3D v);
+	Vector3D origin;
 
+	
+	
 public:
 	Mesh(vector<Face> facesVector, string name);
 
@@ -47,6 +49,8 @@ public:
 	void Draw();
 
 	void NextKeyFrame();
+
+	void GoToFrame(int x);
 
 	void DirectDraw(bool showNormals);
 
@@ -64,6 +68,7 @@ public:
 
 	void createRotation(Vector3D v);
 
+	void rotate(GLfloat angle, Vector3D v);
 
 };
 

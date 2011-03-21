@@ -23,13 +23,6 @@ GLWindow::GLWindow(LPCWSTR title, int width, int height, int bits, bool fullscre
 	GLWindow::fullscreen = fullscreen;
 	GLWindow::active = active;
 
-	textureCount = 3;
-	textureImage = new Texture[textureCount];
-
-	rotx = 0;
-	roty = 0;
-	rotz = 0;
-
 	for(int i = 0; i < 256; i++){
 		GLWindow::keys[i] = false;
 		GLWindow::previousKeys[i] = false;
@@ -261,10 +254,18 @@ void GLWindow::InitGL(){
 
 void GLWindow::Initialize(){
 
-	InitGL(); 
-	LoadContent();
+	InitGL();
 
-	boat.meshes[0].createRotation(Vector3D(0,1.0f,0));
+	textureCount = 3;
+	textureImage = new Texture[textureCount];
+
+	rotx = 0;
+	roty = 0;
+	rotz = 0;
+
+	rotatebom = 0;
+	bomModifier = 0.5f;
+	LoadContent();
 	
 }
 
@@ -394,8 +395,11 @@ void GLWindow::Update(){
 	roty += 0.3f;
 	rotz += 0.3f;
 
+	rotatebom += bomModifier;
+	if(rotatebom > 45.0f || rotatebom < -45.0f) 
+		bomModifier *= -1;
+
 	cloth.TimeStep();
-	boat.meshes[0].NextKeyFrame();
  
 }
 
@@ -439,10 +443,25 @@ int GLWindow::DrawGLScene(){
 	//glRotatef(rotx, 1.0f, 0.0f, 0.0f);
 	glRotatef(roty, 0.0f, 1.0f, 0.0f);
 	//glRotatef(rotz, 0.0f, 0.0f, 1.0f);
+	cloth.meshes[0].rotate(rotatebom, Vector3D(0.0f, 1.0f, 0.0f));
 	cloth.Draw();
 	
-	for(unsigned i = 0; i < boat.meshes.size(); i++)
+	
+	
+
+	for(unsigned i = 0; i < boat.meshes.size(); i++){
+
+		glLoadIdentity();
+
+		glTranslatef(0.0f, -1.5f, -7.0f);
+		glRotatef(roty, 0.0f, 1.0f, 0.0f);
+		
+		
+		if(i == 0)
+			boat.meshes[i].rotate(rotatebom, Vector3D(0.0f, 1.0f, 0.0f));
 		boat.meshes[i].Draw();
+
+	}
 	
 
 	//Tu mike Twoja lodka

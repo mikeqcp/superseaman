@@ -1,5 +1,5 @@
 # Blender MTL File: 'boat.blend'
-# Material Count: 4
+# Material Count: 5
 newmtl Material.001_wood.png.001
 Ns 96.078431
 Ka 0.000000 0.000000 0.000000
@@ -22,15 +22,14 @@ illum 2
 map_Kd woodplanks.jpg
 
 
-newmtl Material.002
+newmtl bomend
 Ns 96.078431
 Ka 0.000000 0.000000 0.000000
-Kd 0.640000 0.640000 0.640000
-Ks 0.179420 0.179420 0.179420
+Kd 1.000000 1.000000 1.000000
+Ks 0.010189 0.010189 0.010189
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd wood.png
 
 
 newmtl Material.005
@@ -41,5 +40,16 @@ Ks 0.010189 0.010189 0.010189
 Ni 1.000000
 d 1.000000
 illum 2
+
+
+newmtl Material.002
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.179420 0.179420 0.179420
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd wood.png
 
 

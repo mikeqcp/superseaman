@@ -40,6 +40,7 @@ private:
 	Cloth cloth;
 
 	GLfloat rotx, roty, rotz;
+	GLfloat rotatebom, bomModifier;
 
 
 #pragma endregion

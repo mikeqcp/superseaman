@@ -198,6 +198,40 @@ void Mesh::UpdateVerticesNormalsTexturesMaterials(
 	this -> materials = materials;
 	this -> noMaterials = mCount;
 
+	int *tab = new int[noVertices];
+
+	memset(tab, 0, sizeof(int)*noVertices);
+
+	
+
+	for(unsigned i = 0; i < noFaces; i++){
+
+		if(faces[i].materialName.compare("bomend")){
+
+			for(unsigned j = 0; j < faces[i].vertices.size(); j++){
+			
+				tab[faces[i].vertices[j]-1]++;
+
+			}
+
+		}
+
+	}
+
+	unsigned maxi = 0;
+	int pos = 0;
+
+	for(unsigned i = 0; i < noVertices; i++){
+		if(maxi < tab[i]){
+			maxi = tab[i];
+			pos = i;
+		}
+	}
+
+	delete [] tab;
+
+	origin = vertices[pos-1];
+
 }
 
 void Mesh::BuildLists(){
@@ -461,34 +495,10 @@ vector<int> Mesh::getBomPins(){
 
 void Mesh::rotate(GLfloat angle, Vector3D v){
 
-	MatrixBase rotMatrix;
-	rotMatrix.createRotation(v, (int)angle);
-
-	GLfloat **vector = new GLfloat*[1];
-		vector[0] = new GLfloat[4];
-
-	for(int i = 0; i < noVertices; i++){
-
-		vector[0][0] = vertices[i].x;
-		vector[0][1] = vertices[i].y;
-		vector[0][2] = vertices[i].z;
-		vector[0][3] = 1.0f;
-
-		MatrixBase m1(vector, 1, 4);
-
-		MatrixBase result = m1 * rotMatrix;
-
-		vertices[i].x = result.get(0, 0);
-		vertices[i].y = result.get(0, 1);
-		vertices[i].z = result.get(0, 2);
-
-	}
-
-	delete [] vector[0];
-	delete [] vector;
+	glTranslatef(origin.x, origin.y, origin.z);
+	glRotatef(angle, v.x, v.y, v.z);
+	glTranslatef(-origin.x, -origin.y, -origin.z);
 	
-	ComputeNormals();
-
 }
 
 void Mesh::createRotation(Vector3D v){
@@ -525,5 +535,15 @@ void Mesh::NextKeyFrame(){
 		currentCL++;
 
 	}
+
+}
+
+void Mesh::GoToFrame(int x){
+
+	currentCL = meshCL;
+	for(int i = 0; i < x; i++)
+		currentCL++;
+
+	currentKeyFrame = x;
 
 }
