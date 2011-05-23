@@ -5,8 +5,13 @@
 class Boat
 {
 private:
+
 	Model *boat;
 	Cloth *sail;
+
+	GLfloat sailAngle;
+	glm::vec4 bomEnd;
+
 public:
 	Boat(Model *boat, Cloth *sail);
 	~Boat(void);
@@ -16,5 +21,7 @@ public:
 	void Update(glm::mat4 P, glm::mat4 V, glm::mat4 M, glm::vec4 lightPos);
 
 	void SetWind(glm::vec4 wind){ sail->SetWind(wind); };
+
+	void RotateSail(GLfloat angle);
 };
 

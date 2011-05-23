@@ -60,6 +60,8 @@ public:
 
 	void Update(glm::mat4 P, glm::mat4 V, glm::mat4 M, glm::vec4 lightPos);
 
+	void UpdateMesh(string name, glm::mat4 P, glm::mat4 V, glm::mat4 M, glm::vec4 lightPos);
+
 	void Draw();
 
 	void Load(string fileName, Texture *textures, int textureCount);
@@ -67,6 +69,8 @@ public:
 	void UpdateRotation(GLfloat angle, glm::vec3 axis);
 
 	glm::mat4 GetModelMatrix();
+
+	glm::vec4 *GetSegment(string mname, string msname, int *length);
 
 
 };
