@@ -10,6 +10,11 @@ private:
 	GLuint vao;
 	GLuint *locations;
 
+	glm::mat4 P, V, M;
+	glm::vec4 lightPos;
+
+	GLuint locP, locV, locM, locLighPos;
+
 	string name;
 	int segmentsCount;
 	MeshSegment *segments;
@@ -23,7 +28,7 @@ public:
 	Mesh(vector<MeshSegment> ms, string name);
 	~Mesh(void);
 
-	void Update();
+	void Update(glm::mat4 P, glm::mat4 V, glm::mat4 M, glm::vec4 lightPos);
 
 	void Draw();
 
@@ -31,9 +36,20 @@ public:
 	
 	void SetMaterials(Material *materials, int materialCount);
 	
-	void SetLocations(GLuint *locations){ this ->locations = locations; };
+	void SetLocations(GLuint locP, GLuint locV, GLuint locM, GLuint locLighPos, GLuint *locations){ 
+
+		this ->locP = locP;
+		this ->locV = locV;
+		this ->locM = locM;
+		this ->locLighPos = locLighPos;
+		this ->locations = locations; 
+
+	};
 
 	MeshSegment *GetSegments(){ return segments; };
 	int GetSegmentCount(){ return segmentsCount; };
+
+	string GetName(){ return name; };
+	MeshSegment GetSegment(string name);
 
 };

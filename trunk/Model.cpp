@@ -34,10 +34,7 @@ void Model::Draw(){
 
 void Model::SetupUniformVariables(){
 
-	glUniformMatrix4fv(locP,1, false, glm::value_ptr(P));
-	glUniformMatrix4fv(locV,1, false, glm::value_ptr(V));
-	glUniformMatrix4fv(locM,1, false, glm::value_ptr(M));
-	glUniform4f(locLighPos, lightPos.x, lightPos.y, lightPos.z, lightPos.w);
+
 
 }
 
@@ -47,6 +44,50 @@ void Model::Update(glm::mat4 P, glm::mat4 V, glm::mat4 M, glm::vec4 lightPos){
 	this ->V = V;
 	this ->M = M;
 	this ->lightPos = lightPos;
+	for(int i = 0; i < meshCount; i++)
+		meshes[i].Update(P, V, M, lightPos);
+	
+}
+
+void Model::UpdateMesh(string name, glm::mat4 P, glm::mat4 V, glm::mat4 M, glm::vec4 lightPos){
+
+	for(int i = 0; i < meshCount; i++){
+		if(meshes[i].GetName().compare(name) == 0)
+			meshes[i].Update(P, V, M, lightPos);
+	}
+
+}
+
+glm::vec4 *Model::GetSegment(string mname, string msname, int *length){
+
+	glm::vec4 *result = NULL;
+	*length = 0;
+
+	for(int i = 0; i < meshCount; i++){
+		if(meshes[i].GetName().compare(mname) == 0){
+		
+			MeshSegment ms = meshes[i].GetSegment(msname);
+			if(ms.materialName != ""){
+			
+				result = new glm::vec4[ms.vertexCount];
+				for(int j = 0, k = ms.begin; j < ms.vertexCount; j++, k++){
+					result[j] = glm::vec4(
+						vertices[k*4], 
+						vertices[k*4 + 1], 
+						vertices[k*4 + 2], 
+						vertices[k*4 + 3]
+					);
+					*length = ms.vertexCount;
+				}
+
+			}
+			break;
+
+		}
+			
+	}
+
+	return result;
 
 }
 
@@ -93,7 +134,8 @@ void Model::SetupBuffers(){
 	for(int i = 0; i < meshCount; i++){
 
 		meshes[i].SetVao(vao);
-		meshes[i].SetLocations(locMaterial);
+		meshes[i].SetLocations(locP, locV, locM, locLighPos, locMaterial);
+		meshes[i].Update(P, V, M, lightPos);
 
 	}
 
@@ -229,14 +271,16 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 
 						if(file.eof()){
 						
-							MeshSegment newMS;
-							newMS.begin = begin;
-							newMS.vertexCount = counter;
-							newMS.materialName = currentMaterialName;
-							ms.push_back(newMS);
+							//TODO upewnic sie, czy segmenty dobrze sa tworzone
 
 						}
 						
+						MeshSegment newMS;
+						newMS.begin = begin;
+						newMS.vertexCount = counter;
+						newMS.materialName = currentMaterialName;
+						ms.push_back(newMS);
+
 						Mesh *newMesh = new Mesh(ms, name);
 						vmeshes.push_back(*newMesh);
 						delete newMesh;

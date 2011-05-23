@@ -11,7 +11,7 @@ glm::mat4 P, V, M;
 glm::vec4 lightPos;
 GLfloat cameraAngle;
 GLfloat angle = 0;
-
+GLfloat sailAngle = 0;
 Boat *boat;
 
 glm::vec4 wind(0, 0, 10, 0);
@@ -24,10 +24,10 @@ void Initialize(){
 
 	glEnable(GL_DEPTH_TEST);
 
-	V = glm::lookAt(glm::vec3(0.0f, 5.0f, 7.0f), glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f)); 
+	V = glm::lookAt(glm::vec3(0, 5.0f, 7.0f), glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f)); 
 	M = glm::mat4(1); 
 
-	lightPos = glm::vec4(0,0,7,1);
+	lightPos = glm::vec4(0,10,7,1);
 
 	boat = new Boat( 
 		new Model("Models/boat.obj", P, V, M, "vshader.txt", "fshader.txt"),
@@ -96,9 +96,12 @@ void InitGLEW(){
 
 void Update(){
 
-	M = glm::rotate(glm::mat4(1), angle, glm::vec3(0,1,0));;
-	boat->Update(P, V, M, lightPos);
+	M = glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0, -1, 0)), angle, glm::vec3(0,1,0));
+	//M = glm::mat4(1);
 
+	boat->RotateSail(sailAngle);
+	boat->Update(P, V, M, lightPos);
+	
 	angle += 0.5f;
 
 }
@@ -111,6 +114,9 @@ void KeyboardEvent(unsigned char c, int x, int y){
 		boat->SetWind(wind);
 
 	}
+
+	if(c == 'a') sailAngle -= 5;
+	if(c == 'd') sailAngle += 5;
 
 
 	printf("%d\n", c);
