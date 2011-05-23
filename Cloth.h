@@ -8,7 +8,7 @@
 class Cloth : public Model
 {
 private:
-	glm::vec4 gravity, wind;
+	glm::vec4 gravity, wind, realWind;
 
 	glm::vec4 *oldVertices;
 	glm::vec4 *verticesAcc;
@@ -33,6 +33,8 @@ public:
 	void TimeStep();
 
 	void SetWind(glm::vec4 wind){ this ->wind = wind; };
+
+	void RotateWind(GLfloat angle);
 
 	void CalculateNormals();
 
