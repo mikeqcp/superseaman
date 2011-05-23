@@ -156,7 +156,7 @@ void SetupProjection(GLfloat angle, int w, int h){
 
 void DisplayFrame(){
 
-	glClearColor(0, 0, 0, 1);
+	glClearColor(0.3921f, 0.5843f, 0.9294f, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	Draw();
