@@ -16,6 +16,8 @@ Boat *boat;
 
 glm::vec4 wind(0, 0, 10, 0);
 
+GLfloat adder = 0.5f;
+
 #pragma endregion
 
 #pragma region initialization
@@ -27,7 +29,7 @@ void Initialize(){
 	V = glm::lookAt(glm::vec3(0, 5.0f, 7.0f), glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f)); 
 	M = glm::mat4(1); 
 
-	lightPos = glm::vec4(0,10,7,1);
+	lightPos = glm::vec4(10,10,10,1);
 
 	boat = new Boat( 
 		new Model("Models/boat.obj", P, V, M, "vshader.txt", "fshader.txt"),
@@ -84,7 +86,7 @@ void InitGLEW(){
 
 		printf("OpenGL 3.3 NOT supported\n");
 		getchar();
-		exit(0);
+		//exit(0);
 
 	}
 
@@ -96,13 +98,16 @@ void InitGLEW(){
 
 void Update(){
 
-	M = glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0, -1, 0)), angle, glm::vec3(0,1,0));
+	M = glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0, -1, 0)), 75.0f, glm::vec3(0,1,0));
 	//M = glm::mat4(1);
 
 	boat->RotateSail(sailAngle);
 	boat->Update(P, V, M, lightPos);
 	
 	angle += 0.5f;
+	sailAngle += adder;
+	if(sailAngle > 60.0f || sailAngle < -60.0f)
+		adder *= -1;
 
 }
 

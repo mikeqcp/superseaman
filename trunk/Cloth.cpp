@@ -1,5 +1,5 @@
 #include "Cloth.h"
-
+#include "glm\gtx\rotate_vector.hpp"
 
 Cloth::Cloth(string fileName, glm::mat4 P, glm::mat4 V, glm::mat4 M, string vshaderFile, string fshaderFile) {
 	
@@ -8,7 +8,8 @@ Cloth::Cloth(string fileName, glm::mat4 P, glm::mat4 V, glm::mat4 M, string vsha
 	this ->M = M;
 
 	gravity = glm::vec4(0, -4, 0, 1);
-	wind = glm::vec4(0, 0, 10, 0);
+	wind = glm::vec4(10, 0, 0, 0);
+	realWind = glm::vec4(10, 0, 0, 0);
 
 	SetupShaders(vshaderFile, fshaderFile);
 	Load(fileName, 0, 0);
@@ -244,6 +245,13 @@ void Cloth::CalculateNormals(){
 	for(int i = 0; i < originalVerticesCount; i++)
 		tempNormals[i] = glm::normalize(tempNormals[i]);
 
+}
+
+void Cloth::RotateWind(GLfloat angle){
+
+	glm::detail::tvec3<GLfloat> a(realWind.x, realWind.y, realWind.z);
+	a = glm::rotateY(a, angle);
+	wind = glm::vec4(a.x, a.y, a.z, 1);
 }
 
 void Cloth::TimeStep(){
