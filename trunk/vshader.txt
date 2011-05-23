@@ -1,0 +1,29 @@
+#version 330
+#define GLM_SWIZZLE GLM_SWIZZLE_FULL
+
+uniform mat4 P;
+uniform mat4 V;
+uniform mat4 M;
+uniform vec4 lightPos;
+
+uniform vec4 ambient;
+uniform vec4 diffuse;
+uniform vec4 specular;
+
+in vec4 vertex;
+in vec4 normal;
+
+out vec4 iColor;
+
+void main(void){
+
+	vec4 n = normalize(V*M*normal);
+	vec4 l = normalize(V*M*vertex - V*lightPos);
+
+	float nl = dot(n, l);
+	nl  = max(nl, 0);
+
+	gl_Position = P*V*M*vertex;
+	iColor = ambient + diffuse*nl;
+
+}
