@@ -15,7 +15,7 @@ def process(fileName):
     
     for line in file:
         temp = line.split()
-        if (temp[0] == 'f') and len(temp) == 3:
+        if (temp[0] == 'f') and len(temp) != 4:
             print line[:(len(line)-1)] + ' in %s deleted.'%(fileName)
             val+=1
         else:
