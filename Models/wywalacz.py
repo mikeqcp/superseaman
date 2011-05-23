@@ -10,6 +10,7 @@ def process(fileName):
 
     print 'Processing %s...'%(fileName)
 
+    newFile = []
     val = 0
     
     for line in file:
@@ -25,8 +26,6 @@ def process(fileName):
     print 'Processing finished successfully with deleting %i lines.\n'%(val)
 
 if __name__ == "__main__":
-    
-    newFile = []
 
     for path, subdirs, files in os.walk('.\\'):
         for name in files:
