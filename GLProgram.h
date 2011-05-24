@@ -23,6 +23,7 @@ void Update();
 
 void RenderReflection();
 void RenderRefractionAndDepth();
+void RenderWater();
 
 GLuint LoadShader(GLenum shaderType, string fileName);
 

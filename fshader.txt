@@ -1,10 +1,18 @@
 #version 130
 
+uniform vec4 ambient;
+uniform vec4 diffuse;
+uniform vec4 specular;
+
 out vec4 pixelColor;
-in vec4 iColor;
+in vec4 inormal;
+in vec4 ilight;
 
 void main(void) {
 
-	pixelColor = iColor;
+	float nl = dot(normalize(inormal), normalize(ilight));
+	nl  = max(nl, 0);
+
+	pixelColor = ambient + diffuse*nl;
 
 }

@@ -13,17 +13,16 @@ uniform vec4 specular;
 in vec4 vertex;
 in vec4 normal;
 
-out vec4 iColor;
+out vec4 inormal;
+out vec4 ilight;
 
 void main(void){
 
 	vec4 n = normalize(V*M*normal);
 	vec4 l = normalize(V*M*vertex - V*lightPos);
 
-	float nl = dot(n, l);
-	nl  = max(nl, 0);
-
 	gl_Position = P*V*M*vertex;
-	iColor = ambient + diffuse*nl;
+	inormal = n;
+	ilight = l;
 
 }
