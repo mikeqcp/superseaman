@@ -52,4 +52,6 @@ public:
 	string GetName(){ return name; };
 	MeshSegment GetSegment(string name);
 
+	glm::mat4 GetModelMatrix(){ return M; };
+
 };

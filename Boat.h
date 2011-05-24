@@ -18,6 +18,8 @@ public:
 
 	void Draw();
 
+	void DrawReflection();
+
 	void Update(glm::mat4 P, glm::mat4 V, glm::mat4 M, glm::vec4 lightPos);
 
 	void SetWind(glm::vec4 wind){ sail->SetWind(wind); };

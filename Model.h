@@ -64,6 +64,8 @@ public:
 
 	void Draw();
 
+	void DrawReflection();
+
 	void Load(string fileName, Texture *textures, int textureCount);
 
 	void UpdateRotation(GLfloat angle, glm::vec3 axis);

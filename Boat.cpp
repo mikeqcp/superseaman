@@ -22,7 +22,7 @@ Boat::~Boat(void)
 void Boat::Draw(){
 
 	boat -> Draw();
-	sail ->Draw();
+	sail -> Draw();
 
 	sailAngle = 0;
 
@@ -45,4 +45,11 @@ void Boat::RotateSail(GLfloat angle){
 
 	if(sailAngle > 60) sailAngle = 60;
 	else if(sailAngle < -60) sailAngle = -60;
+}
+
+void Boat::DrawReflection(){
+
+	boat -> DrawReflection();
+	sail -> DrawReflection();
+
 }

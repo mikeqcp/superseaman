@@ -21,6 +21,9 @@ void KeyboardEvent(unsigned char c, int x, int y);
 void Draw();
 void Update();
 
+void RenderReflection();
+void RenderRefractionAndDepth();
+
 GLuint LoadShader(GLenum shaderType, string fileName);
 
 string ReadFile(string fileName);

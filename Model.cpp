@@ -32,9 +32,25 @@ void Model::Draw(){
 
 }
 
+void Model::DrawReflection(){
+
+	glUseProgram(shaderProgram);
+
+	for(int i = 0; i < meshCount; i++){
+		glm::mat4 prevM = meshes[i].GetModelMatrix();
+		glm::mat4 refM = glm::scale(prevM, glm::vec3(1, -1, 1));
+
+		meshes[i].Update(P, V, refM, lightPos);
+		meshes[i].Draw();
+		meshes[i].Update(P, V, prevM, lightPos);
+
+	}
+
+}
+
 void Model::SetupUniformVariables(){
 
-
+	//zmienne jednorodne dla calego modelu
 
 }
 
