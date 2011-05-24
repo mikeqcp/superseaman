@@ -8,9 +8,13 @@ out vec4 pixelColor;
 in vec4 inormal;
 in vec4 ilight;
 
+
 void main(void) {
 
-	float nl = dot(normalize(inormal), normalize(ilight));
+	vec4 n = normalize(inormal);
+	vec4 l = normalize(ilight);
+	
+	float nl = dot(n, l);
 	nl  = max(nl, 0);
 
 	pixelColor = ambient + diffuse*nl;

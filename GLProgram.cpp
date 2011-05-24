@@ -2,19 +2,21 @@
 
 #pragma region Global variables
 
-char windowTitle[255];
-int windowPositionX = 0, windowPositionY = 0;
-int windowWidth, windowHeight;
-long long frames = 0, time = 0, previousFPSChangeAt = 0, changeFPSAt = 1000;
+char windowTitle[255]; //tablica do tytu³u okna
+int windowPositionX = 0, windowPositionY = 0; //pozycja okna, które zostanie stworzone
+int windowWidth, windowHeight; //szerokoœæ i wysokoœæ okna
+long long frames = 0, time = 0, previousFPSChangeAt = 0, changeFPSAt = 1000; //do wyœwitlania FPSów
 
-glm::mat4 P, V, M;
-glm::vec4 lightPos;
-GLfloat cameraAngle;
+glm::mat4 P, V, M; //kolejno macierz projekcji, widoku i modelu
+glm::vec4 lightPos; //pozycja œwiat³a
+
 GLfloat angle = 0;
 GLfloat sailAngle = 0;
-Boat *boat;
 
-glm::vec4 wind(0, 0, 10, 0);
+Boat *boat; // to wskazuje na ³odkê
+
+GLfloat cameraAngle; //k¹t obrotu kamery
+glm::vec3 observerPos(0, 5.0f, 7.0f); //Pozycja obserwatora - kamery
 
 GLfloat adder = 1.0f;
 
@@ -23,13 +25,24 @@ GLuint reflectionTex, refractionTex, depthTex;
 
 #pragma endregion
 
-#pragma region initialization
+#pragma region initialization - segment inicjalizujacy
+
+/*
+*
+* Inicjalizacja zmiennych, 
+*
+* M - macierz modelu
+* V - macierz widoku
+* 
+* boat - ³ódka, która bêdzie renderowana, sk³ada siê z kad³ubu (klasa Model) i ¿agla (klasa Cloth)
+* 
+*/
 
 void Initialize(){
 
 	glEnable(GL_DEPTH_TEST);
 
-	V = glm::lookAt(glm::vec3(0, 5.0f, 7.0f), glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f)); 
+	V = glm::lookAt(observerPos, glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f)); 
 	M = glm::mat4(1); 
 
 	lightPos = glm::vec4(10,10,10,1);
@@ -40,6 +53,12 @@ void Initialize(){
 		);
 }
 
+/*
+*
+* Inicjalizacja gry, grupa wywo³añ funkcji inicjalizuj¹cych, 
+*
+*/
+
 void InitializeGame(int argc, char **argv){
 
 	InitOpenGL(45.0f, 800, 600);
@@ -48,6 +67,14 @@ void InitializeGame(int argc, char **argv){
 	Initialize();
 
 }
+
+/*
+*
+* Inicjalizacja wskaŸników funkcji oraz okna - pozycji, rozmiaru i tytu³u
+* rozmiar ze zmiennych globalnych widnowPositionX i Y
+* 
+*
+*/
 
 void InitGLUT(int *argc, char **argv){
 
@@ -65,6 +92,13 @@ void InitGLUT(int *argc, char **argv){
 
 }
 
+/*
+*
+* ustawienie k¹ta pod jakim widaæ scenê, oraz wywo³anie funkcji inicjalizuj¹cej macierz projekcji
+*
+*
+*/
+
 void InitOpenGL(GLfloat angle, int w, int h){
 
 	cameraAngle = angle;
@@ -74,6 +108,7 @@ void InitOpenGL(GLfloat angle, int w, int h){
 	SetupProjection(angle, w, h);
 
 }
+
 
 void InitGLEW(){
 
@@ -99,6 +134,16 @@ void InitGLEW(){
 
 #pragma region Update
 
+/*
+*
+*
+* Funkcja wywo³ywana w pêtli kilkadziesi¹t razy na sekundê
+* S³u¿y przekazywaniu obiektom zaktualizowanych danych - macierzy projekcji, widoku i modelu oraz pozycji œwiat³a
+* Oblicza te¿ macierz modelu, przez co ³ódka jest obracana
+*
+*
+*/
+
 void Update(){
 
 	M = glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0, -1, 0)), angle, glm::vec3(0,1,0));
@@ -114,14 +159,14 @@ void Update(){
 
 }
 
+/*
+*
+* Funkcja s³u¿¹ca do obs³ugi klawiatury
+* w argumencie c znajduje siê ASCII naciœniêtego przycisku
+*
+*/
+
 void KeyboardEvent(unsigned char c, int x, int y){
-
-	if(c == 32){
-	
-		wind.z *= -1;
-		boat->SetWind(wind);
-
-	}
 
 	if(c == 'a') sailAngle -= 5;
 	if(c == 'd') sailAngle += 5;
@@ -132,6 +177,14 @@ void KeyboardEvent(unsigned char c, int x, int y){
 	glutPostRedisplay();
 
 }
+
+/*
+*
+* Funkcja wywo³ywana kilkadziesi¹t razy na minutê
+* S³u¿y aktualizacji obiektów
+* Ustawia te¿ tytu³ okna na iloœæ FPS
+*
+*/
 
 void NextFrame(){
 
@@ -168,6 +221,12 @@ void SetupProjection(GLfloat angle, int w, int h){
 
 #pragma region Drawing
 
+/*
+*
+* G³ówna funkcja rysuj¹ca scenê, nie do edycji
+*
+*/
+
 void DisplayFrame(){
 
 	glClearColor(0.3921f, 0.5843f, 0.9294f, 1);
@@ -179,6 +238,13 @@ void DisplayFrame(){
 
 }
 
+/*
+*
+* Funkcja, w której wywo³ywane s¹ metody rysuj¹ce obiekty
+*
+*
+*/
+
 void Draw(){
 
 	boat ->Draw();
@@ -189,7 +255,7 @@ void Draw(){
 
 }
 
-//woda
+//woda - narazie zignoruj
 
 void RenderReflection()
 {
