@@ -3,7 +3,7 @@
 #pragma region Global variables
 
 char windowTitle[255];
-int windowPositionX = 200, windowPositionY = 200;
+int windowPositionX = 0, windowPositionY = 0;
 int windowWidth, windowHeight;
 long long frames = 0, time = 0, previousFPSChangeAt = 0, changeFPSAt = 1000;
 
@@ -17,6 +17,9 @@ Boat *boat;
 glm::vec4 wind(0, 0, 10, 0);
 
 GLfloat adder = 1.0f;
+
+GLdouble clipPlane[4] = { 0.0, 1.0, 0.0, 0.0 };
+GLuint reflectionTex, refractionTex, depthTex;
 
 #pragma endregion
 
@@ -178,8 +181,46 @@ void DisplayFrame(){
 
 void Draw(){
 
-	boat -> Draw();
+	boat ->Draw();
+	//RenderReflection();
+	//RenderRefractionAndDepth();
 	frames++;
+
+}
+
+//woda
+
+void RenderReflection()
+{
+	glViewport(0,0, windowWidth, windowHeight);
+   	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+   	double plane[4] = {0.0, 1.0, 0.0, 0.0}; //water at y=0
+   	glEnable(GL_CLIP_PLANE0);
+   	glClipPlane(GL_CLIP_PLANE0, plane);
+   	boat ->DrawReflection();
+   	glDisable(GL_CLIP_PLANE0);
+
+   	glBindTexture(GL_TEXTURE_2D, reflectionTex);
+   	glCopyTexSubImage2D(GL_TEXTURE_2D,0,0,0,0,0, windowWidth, windowHeight);
+}
+
+void RenderRefractionAndDepth(){
+
+   	glViewport(0,0, windowWidth, windowHeight);
+   	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+   	double plane[4] = {0.0, -1.0, 0.0, 0.0}; 
+   	glEnable(GL_CLIP_PLANE0);
+   	glClipPlane(GL_CLIP_PLANE0, plane);
+   	boat ->Draw();
+   	glDisable(GL_CLIP_PLANE0);
+
+   	glBindTexture(GL_TEXTURE_2D, refractionTex);
+   	glCopyTexSubImage2D(GL_TEXTURE_2D,0,0,0,0,0, windowWidth, windowHeight);
+
+   	glBindTexture(GL_TEXTURE_2D, depthTex);
+   	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0,0, windowWidth, windowHeight, 0);
 
 }
 
