@@ -82,11 +82,11 @@ void InitGLEW(){
 
 	}
 	
-	if (!GLEW_VERSION_3_3) {
+	if (!GLEW_VERSION_3_0) {
 
 		printf("OpenGL 3.3 NOT supported\n");
 		getchar();
-		//exit(0);
+		exit(0);
 
 	}
 

@@ -1,4 +1,4 @@
-#version 330
+#version 130
 #define GLM_SWIZZLE GLM_SWIZZLE_FULL
 
 uniform mat4 P;
