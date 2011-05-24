@@ -141,9 +141,9 @@ void Cloth::SatisfyConstraints(){
 
         int i = 0;
 		int iv1, iv2;
-		for(int j = 0; j < 2; j++){
+		for(int j = 0; j < 3; j++){
 			for(int i = 0; i < indicesCount; i++){
-
+				
 				iv1 = indices[i];
 				if((i+1)%3 == 0)
 					iv2 = indices[i-2];

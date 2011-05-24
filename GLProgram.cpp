@@ -16,7 +16,7 @@ Boat *boat;
 
 glm::vec4 wind(0, 0, 10, 0);
 
-GLfloat adder = 2.0f;
+GLfloat adder = 1.0f;
 
 #pragma endregion
 
