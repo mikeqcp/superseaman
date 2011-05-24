@@ -16,7 +16,7 @@ Boat *boat;
 
 glm::vec4 wind(0, 0, 10, 0);
 
-GLfloat adder = 0.5f;
+GLfloat adder = 2.0f;
 
 #pragma endregion
 
@@ -98,7 +98,7 @@ void InitGLEW(){
 
 void Update(){
 
-	M = glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0, -1, 0)), 75.0f, glm::vec3(0,1,0));
+	M = glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0, -1, 0)), angle, glm::vec3(0,1,0));
 	//M = glm::mat4(1);
 
 	boat->RotateSail(sailAngle);

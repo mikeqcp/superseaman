@@ -141,30 +141,32 @@ void Cloth::SatisfyConstraints(){
 
         int i = 0;
 		int iv1, iv2;
-		for(int i = 0; i < indicesCount; i++){
+		for(int j = 0; j < 2; j++){
+			for(int i = 0; i < indicesCount; i++){
 
-			iv1 = indices[i];
-			if((i+1)%3 == 0)
-				iv2 = indices[i-2];
-			else iv2 = indices[i+1];
+				iv1 = indices[i];
+				if((i+1)%3 == 0)
+					iv2 = indices[i-2];
+				else iv2 = indices[i+1];
 			
-			glm::vec4 v1 = originalVertices[iv1];
-			glm::vec4 v2 = originalVertices[iv2];
+				glm::vec4 v1 = originalVertices[iv1];
+				glm::vec4 v2 = originalVertices[iv2];
 
-            glm::vec4 delta = v2 - v1;
+				glm::vec4 delta = v2 - v1;
 
-			short m1 = masses[iv1];
-			short m2 = masses[iv2];
+				short m1 = masses[iv1];
+				short m2 = masses[iv2];
 
-			GLfloat deltalength = glm::length(delta);
-            GLfloat diff = (deltalength - constraints[i])/deltalength;
+				GLfloat deltalength = glm::length(delta);
+				GLfloat diff = (deltalength - constraints[i])/deltalength;
 
-			v1 += delta *0.5f*diff*(GLfloat)m1;
-			v2 -= delta *0.5f*diff*(GLfloat)m2;
+				v1 += delta *0.5f*diff*(GLfloat)m1;
+				v2 -= delta *0.5f*diff*(GLfloat)m2;
 
-			originalVertices[iv1] = v1;
-            originalVertices[iv2] = v2;
-        }
+				originalVertices[iv1] = v1;
+				originalVertices[iv2] = v2;
+			}
+		}
 
 
 
