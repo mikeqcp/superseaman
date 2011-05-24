@@ -15,6 +15,7 @@ in vec4 normal;
 
 out vec4 inormal;
 out vec4 ilight;
+out vec4 iv;
 
 void main(void){
 
