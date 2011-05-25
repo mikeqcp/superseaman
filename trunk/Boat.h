@@ -2,6 +2,7 @@
 
 #include "Cloth.h"
 
+
 class Boat
 {
 private:
@@ -27,5 +28,7 @@ public:
 	void RotateSail(GLfloat angle);
 
 	void SetClipPlane(glm::vec4 clipPlane);
+
+	GLfloat *getSailAngle() { return &sailAngle; }
 };
 
