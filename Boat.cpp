@@ -53,3 +53,10 @@ void Boat::DrawReflection(){
 	sail -> DrawReflection();
 
 }
+
+void Boat::SetClipPlane(glm::vec4 clipPlane){
+
+	sail->SetClipPlane(clipPlane);
+	boat->SetClipPlane(clipPlane);
+
+}

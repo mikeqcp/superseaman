@@ -4,6 +4,7 @@ Model::Model(){}
 
 Model::Model(string fileName, glm::mat4 P, glm::mat4 V, glm::mat4 M, string vshaderFile, string fshaderFile): P(P), V(V), M(M){
 
+	clipPlane = glm::vec4(0, 0, 0, 0);
 	SetupShaders(vshaderFile, fshaderFile);
 	Load(fileName, 0, 0);
 	verticesBufferType = GL_STATIC_DRAW;
@@ -36,6 +37,8 @@ void Model::DrawReflection(){
 
 	glUseProgram(shaderProgram);
 
+	SetupUniformVariables();
+
 	for(int i = 0; i < meshCount; i++){
 		glm::mat4 prevM = meshes[i].GetModelMatrix();
 		glm::mat4 refM = glm::scale(prevM, glm::vec3(1, -1, 1));
@@ -51,6 +54,7 @@ void Model::DrawReflection(){
 void Model::SetupUniformVariables(){
 
 	//zmienne jednorodne dla calego modelu
+	glUniform4f(locClipPlane, clipPlane.x, clipPlane.y, clipPlane.z, clipPlane.w);
 
 }
 
@@ -200,6 +204,8 @@ void Model::SetupShaders(string vshaderFile, string fshaderFile){
 	locMaterial[0] = glGetUniformLocation(shaderProgram, "ambient");
 	locMaterial[1] = glGetUniformLocation(shaderProgram, "diffuse");
 	locMaterial[2] = glGetUniformLocation(shaderProgram, "specular");
+
+	locClipPlane = glGetUniformLocation(shaderProgram, "clipPlane");
 
 	locVertex = glGetAttribLocation(shaderProgram, "vertex");
 	locNormal = glGetAttribLocation(shaderProgram, "normal");

@@ -25,5 +25,7 @@ public:
 	void SetWind(glm::vec4 wind){ sail->SetWind(wind); };
 
 	void RotateSail(GLfloat angle);
+
+	void SetClipPlane(glm::vec4 clipPlane);
 };
 
