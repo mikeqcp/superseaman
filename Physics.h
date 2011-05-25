@@ -7,11 +7,12 @@ class Physics
 {
 public:
 	static Physics *instance();	//zwraca wskaünik (jeúli trzeba tworzy obiekt klasy)
-	Physics(void);
-	~Physics(void);
-
 	
 	void initialize(Boat *boat);	//ustawia dane otoczenia
+
+protected:
+	Physics(void);
+	~Physics(void);
 
 private:
 	static Physics *instance_pointer;	//wskaünik na instacje singletona
