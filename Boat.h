@@ -29,6 +29,6 @@ public:
 
 	void SetClipPlane(glm::vec4 clipPlane);
 
-	GLfloat *getSailAngle() { return &sailAngle; }
+	GLfloat getSailAngle() { return sailAngle; }
 };
 

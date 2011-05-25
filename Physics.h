@@ -16,9 +16,9 @@ public:
 private:
 	static Physics *instance_pointer;	//wskaŸnik na instacje singletona
 
-	glm::vec4 *speed;
-	glm::vec4 *wind;
-	GLfloat *sailAngle;
+	glm::vec4 speed;	//predkosc ³ódki
+	glm::vec4 wind;	//wiatr
+	GLfloat sailAngle;	//k¹t bomu (wzglêdem osi ³ódki)
 	
 };
 
