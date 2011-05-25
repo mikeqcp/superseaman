@@ -70,6 +70,7 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Physics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Boat.h" />
@@ -81,6 +82,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelStuctures.h" />
+    <ClInclude Include="Physics.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fshader.txt" />
