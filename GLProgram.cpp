@@ -247,8 +247,8 @@ void DisplayFrame(){
 
 void Draw(){
 
-	boat ->Draw();
-	//RenderReflection();
+	//boat ->Draw();
+	RenderReflection();
 	//RenderRefractionAndDepth();
 	//RenderWater();
 	frames++;
@@ -263,8 +263,10 @@ void RenderReflection()
    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::vec4 plane(0, 1, 0, 0);
+	double p[] = {0, 1, 0, 0};
 	boat->SetClipPlane(plane);
    	glEnable(GL_CLIP_PLANE0);
+	glClipPlane(GL_CLIP_PLANE0, p);
    	boat ->DrawReflection();
    	glDisable(GL_CLIP_PLANE0);
 
@@ -350,5 +352,3 @@ void RenderWater()
 }
 
 #pragma endregion
-
-
