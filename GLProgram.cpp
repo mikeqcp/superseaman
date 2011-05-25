@@ -253,8 +253,8 @@ void DisplayFrame(){
 
 void Draw(){
 
-	//boat ->Draw();
-	RenderReflection();
+	boat ->Draw();
+	//RenderReflection();
 	//RenderRefractionAndDepth();
 	//RenderWater();
 	frames++;
