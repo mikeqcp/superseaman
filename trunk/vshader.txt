@@ -26,7 +26,11 @@ void main(void){
 	vec4 l = normalize(V*M*vertex - V*lightPos);
 	
 	gl_Position = P*V*M*vertex;
-	gl_ClipDistance[0] = dot(clipPlane, vertex);
+	//gl_ClipDistance[0] = dot(clipPlane, vertex);
+
+	if(vertex.y < clipPlane.y) gl_ClipVertex = vertex;
+	else gl_ClipVertex = vec4(0,0,0,0);
+
 	inormal = n;
 	ilight = l;
 	iv = V*vec4(0, 5.0f, 7.0f, 1);
