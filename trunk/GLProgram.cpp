@@ -262,14 +262,17 @@ void RenderReflection()
 	glViewport(0,0, windowWidth, windowHeight);
    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   	double plane[4] = {0.0, 1.0, 0.0, 0.0}; //water at y=0
+	glm::vec4 plane(0, 1, 0, 0);
+	boat->SetClipPlane(plane);
    	glEnable(GL_CLIP_PLANE0);
-   	glClipPlane(GL_CLIP_PLANE0, plane);
    	boat ->DrawReflection();
    	glDisable(GL_CLIP_PLANE0);
 
    	glBindTexture(GL_TEXTURE_2D, reflectionTex);
-   	glCopyTexSubImage2D(GL_TEXTURE_2D,0,0,0,0,0, windowWidth, windowHeight);
+	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,0, 0,  windowWidth, windowHeight, 0); 
+
+	//TODO sprawdziæ, czy to rzeczywiœcie robi screena
+   	
 }
 
 void RenderRefractionAndDepth(){

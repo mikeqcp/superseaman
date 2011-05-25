@@ -15,12 +15,14 @@ protected:
 	glm::mat4 P, V, M;
 	glm::vec4 lightPos;
 
-	GLuint locP, locV, locM, locVertex, locNormal, locLighPos;
+	GLuint locP, locV, locM, locVertex, locNormal, locLighPos, locClipPlane;
 	GLuint locMaterial[3];
 	GLuint vertexShader, fragmentShader, shaderProgram;
 	GLuint bufVertices, bufIndices, bufNormals, vao;
 	GLuint verticesBufferType;
 	GLuint verticesCount, normalsCount, indicesCount;
+
+	glm::vec4 clipPlane;
 
 	GLfloat *vertices, *normals;
 
@@ -73,6 +75,8 @@ public:
 	glm::mat4 GetModelMatrix();
 
 	glm::vec4 *GetSegment(string mname, string msname, int *length);
+
+	void SetClipPlane(glm::vec4 clipPlane){ this ->clipPlane = clipPlane; };
 
 
 };

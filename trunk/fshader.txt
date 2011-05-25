@@ -1,5 +1,8 @@
 #version 130
 
+uniform mat4 P;
+uniform mat4 V;
+uniform mat4 M;
 uniform vec4 ambient;
 uniform vec4 diffuse;
 uniform vec4 specular;
@@ -7,16 +10,23 @@ uniform vec4 specular;
 out vec4 pixelColor;
 in vec4 inormal;
 in vec4 ilight;
+in vec4 iv;
 
 
 void main(void) {
 
 	vec4 n = normalize(inormal);
 	vec4 l = normalize(ilight);
-	
+	vec4 v = normalize(iv);
+	vec4 r = reflect(-l, n);
+		
 	float nl = dot(n, l);
 	nl  = max(nl, 0);
 
-	pixelColor = ambient + diffuse*nl;
+	float rv = dot(r, v);
+	rv = max(rv, 0);
+	rv = pow(rv, 12);
+
+	pixelColor = ambient + diffuse*nl + specular*rv;
 
 }
