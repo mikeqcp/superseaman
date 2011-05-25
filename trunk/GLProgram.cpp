@@ -1,6 +1,9 @@
 #include "GLProgram.h"
+#include "Physics.h"
 
 #pragma region Global variables
+
+#define MAXANGLE 60.0f
 
 char windowTitle[255]; //tablica do tytu³u okna
 int windowPositionX = 0, windowPositionY = 0; //pozycja okna, które zostanie stworzone
@@ -12,6 +15,7 @@ glm::vec4 lightPos; //pozycja œwiat³a
 
 GLfloat angle = 0;
 GLfloat sailAngle = 0;
+
 
 Boat *boat; // to wskazuje na ³odkê
 
@@ -51,6 +55,8 @@ void Initialize(){
 		new Model("Models/boat.obj", P, V, M, "vshader.txt", "fshader.txt"),
 		new Cloth("Models/sail.obj", P, V, M, "vshader.txt", "fshader.txt")
 		);
+
+	Physics::instance()->initialize(boat);
 }
 
 /*
@@ -122,7 +128,7 @@ void InitGLEW(){
 	
 	if (!GLEW_VERSION_3_0) {
 
-		printf("OpenGL 3.3 NOT supported\n");
+		printf("OpenGL 3.0 NOT supported\n");
 		getchar();
 		exit(0);
 
@@ -153,9 +159,9 @@ void Update(){
 	boat->Update(P, V, M, lightPos);
 	
 	angle += 0.5f;
-	sailAngle += adder;
-	if(sailAngle > 60.0f || sailAngle < -60.0f)
-		adder *= -1;
+	//sailAngle += adder;
+	//if(sailAngle > 60.0f || sailAngle < -60.0f)
+		//adder *= -1;
 
 }
 
@@ -168,9 +174,9 @@ void Update(){
 
 void KeyboardEvent(unsigned char c, int x, int y){
 
-	if(c == 'a') sailAngle -= 5;
-	if(c == 'd') sailAngle += 5;
-
+	if(c == 'a' && sailAngle > -MAXANGLE) sailAngle -= 3;
+	if(c == 'd' && sailAngle < MAXANGLE) sailAngle += 3;
+	if(c == 27 ) exit(0);
 
 	printf("%d\n", c);
 
