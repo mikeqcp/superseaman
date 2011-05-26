@@ -17,5 +17,6 @@ struct MeshSegment{
 	int begin;
 	int vertexCount;
 	int materialIndex;
+	GLuint texture;
 
 };

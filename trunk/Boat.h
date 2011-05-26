@@ -32,5 +32,7 @@ public:
 	void SetClipPlane(glm::vec4 clipPlane);
 
 	GLfloat getSailAngle() { return sailAngle; }
+
+	void SetTextures(Texture *textures, int texCount);
 };
 

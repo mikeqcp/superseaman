@@ -55,6 +55,7 @@ void Model::SetupUniformVariables(){
 
 	//zmienne jednorodne dla calego modelu
 	glUniform4f(locClipPlane, clipPlane.x, clipPlane.y, clipPlane.z, clipPlane.w);
+	glUniform1i(locTextureMap0, 0);
 
 }
 
@@ -135,6 +136,16 @@ void Model::SetupBuffers(){
 		normals,
 		GL_STATIC_DRAW);
 
+	/*
+	*	Model's texture coords buffer setup
+	*/
+
+	glGenBuffers(1, &bufTexCoords);
+	glBindBuffer(GL_ARRAY_BUFFER, bufTexCoords);
+	glBufferData(GL_ARRAY_BUFFER,
+		verticesCount*sizeof(GLfloat)*2,
+		texturesCoords,
+		GL_STATIC_DRAW);
 
 	/*
 	*	Model's vao setup
@@ -150,6 +161,10 @@ void Model::SetupBuffers(){
 	glBindBuffer(GL_ARRAY_BUFFER, bufNormals);
 	glEnableVertexAttribArray(locNormal);
 	glVertexAttribPointer(locNormal, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, bufTexCoords);
+	glEnableVertexAttribArray(locTexCoord);
+	glVertexAttribPointer(locTexCoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	for(int i = 0; i < meshCount; i++){
 
@@ -206,6 +221,10 @@ void Model::SetupShaders(string vshaderFile, string fshaderFile){
 	locMaterial[2] = glGetUniformLocation(shaderProgram, "specular");
 
 	locClipPlane = glGetUniformLocation(shaderProgram, "clipPlane");
+
+	locTextureMap0 = glGetUniformLocation(shaderProgram, "textureMap0");
+	locEnableTexturing = glGetUniformLocation(shaderProgram, "enableTexturing");
+	locTexCoord = glGetAttribLocation(shaderProgram, "texCoord");
 
 	locVertex = glGetAttribLocation(shaderProgram, "vertex");
 	locNormal = glGetAttribLocation(shaderProgram, "normal");
@@ -499,7 +518,7 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 
 				} else if (split[0].compare("map_Kd") == 0){
 
-					materials[currentMaterial].setMap_Kd(split[1]);
+					materials[currentMaterial].setMap_Kd(split[1].substr(0, split[1].find_last_of('.')));
 
 				}
 			}
@@ -514,7 +533,7 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 
 	//unsigned nov = vvertices.size();
 	//unsigned non = vnormalsIndices.size();
-	//unsigned not = vtextureCoords.size();
+	unsigned texCoordCount = vtextureCoords.size();
 	
 	unsigned iCount = vindices.size();
 	originalVerticesCount = vvertices.size();
@@ -526,11 +545,12 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 	originalVertices = new glm::vec4[originalVerticesCount];
 	vertices = new GLfloat[iCount*4];
 	normals = new GLfloat[iCount*4];
+	texturesCoords = new GLfloat[iCount*2];
 	indices = new GLuint[iCount];
 	meshes = new Mesh[meshCount];
-	//textureCoordsTab = new TextureUV[not];
 
 	glm::vec4 v, n;
+	glm::vec2 t;
 	for(unsigned i = 0; i < iCount; i++){
 
 		v = vvertices[vindices[0]-1];
@@ -545,11 +565,20 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 		normals[i*4 + 2] = n.z;
 		normals[i*4 + 3] = 1;
 
+		if(texCoordCount > 0 && vtextureCoordsIndices[0] > 0){
+
+			t = vtextureCoords[vtextureCoordsIndices[0]-1];
+
+			texturesCoords[i*2] = t.x;
+			texturesCoords[i*2 + 1] = t.y;
+
+		}
+
 		indices[i] = vindices[0]-1;
 		
 		vnormalsIndices.erase(vnormalsIndices.begin());
 		vindices.erase(vindices.begin());
-
+		vtextureCoordsIndices.erase(vtextureCoordsIndices.begin());
 	}
 
 	for(unsigned i = 0; i < originalVerticesCount; i++){
@@ -580,26 +609,6 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 
 	}
 
-	/*for(unsigned i = 0; i < not; i++){
-		textureCoordsTab[i] = textureCoords[0];
-		textureCoords.erase(textureCoords.begin());
-	}*/
-
-	/*for(unsigned i = 0; i < meshes.size(); i++){
-		meshes[i].UpdateVerticesNormalsTexturesMaterials(
-			verticesTab, 
-			nov,
-			normalsTab, 
-			textures, 
-			textureCount, 
-			textureCoordsTab, 
-			materials, 
-			materialCount
-			);
-
-		meshes[i].BuildLists();
-	}*/
-
 }
 
 void Model::UpdateRotation(GLfloat angle, glm::vec3 axis){
@@ -614,3 +623,15 @@ glm::mat4 Model::GetModelMatrix(){
 	return glm::rotate(glm::mat4(1), rotationAngle, rotationAxis);
 
 }
+
+void Model::SetTextures(Texture *textures, unsigned textureCount){ 
+	
+	this ->textures = textures; 
+	this ->textureCount = textureCount; 
+
+	for(int i = 0; i < meshCount; i++){
+	
+		meshes[i].SetTextures(textures, textureCount, locEnableTexturing);
+
+	}
+};

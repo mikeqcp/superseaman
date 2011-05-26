@@ -38,6 +38,22 @@ Cloth::~Cloth(void)
 
 /*
 *
+* G³ówna metoda wywo³uj¹ca poszczególne etapy metody ca³kowania verleta
+*
+*/
+
+void Cloth::TimeStep(){
+
+	AccumulateForces();
+	Verlet();
+	SatisfyConstraints();
+	CalculateNormals();
+	UpdateVBO();
+
+}
+
+/*
+*
 * Alokowanie pamiêci dla algorytmu ca³kowania Verleta i funkcji spe³niania ograniczeñ
 * Ustalanie masy poszczególnych punktów p³ótna
 * Masa 0 oznacza, ¿e wierzcho³ek pozostanie na swojej pozycji, a wiêc bêdzie punktem zaczepienia
@@ -301,20 +317,4 @@ void Cloth::RotateWind(GLfloat angle){
 	glm::detail::tvec3<GLfloat> a(wind.x, wind.y, wind.z);
 	a = glm::rotateY(a, angle);
 	wind = glm::vec4(a.x, a.y, a.z, 1);
-}
-
-/*
-*
-* G³ówna metoda wywo³uj¹ca poszczególne etapy metody ca³kowania verleta
-*
-*/
-
-void Cloth::TimeStep(){
-
-	AccumulateForces();
-	Verlet();
-	SatisfyConstraints();
-	CalculateNormals();
-	UpdateVBO();
-
 }

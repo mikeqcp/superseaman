@@ -11,8 +11,11 @@ Mesh::Mesh(vector<MeshSegment> ms, string name) : name(name){
 	for(int i = 0; i < segmentsCount; i++){
 	
 		segments[i] = ms[i];
+		segments[i].texture = 0;
 
 	}
+
+	enableTexturing = 0;
 
 }
 
@@ -25,6 +28,15 @@ Mesh::~Mesh(void)
 void Mesh::Draw(){
 
 	for(int i = 0; i < segmentsCount; i++){
+
+		if(materials[segments[i].materialIndex].getMap_Kd() != ""){
+
+			enableTexturing = 1;
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, segments[i].texture);
+			
+
+		} else enableTexturing = 0;
 
 		SetupUniformVariables(segments[i].materialIndex);
 
@@ -60,6 +72,8 @@ void Mesh::SetupUniformVariables(int index){
 
 	glm::vec4 diffuse = materials[index].getKd();
 	glUniform4f(locations[1], diffuse.r, diffuse.g, diffuse.b, diffuse.a);
+	
+	glUniform1i(locEnableTexturing, enableTexturing);
 
 }
 
@@ -99,3 +113,25 @@ MeshSegment Mesh::GetSegment(string name){
 	return ms;
 
 }
+
+void Mesh::SetTextures(Texture *textures, unsigned textureCount, GLuint locEnableTexturing){ 
+
+	this ->textures = textures;
+	this ->textureCount = textureCount;
+	this ->locEnableTexturing = locEnableTexturing;
+
+	for(int i = 0; i < segmentsCount; i++){
+	
+		for(int j = 0; j < textureCount; j++){
+		
+			if(materials[segments[i].materialIndex].getMap_Kd() == textures[j].name){
+			
+				segments[i].texture = textures[j].tex;
+
+			}
+
+		}
+
+	}
+
+};

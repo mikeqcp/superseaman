@@ -1,5 +1,6 @@
 #include "GLProgram.h"
 #include "Physics.h"
+#include "ModelStuctures.h"
 
 #pragma region Global variables
 
@@ -26,6 +27,8 @@ GLfloat adder = 1.0f;
 
 GLdouble clipPlane[4] = { 0.0, 1.0, 0.0, 0.0 };
 GLuint reflectionTex, refractionTex, depthTex;
+
+Texture *textures;
 
 #pragma endregion
 
@@ -59,6 +62,16 @@ void Initialize(){
 		);
 	boat->SetWind(glm::vec4(0, 0, 10, 0));
 	Physics::instance()->initialize(boat);
+
+	int texCount = 2;
+	char *fileNames[] = { 
+		"Models/wood.tga", 
+		"Models/woodplanks.tga" 
+	};										//nazwy plików tekstur w postaci tablicy lancuchów
+	SetUpTextures(fileNames, texCount);		//zaladowanie tekstur z plików
+
+	boat ->SetTextures(textures, texCount); //wys³anie uchwytow i nazw tekstur do modelu lodzi i zagla
+
 }
 
 /*
@@ -363,6 +376,54 @@ void RenderWater()
     glEnd();
 
     //Disable texture units and shader programs
+}
+
+#pragma endregion
+
+#pragma region Additional Functions
+
+GLuint LoadTexture(char* filename){
+
+	GLuint tex = 0;
+	TGAImg img;
+	glActiveTexture(GL_TEXTURE0);
+
+	if (img.Load(filename) == IMG_OK) {
+
+		glGenTextures(1, &tex);
+		glBindTexture(GL_TEXTURE_2D, tex);
+
+		if (img.GetBPP()==24)
+			glTexImage2D(GL_TEXTURE_2D, 0, 3, img.GetWidth(), img.GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, img.GetImg());
+		else if (img.GetBPP()==32) 
+			glTexImage2D(GL_TEXTURE_2D, 0, 4, img.GetWidth(), img.GetHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, img.GetImg());
+		else printf("Nieobslugiwany format obrazka w pliku: %s \n",filename);
+
+	} else printf("Blad przy wczytywaniu pliku: %s\n",filename);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	return tex;
+
+}
+
+void SetUpTextures(char **fileNames, int texCount){
+
+	textures = new Texture[texCount];
+	string fileName;
+	for(int i = 0; i < texCount; i++){
+
+		fileName = string(fileNames[i]);
+		int pos1 = fileName.find_last_of('/')+1;
+		int pos2 = fileName.find_last_of('.');
+		textures[i].name = fileName.substr(pos1, pos2-pos1);
+		textures[i].tex = LoadTexture(fileNames[i]);
+
+	}
+
 }
 
 #pragma endregion

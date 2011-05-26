@@ -3,6 +3,7 @@
 #include "Cloth.h"
 #include "Model.h"
 #include "Boat.h"
+#include "tga.h"
 
 using namespace std;
 
@@ -25,6 +26,7 @@ void RenderReflection();
 void RenderRefractionAndDepth();
 void RenderWater();
 
-GLuint LoadShader(GLenum shaderType, string fileName);
+GLuint LoadTexture(char* fileName);
+void SetUpTextures(char **fileNames, int texCount);
 
 string ReadFile(string fileName);

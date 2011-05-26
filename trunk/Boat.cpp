@@ -74,7 +74,14 @@ void Boat::DrawReflection(){
 
 void Boat::SetClipPlane(glm::vec4 clipPlane){
 
-	sail->SetClipPlane(clipPlane);
 	boat->SetClipPlane(clipPlane);
+	sail->SetClipPlane(clipPlane);
+
+}
+
+void Boat::SetTextures(Texture *textures, int texCount){
+
+	boat ->SetTextures(textures, texCount);
+	sail ->SetTextures(textures, texCount);
 
 }
