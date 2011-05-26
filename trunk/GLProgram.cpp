@@ -155,10 +155,11 @@ void InitGLEW(){
 void Update(){
 	
 	//TODO wywalic------------------------------
+
 	M = glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)), angle, glm::vec3(0,1,0));
 
 	glm::detail::tvec3<GLfloat> a(0, 0, 10);
-	a = glm::rotateY(a, angle);
+	a = glm::rotateY(a, -angle);
 	glm::vec4 wind = glm::vec4(a.x, a.y, a.z, 1);
 
 	boat ->SetWind(wind);

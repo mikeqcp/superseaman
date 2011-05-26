@@ -12,6 +12,8 @@ private:
 
 	GLfloat sailAngle;
 	glm::vec4 bomEnd;
+	glm::mat4 translateBomMatrix;
+
 
 public:
 	Boat(Model *boat, Cloth *sail);

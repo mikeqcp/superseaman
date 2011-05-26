@@ -7,9 +7,11 @@ Cloth::Cloth(string fileName, glm::mat4 P, glm::mat4 V, glm::mat4 M, string vsha
 	this ->V = V;
 	this ->M = M;
 
-	gravity = glm::vec4(0, -4, 0, 1);
-	wind = glm::vec4(10, 0, 0, 0);
-	realWind = glm::vec4(10, 0, 0, 0);
+	fTimeStep = 0.01f;
+
+	gravity = glm::vec4(0, -4, 0, 1); //grawitacja jest sta³a, taka wartoœæ zachowuje wystarczaj¹cy realizm
+	wind = glm::vec4(10, 0, 0, 0); //domyœlny wiatr, tylko dla bezpieczeñstwa
+	realWind = glm::vec4(10, 0, 0, 0); //prawdziwy wiatr jest to wiatr w przestrzeni œwiata, przed przekszta³ceniami
 
 	SetupShaders(vshaderFile, fshaderFile);
 	Load(fileName, 0, 0);
@@ -34,6 +36,15 @@ Cloth::~Cloth(void)
 {
 }
 
+/*
+*
+* Alokowanie pamiêci dla algorytmu ca³kowania Verleta i funkcji spe³niania ograniczeñ
+* Ustalanie masy poszczególnych punktów p³ótna
+* Masa 0 oznacza, ¿e wierzcho³ek pozostanie na swojej pozycji, a wiêc bêdzie punktem zaczepienia
+* Punkty te s¹ rozpoznawane dziêki nazwie materialu do nich przypisanego - "pins" oraz "bompins", indeksy tych materia³ów w tablicy 
+* zostaly ustalone w konstruktorze
+* Tutaj równie¿ obliczane s¹ ograniczenia dla d³ugoœci poszczególnych krawêdzi
+*/
 
 void Cloth::BuildCloth(){
 
@@ -109,6 +120,12 @@ void Cloth::BuildCloth(){
 
 }
 
+/*
+*
+* Metoda sumuj¹ca si³y pochodz¹ce z róznych Ÿróde³
+*
+*/
+
 void Cloth::AccumulateForces(){
 
 	for(int i = 0; i < originalVerticesCount; i++)
@@ -116,26 +133,42 @@ void Cloth::AccumulateForces(){
 
 }
 
+/*
+*
+* Metoda ca³kowania Verleta
+* Dziêki zapamiêtanym wartoœciom poprzedniego po³o¿enia, mozna pomin¹æ tak¹ wielkoœæ jak prêdkoœæ, która wprowadza zbyt du¿¹ niedok³adnoœæ przy
+* obliczaniu nowego po³o¿enia
+* W zamian za to do obecnego po³o¿enia dodawana jest róznica obecnego i poprzedniego
+* Na koñcu dodawany jest wektor si³y przemno¿ony przez kwadrat ma³ego odcinka czasowego, wczeœniej ustalonego
+* 
+*/
+
 void Cloth::Verlet(){
 
-	GLfloat fTimeStep = 0.01f;
 	glm::vec4 v, temp, old, a;
 	for(int i = 0; i < originalVerticesCount; i++){
-		if(masses[i] > 0){
-			v = originalVertices[i];
-			temp = v;
-			old = oldVertices[i];
-			a = verticesAcc[i];
 
-			v += v - old + a*fTimeStep*fTimeStep*(GLfloat)masses[i];
+		v = originalVertices[i];
+		temp = v;
+		old = oldVertices[i];
+		a = verticesAcc[i];
 
-			originalVertices[i] = v;
-			oldVertices[i] = temp;
-		}
+		v += v - old + a*fTimeStep*fTimeStep*(GLfloat)masses[i];
+
+		originalVertices[i] = v;
+		oldVertices[i] = temp;
+
 
 	}
 
 }
+
+/*
+*
+* Ta metoda zapewnia utrzymanie odpowiednich odleg³oœci miêdzy wierzcho³kami, które mog³y zostaæ zaburzone w etapie poprzednim (verlet)
+* 
+*
+*/
 
 void Cloth::SatisfyConstraints(){
 
@@ -169,6 +202,50 @@ void Cloth::SatisfyConstraints(){
 		}
 
 
+
+}
+
+/*
+*
+* Ta metoda oblicza normalne dla nowych wierzcho³ków p³ótna.
+* 
+*
+*/
+
+void Cloth::CalculateNormals(){
+
+	for(int i = 0; i < originalVerticesCount; i++)
+		tempNormals[i] = glm::vec4(0);
+
+	int iv1, iv2, iv3;
+	glm::vec4 a, b, c, normal, U, V;
+	for(int i = 0; i < indicesCount; i+=3){
+	
+		iv1 = indices[i];
+		iv2 = indices[i+1];
+		iv3 = indices[i+2];
+
+		a = originalVertices[iv1];
+		b = originalVertices[iv2];
+		c = originalVertices[iv3];
+
+		U = a - b;
+		V = c - b;
+
+		normal.x = U.y * V.z - U.z * V.y;
+		normal.y = U.z * V.x - U.x * V.z;
+		normal.z = U.x * V.y - U.y * V.x;
+
+		normal = glm::normalize(normal);
+
+		tempNormals[iv1] += normal;
+		tempNormals[iv2] += normal;
+		tempNormals[iv3] += normal;
+
+	}
+
+	for(int i = 0; i < originalVerticesCount; i++)
+		tempNormals[i] = glm::normalize(tempNormals[i]);
 
 }
 
@@ -212,42 +289,11 @@ void Cloth::UpdateVBO(){
 		GL_DYNAMIC_DRAW);
 }
 
-void Cloth::CalculateNormals(){
-
-	for(int i = 0; i < originalVerticesCount; i++)
-		tempNormals[i] = glm::vec4(0);
-
-	int iv1, iv2, iv3;
-	glm::vec4 a, b, c, normal, U, V;
-	for(int i = 0; i < indicesCount; i+=3){
-	
-		iv1 = indices[i];
-		iv2 = indices[i+1];
-		iv3 = indices[i+2];
-
-		a = originalVertices[iv1];
-		b = originalVertices[iv2];
-		c = originalVertices[iv3];
-
-		U = a - b;
-		V = c - b;
-
-		normal.x = U.y * V.z - U.z * V.y;
-		normal.y = U.z * V.x - U.x * V.z;
-		normal.z = U.x * V.y - U.y * V.x;
-
-		normal = glm::normalize(normal);
-
-		tempNormals[iv1] += normal;
-		tempNormals[iv2] += normal;
-		tempNormals[iv3] += normal;
-
-	}
-
-	for(int i = 0; i < originalVerticesCount; i++)
-		tempNormals[i] = glm::normalize(tempNormals[i]);
-
-}
+/*
+*
+* Proste obracanie wiatru wokol osi OY
+*
+*/
 
 void Cloth::RotateWind(GLfloat angle){
 
@@ -256,6 +302,12 @@ void Cloth::RotateWind(GLfloat angle){
 	a = glm::rotateY(a, angle);
 	wind = glm::vec4(a.x, a.y, a.z, 1);
 }
+
+/*
+*
+* G³ówna metoda wywo³uj¹ca poszczególne etapy metody ca³kowania verleta
+*
+*/
 
 void Cloth::TimeStep(){
 
