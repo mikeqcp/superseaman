@@ -17,7 +17,7 @@ glm::vec4 lightPos; //pozycja œwiat³a
 GLfloat angle = 0;
 GLfloat sailAngle = 0;
 
-Model *arrow;
+Model *arrow; //strza³ka, która wskazuje, w któr¹ stronê wieje wiatr
 Boat *boat; // to wskazuje na ³odkê
 
 GLfloat cameraAngle; //k¹t obrotu kamery
@@ -164,7 +164,8 @@ void InitGLEW(){
 *
 *
 */
-#include "glm\gtx\rotate_vector.hpp"
+
+#include "glm\gtx\rotate_vector.hpp" //TODO do wywalenia póŸniej
 void Update(){
 	
 	glm::vec3 basicWind(0, 0, 10);
@@ -186,11 +187,12 @@ void Update(){
 	boat->Update(P, V, M, lightPos);
 
 	//TODO wywalic------------------------------
+
 	M = M*glm::translate(glm::mat4(1), glm::vec3(-3, 0, 0))*glm::rotate(glm::mat4(1), -90.0f, glm::vec3(0, 1, 0))*glm::rotate(glm::mat4(1), -angle, glm::vec3(0, 1, 0));
 
-	arrow -> Update(P, V, M, lightPos);
 	//TEST---------------------------------------
-
+	
+	arrow -> Update(P, V, M, lightPos);
 	angle += 0.5f;
 }
 
