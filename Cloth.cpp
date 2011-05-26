@@ -251,7 +251,7 @@ void Cloth::CalculateNormals(){
 
 void Cloth::RotateWind(GLfloat angle){
 
-	wind = glm::inverse(M)*realWind;
+	wind = realWind;
 	glm::detail::tvec3<GLfloat> a(wind.x, wind.y, wind.z);
 	a = glm::rotateY(a, angle);
 	wind = glm::vec4(a.x, a.y, a.z, 1);

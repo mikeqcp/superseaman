@@ -35,7 +35,7 @@ void Boat::Update(glm::mat4 P, glm::mat4 V, glm::mat4 M, glm::vec4 lightPos){
 	M = glm::translate(glm::rotate(glm::translate(M, glm::vec3(bomEnd.x, bomEnd.y, bomEnd.z)), sailAngle, glm::vec3(0, 1, 0)), glm::vec3(-bomEnd.x, -bomEnd.y, -bomEnd.z));
 	boat->UpdateMesh("bom", P, V, M, lightPos);
 	sail ->Update(P, V, M, lightPos);
-	sail ->RotateWind(-sailAngle);
+	sail ->RotateWind(sailAngle);
 	sail->TimeStep();
 }
 
