@@ -54,7 +54,7 @@ void Initialize(){
 
 	lightPos = glm::vec4(10,10,10,1);
 
-	arrow = new Model("Models/boat.obj", P, V, M, "vshader.txt", "fshader.txt"), 
+	arrow = new Model("Models/arrow.obj", P, V, M, "vshader.txt", "fshader.txt"), 
 
 	boat = new Boat( 
 		new Model("Models/boat.obj", P, V, M, "vshader.txt", "fshader.txt"),
@@ -167,11 +167,13 @@ void InitGLEW(){
 #include "glm\gtx\rotate_vector.hpp"
 void Update(){
 	
+	glm::vec3 basicWind(0, 0, 10);
+
 	//TODO wywalic------------------------------
 
 	M = glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)), angle, glm::vec3(0,1,0));
 
-	glm::detail::tvec3<GLfloat> a(0, 0, 10);
+	glm::detail::tvec3<GLfloat> a(basicWind.x, basicWind.y, basicWind.z);
 	a = glm::rotateY(a, -angle);
 	glm::vec4 wind = glm::vec4(a.x, a.y, a.z, 1);
 
@@ -182,7 +184,13 @@ void Update(){
 	//TEST---------------------------------------
 
 	boat->Update(P, V, M, lightPos);
-	
+
+	//TODO wywalic------------------------------
+	M = M*glm::translate(glm::mat4(1), glm::vec3(-3, 0, 0))*glm::rotate(glm::mat4(1), -90.0f, glm::vec3(0, 1, 0))*glm::rotate(glm::mat4(1), -angle, glm::vec3(0, 1, 0));
+
+	arrow -> Update(P, V, M, lightPos);
+	//TEST---------------------------------------
+
 	angle += 0.5f;
 }
 
@@ -275,6 +283,7 @@ void DisplayFrame(){
 void Draw(){
 
 	boat ->Draw();
+	arrow ->Draw();
 	//RenderReflection();
 	//RenderRefractionAndDepth();
 	//RenderWater();
