@@ -15,16 +15,16 @@ protected:
 	glm::mat4 P, V, M;
 	glm::vec4 lightPos;
 
-	GLuint locP, locV, locM, locVertex, locNormal, locLighPos, locClipPlane;
+	GLuint locP, locV, locM, locVertex, locNormal, locLighPos, locClipPlane, locTexCoord, locTextureMap0, locEnableTexturing;
 	GLuint locMaterial[3];
 	GLuint vertexShader, fragmentShader, shaderProgram;
-	GLuint bufVertices, bufIndices, bufNormals, vao;
+	GLuint bufVertices, bufIndices, bufNormals, bufTexCoords, vao;
 	GLuint verticesBufferType;
 	GLuint verticesCount, normalsCount, indicesCount;
 
 	glm::vec4 clipPlane;
 
-	GLfloat *vertices, *normals;
+	GLfloat *vertices, *normals, *texturesCoords;
 
 	glm::vec4 *originalVertices;
 	unsigned originalVerticesCount;
@@ -58,8 +58,6 @@ public:
 	Model(string fileName, glm::mat4 P, glm::mat4 V, glm::mat4 M, string vshaderFile, string fshaderFile);
 	~Model(void);
 
-	
-
 	void Update(glm::mat4 P, glm::mat4 V, glm::mat4 M, glm::vec4 lightPos);
 
 	void UpdateMesh(string name, glm::mat4 P, glm::mat4 V, glm::mat4 M, glm::vec4 lightPos);
@@ -75,6 +73,8 @@ public:
 	glm::mat4 GetModelMatrix();
 
 	glm::vec4 *GetSegment(string mname, string msname, int *length);
+
+	void SetTextures(Texture *textures, unsigned textureCount);
 
 	void SetClipPlane(glm::vec4 clipPlane){ this ->clipPlane = clipPlane; };
 

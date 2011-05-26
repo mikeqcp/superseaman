@@ -14,11 +14,12 @@ uniform vec4 clipPlane;
 
 in vec4 vertex;
 in vec4 normal;
+in vec2 texCoord;
 
 out vec4 inormal;
 out vec4 ilight;
 out vec4 iv;
-
+out vec2 iTexCoord;
 
 void main(void){
 
@@ -34,5 +35,6 @@ void main(void){
 	inormal = n;
 	ilight = l;
 	iv = V*vec4(0, 5.0f, 7.0f, 1);
+	iTexCoord = texCoord;
 
 }
