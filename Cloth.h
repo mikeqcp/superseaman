@@ -16,6 +16,8 @@ private:
     GLfloat *constraints;
 	int *masses;
 
+	GLfloat fTimeStep;
+
 	int pinMaterialIndex, bompinMaterialIndex;
 
 	void Verlet();
