@@ -16,7 +16,7 @@ glm::vec4 lightPos; //pozycja œwiat³a
 GLfloat angle = 0;
 GLfloat sailAngle = 0;
 
-
+Model *arrow;
 Boat *boat; // to wskazuje na ³odkê
 
 GLfloat cameraAngle; //k¹t obrotu kamery
@@ -46,16 +46,18 @@ void Initialize(){
 
 	glEnable(GL_DEPTH_TEST);
 
-	V = glm::lookAt(observerPos, glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f)); 
+	V = glm::lookAt(observerPos, glm::vec3(0.0f, 1.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f)); 
 	M = glm::mat4(1); 
 
 	lightPos = glm::vec4(10,10,10,1);
+
+	arrow = new Model("Models/boat.obj", P, V, M, "vshader.txt", "fshader.txt"), 
 
 	boat = new Boat( 
 		new Model("Models/boat.obj", P, V, M, "vshader.txt", "fshader.txt"),
 		new Cloth("Models/sail.obj", P, V, M, "vshader.txt", "fshader.txt")
 		);
-
+	boat->SetWind(glm::vec4(0, 0, 10, 0));
 	Physics::instance()->initialize(boat);
 }
 
@@ -149,20 +151,25 @@ void InitGLEW(){
 *
 *
 */
-
+#include "glm\gtx\rotate_vector.hpp"
 void Update(){
+	
+	//TODO wywalic------------------------------
+	M = glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)), angle, glm::vec3(0,1,0));
 
-	M = glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0, -1, 0)), angle, glm::vec3(0,1,0));
-	//M = glm::mat4(1);
+	glm::detail::tvec3<GLfloat> a(0, 0, 10);
+	a = glm::rotateY(a, angle);
+	glm::vec4 wind = glm::vec4(a.x, a.y, a.z, 1);
+
+	boat ->SetWind(wind);
 
 	boat->RotateSail(sailAngle);
+
+	//TEST---------------------------------------
+
 	boat->Update(P, V, M, lightPos);
 	
 	angle += 0.5f;
-	//sailAngle += adder;
-	//if(sailAngle > 60.0f || sailAngle < -60.0f)
-		//adder *= -1;
-
 }
 
 /*

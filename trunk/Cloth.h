@@ -32,7 +32,7 @@ public:
 
 	void TimeStep();
 
-	void SetWind(glm::vec4 wind){ this ->wind = wind; };
+	void SetWind(glm::vec4 wind){ this ->realWind = wind; };
 
 	void RotateWind(GLfloat angle);
 
