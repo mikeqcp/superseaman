@@ -14,6 +14,7 @@ long long frames = 0, time = 0, previousFPSChangeAt = 0, changeFPSAt = 1000; //d
 glm::mat4 P, V, M; //kolejno macierz projekcji, widoku i modelu
 glm::vec4 lightPos; //pozycja œwiat³a
 
+
 GLfloat angle = 0;
 GLfloat sailAngle = 0;
 
@@ -22,6 +23,7 @@ Boat *boat; // to wskazuje na ³odkê
 
 GLfloat cameraAngle; //k¹t obrotu kamery
 glm::vec3 observerPos(0, 5.0f, 7.0f); //Pozycja obserwatora - kamery
+glm::vec3 lookAtPos(0, 1, 0); //na co patrzy kamera
 
 GLfloat adder = 1.0f;
 
@@ -49,16 +51,16 @@ void Initialize(){
 
 	glEnable(GL_DEPTH_TEST);
 
-	V = glm::lookAt(observerPos, glm::vec3(0.0f, 1.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f)); 
+	V = glm::lookAt(observerPos, lookAtPos, glm::vec3(0.0f,1.0f,0.0f)); 
 	M = glm::mat4(1); 
 
 	lightPos = glm::vec4(10,10,10,1);
 
-	arrow = new Model("Models/arrow.obj", P, V, M, "vshader.txt", "fshader.txt"), 
+	arrow = new Model("Models/arrow.obj", P, V, M, "Shaders/arrowvshader.txt", "Shaders/arrowfshader.txt"), 
 
 	boat = new Boat( 
-		new Model("Models/boat.obj", P, V, M, "vshader.txt", "fshader.txt"),
-		new Cloth("Models/sail.obj", P, V, M, "vshader.txt", "fshader.txt")
+		new Model("Models/boat.obj", P, V, M, "Shaders/vshader.txt", "Shaders/fshader.txt"),
+		new Cloth("Models/sail.obj", P, V, M, "Shaders/vshader.txt", "Shaders/fshader.txt")
 		);
 	boat->SetWind(glm::vec4(0, 0, 10, 0));
 	Physics::instance()->initialize(boat);
