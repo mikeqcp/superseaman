@@ -171,9 +171,10 @@ void Cloth::Verlet(){
 
 		v += v - old + a*fTimeStep*fTimeStep*(GLfloat)masses[i];
 
+		v.w = originalVertices[i].w;
+
 		originalVertices[i] = v;
 		oldVertices[i] = temp;
-
 
 	}
 
@@ -316,5 +317,5 @@ void Cloth::RotateWind(GLfloat angle){
 	wind = realWind;
 	glm::detail::tvec3<GLfloat> a(wind.x, wind.y, wind.z);
 	a = glm::rotateY(a, angle);
-	wind = glm::vec4(a.x, a.y, a.z, 1);
+	wind = glm::vec4(a.x, a.y, a.z, 0);
 }
