@@ -85,3 +85,10 @@ void Boat::SetTextures(Texture *textures, int texCount){
 	sail ->SetTextures(textures, texCount);
 
 }
+
+void Boat::SetLookAtPos(glm::vec3 lookAtPos){
+
+	boat ->SetLookAt(lookAtPos);
+	sail ->SetLookAt(lookAtPos);
+
+}

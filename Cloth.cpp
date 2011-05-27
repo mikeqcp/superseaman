@@ -22,9 +22,9 @@ Cloth::Cloth(string fileName, glm::mat4 P, glm::mat4 V, glm::mat4 M, string vsha
 
 		string mname = materials[i].getName();
 	
-		if(mname.compare("pins") == 0)
+		if(mname.find("pins") != string::npos && mname.find("bompins") == string::npos)
 			pinMaterialIndex = i;
-		else if(mname.compare("bompins") == 0)
+		else if(mname.find("bompins") != string::npos)
 			bompinMaterialIndex = i;
 
 	}

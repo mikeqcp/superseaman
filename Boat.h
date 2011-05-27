@@ -14,7 +14,6 @@ private:
 	glm::vec4 bomEnd;
 	glm::mat4 translateBomMatrix;
 
-
 public:
 	Boat(Model *boat, Cloth *sail);
 	~Boat(void);
@@ -34,5 +33,7 @@ public:
 	GLfloat getSailAngle() { return sailAngle; }
 
 	void SetTextures(Texture *textures, int texCount);
+
+	void SetLookAtPos(glm::vec3 lookAtPos);
 };
 
