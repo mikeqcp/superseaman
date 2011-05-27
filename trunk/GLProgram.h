@@ -3,6 +3,7 @@
 #include "Cloth.h"
 #include "Model.h"
 #include "Boat.h"
+#include "Water.h"
 #include "tga.h"
 
 using namespace std;
@@ -28,5 +29,7 @@ void RenderWater();
 
 GLuint LoadTexture(char* fileName);
 void SetUpTextures(char **fileNames, int texCount);
+
+void SetupFBO(GLuint &fbo, GLuint &tex);
 
 string ReadFile(string fileName);

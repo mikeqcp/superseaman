@@ -14,12 +14,12 @@ long long frames = 0, time = 0, previousFPSChangeAt = 0, changeFPSAt = 1000; //d
 glm::mat4 P, V, M; //kolejno macierz projekcji, widoku i modelu
 glm::vec4 lightPos; //pozycja œwiat³a
 
-
 GLfloat angle = 0;
 GLfloat sailAngle = 0;
 
 Model *arrow; //strza³ka, która wskazuje, w któr¹ stronê wieje wiatr
 Boat *boat; // to wskazuje na ³odkê
+Water *water;
 
 GLfloat cameraAngle; //k¹t obrotu kamery
 glm::vec3 observerPos(0, 5.0f, 7.0f); //Pozycja obserwatora - kamery
@@ -29,6 +29,7 @@ GLfloat adder = 1.0f;
 
 GLdouble clipPlane[4] = { 0.0, 1.0, 0.0, 0.0 };
 GLuint reflectionTex, refractionTex, depthTex;
+GLuint reflectionFBO;
 
 Texture *textures;
 
@@ -57,7 +58,7 @@ void Initialize(){
 	lightPos = glm::vec4(10,10,10,1);
 
 	arrow = new Model("Models/arrow.obj", P, V, M, "Shaders/arrowvshader.txt", "Shaders/arrowfshader.txt"), 
-
+	water = new Water("Models/waterPlane.obj", P, V, M, "Shaders/watervshader.txt", "Shaders/waterfshader.txt");
 	boat = new Boat( 
 		new Model("Models/boat.obj", P, V, M, "Shaders/vshader.txt", "Shaders/fshader.txt"),
 		new Cloth("Models/sail.obj", P, V, M, "Shaders/vshader.txt", "Shaders/fshader.txt")
@@ -65,15 +66,18 @@ void Initialize(){
 	boat->SetWind(glm::vec4(0, 0, 10, 0));
 	Physics::instance()->initialize(boat);
 
-	int texCount = 2;
+	int texCount = 3;
 	char *fileNames[] = { 
 		"Models/wood.tga", 
-		"Models/woodplanks.tga" 
+		"Models/woodplanks.tga",
+		"Models/fabric.tga"
 	};										//nazwy plików tekstur w postaci tablicy lancuchów
 	SetUpTextures(fileNames, texCount);		//zaladowanie tekstur z plików
 
 	boat ->SetTextures(textures, texCount); //wys³anie uchwytow i nazw tekstur do modelu lodzi i zagla
 
+
+	SetupFBO(reflectionFBO, reflectionTex);
 }
 
 /*
@@ -172,6 +176,9 @@ void Update(){
 	
 	glm::vec3 basicWind(0, 0, 10);
 
+	water ->Update(P, V, glm::rotate(glm::mat4(1), 0.0f, glm::vec3(0, 1, 0)), lightPos);
+	water ->SetLookAt(lookAtPos);
+
 	//TODO wywalic------------------------------
 
 	M = glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)), angle, glm::vec3(0,1,0));
@@ -187,6 +194,7 @@ void Update(){
 	//TEST---------------------------------------
 
 	boat->Update(P, V, M, lightPos);
+	boat->SetLookAtPos(lookAtPos);
 
 	//TODO wywalic------------------------------
 
@@ -195,6 +203,7 @@ void Update(){
 	//TEST---------------------------------------
 	
 	arrow -> Update(P, V, M, lightPos);
+	arrow ->SetLookAt(lookAtPos);
 	angle += 0.5f;
 }
 
@@ -232,7 +241,7 @@ void NextFrame(){
 	time = glutGet(GLUT_ELAPSED_TIME);
 
 	if(time > changeFPSAt){
-		sprintf(windowTitle, "FPS: %f", (GLfloat)frames/(time - changeFPSAt + 1000)*1000); 
+		sprintf_s(windowTitle, "FPS: %f", (GLfloat)frames/(time - changeFPSAt + 1000)*1000); 
 
 		glutSetWindowTitle(windowTitle);
 		changeFPSAt = time + 1000;
@@ -246,6 +255,11 @@ void NextFrame(){
 void ReshapeWindow(int w, int h){
 
 	glViewport(0, 0, w, h);
+	windowWidth = w;
+	windowHeight = h;
+	glDeleteFramebuffersEXT(1, &reflectionFBO);
+	glDeleteTextures(1, &reflectionTex);
+	SetupFBO(reflectionFBO, reflectionTex);
 	SetupProjection(cameraAngle, w, h);
 
 }
@@ -286,11 +300,13 @@ void DisplayFrame(){
 
 void Draw(){
 
-	boat ->Draw();
-	arrow ->Draw();
 	//RenderReflection();
 	//RenderRefractionAndDepth();
 	//RenderWater();
+
+	//water ->Draw();
+	boat ->Draw();
+	arrow ->Draw();
 	frames++;
 
 }
@@ -299,6 +315,8 @@ void Draw(){
 
 void RenderReflection()
 {
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, reflectionFBO);
+
 	glViewport(0,0, windowWidth, windowHeight);
    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -307,13 +325,17 @@ void RenderReflection()
 	boat->SetClipPlane(plane);
    	glEnable(GL_CLIP_PLANE0);
 	glClipPlane(GL_CLIP_PLANE0, p);
+
    	boat ->DrawReflection();
    	glDisable(GL_CLIP_PLANE0);
 
-   	glBindTexture(GL_TEXTURE_2D, reflectionTex);
-	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,0, 0,  windowWidth, windowHeight, 0); 
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	
+	glBindTexture(GL_TEXTURE_2D, reflectionTex);
+	glGenerateMipmapEXT(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
-	//TODO sprawdziæ, czy to rzeczywiœcie robi screena
+	water ->SetReflectionTex(reflectionTex);
    	
 }
 
@@ -436,6 +458,40 @@ void SetUpTextures(char **fileNames, int texCount){
 		textures[i].tex = LoadTexture(fileNames[i]);
 
 	}
+
+}
+
+void SetupFBO(GLuint &fbo, GLuint &tex){
+
+	glActiveTexture(GL_TEXTURE0);
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, windowWidth, windowHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	GLuint rboId;
+	glGenRenderbuffersEXT(1, &rboId);
+	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rboId);
+	glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, windowWidth, windowHeight);
+	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+
+	// create a framebuffer object
+	glGenFramebuffersEXT(1, &fbo);
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
+
+	// attach the texture to FBO color attachment point
+	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, tex, 0);
+
+	// attach the renderbuffer to depth attachment point
+	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, rboId);
+
+	// switch back to window-system-provided framebuffer
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
 }
 

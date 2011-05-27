@@ -1,0 +1,37 @@
+#version 130
+#define GLM_SWIZZLE GLM_SWIZZLE_FULL
+
+uniform mat4 P;
+uniform mat4 V;
+uniform mat4 M;
+uniform vec4 lightPos;
+uniform vec3 lookAtPos;
+
+uniform vec4 ambient;
+uniform vec4 diffuse;
+uniform vec4 specular;
+
+uniform vec4 clipPlane;
+
+in vec4 vertex;
+in vec4 normal;
+in vec2 texCoord;
+
+out vec4 inormal;
+out vec4 ilight;
+out vec4 iv;
+out vec2 iTexCoord;
+
+void main(void){
+
+	vec4 n = normalize(V*M*normal);
+	vec4 l = normalize(V*M*vertex - lightPos);
+	
+	gl_Position = P*V*M*vertex;
+	
+	inormal = n;
+	ilight = l;
+	iv = normalize(V*M*vertex - vec4(lookAtPos, 1));
+	iTexCoord = texCoord;
+
+}
