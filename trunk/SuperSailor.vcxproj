@@ -86,8 +86,10 @@
     <ClInclude Include="Physics.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="fshader.txt" />
-    <None Include="vshader.txt" />
+    <None Include="Shaders\arrowfshader.txt" />
+    <None Include="Shaders\arrowvshader.txt" />
+    <None Include="Shaders\fshader.txt" />
+    <None Include="Shaders\vshader.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -73,6 +73,9 @@ void Mesh::SetupUniformVariables(int index){
 	glm::vec4 diffuse = materials[index].getKd();
 	glUniform4f(locations[1], diffuse.r, diffuse.g, diffuse.b, diffuse.a);
 	
+	glm::vec4 specular = materials[index].getKs();
+	glUniform4f(locations[2], specular.r, specular.g, specular.b, specular.a);
+
 	glUniform1i(locEnableTexturing, enableTexturing);
 
 }

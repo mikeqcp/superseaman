@@ -5,6 +5,7 @@ uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
 uniform vec4 lightPos;
+uniform vec3 lookAtPos;
 
 uniform vec4 ambient;
 uniform vec4 diffuse;
@@ -24,17 +25,13 @@ out vec2 iTexCoord;
 void main(void){
 
 	vec4 n = normalize(V*M*normal);
-	vec4 l = normalize(V*M*vertex - V*lightPos);
+	vec4 l = normalize(V*M*vertex - lightPos);
 	
 	gl_Position = P*V*M*vertex;
-	//gl_ClipDistance[0] = dot(clipPlane, vertex);
-
-	if(vertex.y < clipPlane.y) gl_ClipVertex = vertex;
-	else gl_ClipVertex = vec4(0,0,0,0);
-
+	
 	inormal = n;
 	ilight = l;
-	iv = V*vec4(0, 5.0f, 7.0f, 1);
+	iv = normalize(V*M*vertex - vec4(lookAtPos, 1));
 	iTexCoord = texCoord;
 
 }

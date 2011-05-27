@@ -16,8 +16,6 @@ out vec4 pixelColor;
 
 void main(void) {
 
-	vec4 texColor = texture(textureMap0, iTexCoord);
-
 	vec4 n = normalize(inormal);
 	vec4 l = normalize(ilight);
 	vec4 v = normalize(iv);
@@ -26,9 +24,12 @@ void main(void) {
 	float nl = max(dot(n, l), 0);
 	float rv = pow(max(dot(r, v), 0), 12);
 
-	if(enableTexturing == 1)
+	if(enableTexturing == 1){
+
+		vec4 texColor = texture(textureMap0, iTexCoord);
 		pixelColor = texColor*diffuse*nl + ambient + specular*rv;
-	else if(enableTexturing == 0)
+
+	} else if(enableTexturing == 0)
 		pixelColor = ambient + diffuse*nl  + specular*rv;
 
 }

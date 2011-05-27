@@ -25,7 +25,7 @@ void Model::Draw(){
 
 	SetupUniformVariables();
 
-	for(int i = 0; i < meshCount; i++){
+	for(unsigned i = 0; i < meshCount; i++){
 	
 		meshes[i].Draw();
 
@@ -39,7 +39,7 @@ void Model::DrawReflection(){
 
 	SetupUniformVariables();
 
-	for(int i = 0; i < meshCount; i++){
+	for(unsigned i = 0; i < meshCount; i++){
 		glm::mat4 prevM = meshes[i].GetModelMatrix();
 		glm::mat4 refM = glm::scale(prevM, glm::vec3(1, -1, 1));
 
@@ -54,8 +54,10 @@ void Model::DrawReflection(){
 void Model::SetupUniformVariables(){
 
 	//zmienne jednorodne dla calego modelu
+	glUniform3f(locLookAtPos, lookAtPos.x, lookAtPos.y, lookAtPos.z);
 	glUniform4f(locClipPlane, clipPlane.x, clipPlane.y, clipPlane.z, clipPlane.w);
 	glUniform1i(locTextureMap0, 0);
+
 
 }
 
@@ -65,14 +67,14 @@ void Model::Update(glm::mat4 P, glm::mat4 V, glm::mat4 M, glm::vec4 lightPos){
 	this ->V = V;
 	this ->M = M;
 	this ->lightPos = lightPos;
-	for(int i = 0; i < meshCount; i++)
+	for(unsigned i = 0; i < meshCount; i++)
 		meshes[i].Update(P, V, M, lightPos);
 	
 }
 
 void Model::UpdateMesh(string name, glm::mat4 P, glm::mat4 V, glm::mat4 M, glm::vec4 lightPos){
 
-	for(int i = 0; i < meshCount; i++){
+	for(unsigned i = 0; i < meshCount; i++){
 		if(meshes[i].GetName().compare(name) == 0)
 			meshes[i].Update(P, V, M, lightPos);
 	}
@@ -84,7 +86,7 @@ glm::vec4 *Model::GetSegment(string mname, string msname, int *length){
 	glm::vec4 *result = NULL;
 	*length = 0;
 
-	for(int i = 0; i < meshCount; i++){
+	for(unsigned i = 0; i < meshCount; i++){
 		if(meshes[i].GetName().compare(mname) == 0){
 		
 			MeshSegment ms = meshes[i].GetSegment(msname);
@@ -166,7 +168,7 @@ void Model::SetupBuffers(){
 	glEnableVertexAttribArray(locTexCoord);
 	glVertexAttribPointer(locTexCoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-	for(int i = 0; i < meshCount; i++){
+	for(unsigned i = 0; i < meshCount; i++){
 
 		meshes[i].SetVao(vao);
 		meshes[i].SetLocations(locP, locV, locM, locLighPos, locMaterial);
@@ -219,6 +221,8 @@ void Model::SetupShaders(string vshaderFile, string fshaderFile){
 	locMaterial[0] = glGetUniformLocation(shaderProgram, "ambient");
 	locMaterial[1] = glGetUniformLocation(shaderProgram, "diffuse");
 	locMaterial[2] = glGetUniformLocation(shaderProgram, "specular");
+
+	locLookAtPos = glGetUniformLocation(shaderProgram, "lookAtPos");
 
 	locClipPlane = glGetUniformLocation(shaderProgram, "clipPlane");
 
@@ -603,7 +607,7 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 	vtextureCoordsIndices.clear();
 	vmeshes.clear();
 
-	for(int i = 0; i < meshCount; i++){
+	for(unsigned i = 0; i < meshCount; i++){
 
 		meshes[i].SetMaterials(materials, materialCount);
 
@@ -629,7 +633,7 @@ void Model::SetTextures(Texture *textures, unsigned textureCount){
 	this ->textures = textures; 
 	this ->textureCount = textureCount; 
 
-	for(int i = 0; i < meshCount; i++){
+	for(unsigned i = 0; i < meshCount; i++){
 	
 		meshes[i].SetTextures(textures, textureCount, locEnableTexturing);
 

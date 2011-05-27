@@ -15,7 +15,10 @@ protected:
 	glm::mat4 P, V, M;
 	glm::vec4 lightPos;
 
+	glm::vec3 lookAtPos;
+
 	GLuint locP, locV, locM, locVertex, locNormal, locLighPos, locClipPlane, locTexCoord, locTextureMap0, locEnableTexturing;
+	GLuint locLookAtPos;
 	GLuint locMaterial[3];
 	GLuint vertexShader, fragmentShader, shaderProgram;
 	GLuint bufVertices, bufIndices, bufNormals, bufTexCoords, vao;
@@ -77,6 +80,8 @@ public:
 	void SetTextures(Texture *textures, unsigned textureCount);
 
 	void SetClipPlane(glm::vec4 clipPlane){ this ->clipPlane = clipPlane; };
+
+	void SetLookAt(glm::vec3 lookAtPos){ this ->lookAtPos = lookAtPos; };
 
 
 };
