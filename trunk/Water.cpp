@@ -13,6 +13,12 @@ Water::Water(string fileName, glm::mat4 P, glm::mat4 V, glm::mat4 M, string vsha
 	clipPlane = glm::vec4(0, 0, 0, 0);
 	SetupShaders(vshaderFile, fshaderFile);
 	Load(fileName, 0, 0);
+
+	for(int i = 0; i < indicesCount; i++){
+		texturesCoords[i*2] *= vertices[0]; 
+		texturesCoords[i*2 + 1] *= vertices[0]; 
+	}
+
 	verticesBufferType = GL_STATIC_DRAW;
 	SetupBuffers();
 
@@ -57,6 +63,7 @@ void Water::SetUpDrawing(){
 
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, depthTex);
+
 
 }
 
