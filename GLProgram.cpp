@@ -20,9 +20,10 @@ GLfloat sailAngle = 0;
 Model *arrow; //strza³ka, która wskazuje, w któr¹ stronê wieje wiatr
 Boat *boat; // to wskazuje na ³odkê
 Water *water;
+Model *skyDome;
 
 GLfloat cameraAngle; //k¹t obrotu kamery
-glm::vec3 observerPos(0, 15.0f, 15.0f); //Pozycja obserwatora - kamery
+glm::vec3 observerPos(-15.0f, 5.0f, 0.0f); //Pozycja obserwatora - kamery
 glm::vec3 lookAtPos(0, 1, 0); //na co patrzy kamera
 
 GLfloat adder = 1.0f;
@@ -57,8 +58,10 @@ void Initialize(){
 
 	lightPos = glm::vec4(10,10,10,1);
 
-	arrow = new Model("Models/arrow.obj", P, V, M, "Shaders/arrowvshader.txt", "Shaders/arrowfshader.txt"), 
+	arrow = new Model("Models/arrow.obj", P, V, M, "Shaders/arrowvshader.txt", "Shaders/arrowfshader.txt");
 	water = new Water("Models/waterPlane.obj", P, V, M, "Shaders/watervshader.txt", "Shaders/waterfshader.txt");
+	skyDome = new Model("Models/skyDome.obj", P, V, M, "Shaders/skyvshader.txt", "Shaders/skyfshader.txt");
+
 	boat = new Boat( 
 		new Model("Models/boat.obj", P, V, M, "Shaders/vshader.txt", "Shaders/fshader.txt"),
 		new Cloth("Models/sail.obj", P, V, M, "Shaders/vshader.txt", "Shaders/fshader.txt")
@@ -66,15 +69,17 @@ void Initialize(){
 	boat->SetWind(glm::vec4(0, 0, 10, 0));
 	Physics::instance()->initialize(boat);
 
-	int texCount = 3;
+	int texCount = 4;
 	char *fileNames[] = { 
 		"Models/wood.tga", 
 		"Models/woodplanks.tga",
-		"Models/fabric.tga"
+		"Models/fabric.tga",
+		"Models/SkyDome-Cloud-Medium-MidMorning.tga"
 	};										//nazwy plików tekstur w postaci tablicy lancuchów
 	SetUpTextures(fileNames, texCount);		//zaladowanie tekstur z plików
 
 	boat ->SetTextures(textures, texCount); //wys³anie uchwytow i nazw tekstur do modelu lodzi i zagla
+	skyDome ->SetTextures(textures, texCount);
 
 	SetupFBO(reflectionFBO, reflectionTex);
 	SetupFBO(refractionAndDepthFBO, refractionTex);
@@ -180,16 +185,19 @@ void Update(){
 	
 	glm::vec3 basicWind(0, 0, 10);
 
-	water ->Update(P, V, glm::rotate(glm::mat4(1), 0.0f, glm::vec3(0, 1, 0)), lightPos);
+	skyDome ->Update(P, V, glm::mat4(1), lightPos);
+
+	water ->Update(P, V, glm::rotate(glm::mat4(1), 90.0f, glm::vec3(0, 1, 0)), lightPos);
 	water ->SetLookAt(lookAtPos);
 	water ->SetViewPos(observerPos);
 
 	//TODO wywalic------------------------------
 
-	M = glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)), angle, glm::vec3(0,1,0));
+	//M = glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)), angle, glm::vec3(0,1,0));
+	M = glm::mat4(1);
 
 	glm::detail::tvec3<GLfloat> a(basicWind.x, basicWind.y, basicWind.z);
-	a = glm::rotateY(a, -angle);
+	//a = glm::rotateY(a, -angle);
 	glm::vec4 wind = glm::vec4(a.x, a.y, a.z, 1);
 
 	boat ->SetWind(wind);
@@ -203,7 +211,7 @@ void Update(){
 
 	//TODO wywalic------------------------------
 
-	M = M*glm::translate(glm::mat4(1), glm::vec3(-3, 0, 0))*glm::rotate(glm::mat4(1), -90.0f, glm::vec3(0, 1, 0))*glm::rotate(glm::mat4(1), -angle, glm::vec3(0, 1, 0));
+	M = M*glm::translate(glm::mat4(1), glm::vec3(-3, 0, 0))*glm::rotate(glm::mat4(1), -90.0f, glm::vec3(0, 1, 0))*glm::rotate(glm::mat4(1), 0.0f, glm::vec3(0, 1, 0));
 
 	//TEST---------------------------------------
 	
@@ -312,6 +320,7 @@ void Draw(){
 	//RenderWater();
 
 	water ->Draw();
+	skyDome ->Draw();
 	boat ->Draw();
 	arrow ->Draw();
 	frames++;
@@ -334,6 +343,7 @@ void RenderReflection()
 	glClipPlane(GL_CLIP_PLANE0, p);
 
    	boat ->DrawReflection();
+	skyDome ->DrawReflection();
    	glDisable(GL_CLIP_PLANE0);
 
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
@@ -360,6 +370,7 @@ void RenderRefractionAndDepth(){
 	glClipPlane(GL_CLIP_PLANE0, p);
 
    	boat ->Draw();
+	skyDome ->Draw();
    	glDisable(GL_CLIP_PLANE0);
 
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
