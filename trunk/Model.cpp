@@ -55,6 +55,7 @@ void Model::SetupUniformVariables(){
 
 	//zmienne jednorodne dla calego modelu
 	glUniform3f(locLookAtPos, lookAtPos.x, lookAtPos.y, lookAtPos.z);
+	glUniform3f(locViewPos, viewPos.x, viewPos.y, viewPos.z);
 	glUniform4f(locClipPlane, clipPlane.x, clipPlane.y, clipPlane.z, clipPlane.w);
 	glUniform1i(locTextureMap0, 0);
 
@@ -217,12 +218,12 @@ void Model::SetupShaders(string vshaderFile, string fshaderFile){
 	locV = glGetUniformLocation(shaderProgram, "V");
 	locM = glGetUniformLocation(shaderProgram, "M");
 	locLighPos = glGetUniformLocation(shaderProgram, "lightPos");
+	locLookAtPos = glGetUniformLocation(shaderProgram, "lookAtPos");
+	locViewPos = glGetUniformLocation(shaderProgram, "viewPos");
 
 	locMaterial[0] = glGetUniformLocation(shaderProgram, "ambient");
 	locMaterial[1] = glGetUniformLocation(shaderProgram, "diffuse");
 	locMaterial[2] = glGetUniformLocation(shaderProgram, "specular");
-
-	locLookAtPos = glGetUniformLocation(shaderProgram, "lookAtPos");
 
 	locClipPlane = glGetUniformLocation(shaderProgram, "clipPlane");
 

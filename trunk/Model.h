@@ -15,10 +15,10 @@ protected:
 	glm::mat4 P, V, M;
 	glm::vec4 lightPos;
 
-	glm::vec3 lookAtPos;
+	glm::vec3 lookAtPos, viewPos;
 
 	GLuint locP, locV, locM, locVertex, locNormal, locLighPos, locClipPlane, locTexCoord, locTextureMap0, locEnableTexturing;
-	GLuint locLookAtPos;
+	GLuint locLookAtPos, locViewPos;
 	GLuint locMaterial[3];
 	GLuint vertexShader, fragmentShader, shaderProgram;
 	GLuint bufVertices, bufIndices, bufNormals, bufTexCoords, vao;
@@ -83,6 +83,7 @@ public:
 
 	void SetLookAt(glm::vec3 lookAtPos){ this ->lookAtPos = lookAtPos; };
 
+	void SetViewPos(glm::vec3 viewPos){ this ->viewPos = viewPos; };
 
 };
 
