@@ -22,14 +22,14 @@ Boat *boat; // to wskazuje na ³odkê
 Water *water;
 
 GLfloat cameraAngle; //k¹t obrotu kamery
-glm::vec3 observerPos(0, 5.0f, 7.0f); //Pozycja obserwatora - kamery
+glm::vec3 observerPos(0, 15.0f, 15.0f); //Pozycja obserwatora - kamery
 glm::vec3 lookAtPos(0, 1, 0); //na co patrzy kamera
 
 GLfloat adder = 1.0f;
 
 GLdouble clipPlane[4] = { 0.0, 1.0, 0.0, 0.0 };
 GLuint reflectionTex, refractionTex, depthTex;
-GLuint reflectionFBO;
+GLuint reflectionFBO, refractionAndDepthFBO;
 
 Texture *textures;
 
@@ -76,8 +76,12 @@ void Initialize(){
 
 	boat ->SetTextures(textures, texCount); //wys³anie uchwytow i nazw tekstur do modelu lodzi i zagla
 
-
 	SetupFBO(reflectionFBO, reflectionTex);
+	SetupFBO(refractionAndDepthFBO, refractionTex);
+	CreateDepthTex();
+
+	water ->SetNormalAndDUDVMapsTex(LoadTexture("Models/waterNormalMap.tga"), LoadTexture("Models/waterDUDVMap.tga"));
+
 }
 
 /*
@@ -178,6 +182,7 @@ void Update(){
 
 	water ->Update(P, V, glm::rotate(glm::mat4(1), 0.0f, glm::vec3(0, 1, 0)), lightPos);
 	water ->SetLookAt(lookAtPos);
+	water ->SetViewPos(observerPos);
 
 	//TODO wywalic------------------------------
 
@@ -260,6 +265,8 @@ void ReshapeWindow(int w, int h){
 	glDeleteFramebuffersEXT(1, &reflectionFBO);
 	glDeleteTextures(1, &reflectionTex);
 	SetupFBO(reflectionFBO, reflectionTex);
+	SetupFBO(refractionAndDepthFBO, refractionTex);
+	CreateDepthTex();
 	SetupProjection(cameraAngle, w, h);
 
 }
@@ -300,11 +307,11 @@ void DisplayFrame(){
 
 void Draw(){
 
-	//RenderReflection();
-	//RenderRefractionAndDepth();
+	RenderReflection();
+	RenderRefractionAndDepth();
 	//RenderWater();
 
-	//water ->Draw();
+	water ->Draw();
 	boat ->Draw();
 	arrow ->Draw();
 	frames++;
@@ -341,78 +348,37 @@ void RenderReflection()
 
 void RenderRefractionAndDepth(){
 
-   	glViewport(0,0, windowWidth, windowHeight);
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, refractionAndDepthFBO);
+
+	glViewport(0,0, windowWidth, windowHeight);
    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   	double plane[4] = {0.0, -1.0, 0.0, 0.0}; 
+	glm::vec4 plane(0, -1, 0, 0);
+	double p[] = {0, -1, 0, 0};
+	boat->SetClipPlane(plane);
    	glEnable(GL_CLIP_PLANE0);
-   	glClipPlane(GL_CLIP_PLANE0, plane);
+	glClipPlane(GL_CLIP_PLANE0, p);
+
    	boat ->Draw();
    	glDisable(GL_CLIP_PLANE0);
 
-   	glBindTexture(GL_TEXTURE_2D, refractionTex);
-   	glCopyTexSubImage2D(GL_TEXTURE_2D,0,0,0,0,0, windowWidth, windowHeight);
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	
+	glBindTexture(GL_TEXTURE_2D, refractionTex);
+	glGenerateMipmapEXT(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
-   	glBindTexture(GL_TEXTURE_2D, depthTex);
-   	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0,0, windowWidth, windowHeight, 0);
+	boat ->Draw();
+
+	glBindTexture(GL_TEXTURE_2D, depthTex);
+    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, windowWidth, windowHeight);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	water ->SetRefractionAndDepthTex(refractionTex, depthTex);
 
 }
-
-void RenderWater()
-{
-
-    //bind all textures
-   	glActiveTextureARB(GL_TEXTURE0_ARB);
-   	glEnable(GL_TEXTURE_2D);	
-   	glBindTexture(GL_TEXTURE_2D, reflectionTex);
-
-   //	glActiveTextureARB(GL_TEXTURE1_ARB);
-   //	glEnable(GL_TEXTURE_2D);
-   //	glBindTexture(GL_TEXTURE_2D, refractionTex);
-
-   	//glActiveTextureARB(GL_TEXTURE2_ARB);
-   	//glEnable(GL_TEXTURE_2D);	
-   	//glBindTexture(GL_TEXTURE_2D, normalmap);
-
-   	//glActiveTextureARB(GL_TEXTURE3_ARB);
-   	//glEnable(GL_TEXTURE_2D);
-   	//glBindTexture(GL_TEXTURE_2D, dudvmap);
-
-   	glActiveTextureARB(GL_TEXTURE4_ARB);
-   	glEnable(GL_TEXTURE_2D);	
-   	glBindTexture(GL_TEXTURE_2D, depthTex);
-
-    //Render the water surface 
-   	glBegin(GL_QUADS);
-    glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 0.0f, 5.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 0.0f, 1.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE2_ARB, 0.0f, 1.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE3_ARB, 0.0f, 1.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE4_ARB, 0.0f, 1.0f);
-    glVertex3f(-5.0f, 0.0f, 5.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 0.0f, 0.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 0.0f, 1.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE2_ARB, 0.0f, 1.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE3_ARB, 0.0f, 1.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE4_ARB, 0.0f, 1.0f);
-    glVertex3f(-5.0f, 0.0f, -5.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 5.0f, 0.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 0.0f, 1.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE2_ARB, 0.0f, 1.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE3_ARB, 0.0f, 1.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE4_ARB, 0.0f, 1.0f);
-    glVertex3f(5.0f, 0.0f, -5.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 5.0f, 5.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 0.0f, 1.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE2_ARB, 0.0f, 1.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE3_ARB, 0.0f, 1.0f);
-    glMultiTexCoord2fARB(GL_TEXTURE4_ARB, 0.0f, 1.0f);
-    glVertex3f(5.0f, 0.0f, 5.0f);
-    glEnd();
-
-    //Disable texture units and shader programs
-}
-
 #pragma endregion
 
 #pragma region Additional Functions
@@ -463,7 +429,7 @@ void SetUpTextures(char **fileNames, int texCount){
 
 void SetupFBO(GLuint &fbo, GLuint &tex){
 
-	glActiveTexture(GL_TEXTURE0);
+	if(tex) glDeleteTextures(1, &tex);
 	glGenTextures(1, &tex);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -480,7 +446,7 @@ void SetupFBO(GLuint &fbo, GLuint &tex){
 	glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, windowWidth, windowHeight);
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
 
-	// create a framebuffer object
+	if(fbo) glDeleteFramebuffers(1, &fbo);
 	glGenFramebuffersEXT(1, &fbo);
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
 
@@ -492,6 +458,26 @@ void SetupFBO(GLuint &fbo, GLuint &tex){
 
 	// switch back to window-system-provided framebuffer
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+}
+
+void CreateDepthTex(){
+
+	if(depthTex) glDeleteTextures(1, &depthTex);
+	glGenTextures(1, &depthTex);
+    glBindTexture(GL_TEXTURE_2D, depthTex);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap generation included in OpenGL v1.4
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, windowWidth, windowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
 }
 

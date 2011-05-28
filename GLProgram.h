@@ -25,11 +25,11 @@ void Update();
 
 void RenderReflection();
 void RenderRefractionAndDepth();
-void RenderWater();
 
 GLuint LoadTexture(char* fileName);
 void SetUpTextures(char **fileNames, int texCount);
 
 void SetupFBO(GLuint &fbo, GLuint &tex);
+void CreateDepthTex();
 
 string ReadFile(string fileName);

@@ -5,33 +5,54 @@ uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
 uniform vec4 lightPos;
+uniform vec3 viewPos;
+uniform float time, time2;
 uniform vec3 lookAtPos;
 
-uniform vec4 ambient;
-uniform vec4 diffuse;
-uniform vec4 specular;
-
-uniform vec4 clipPlane;
-
 in vec4 vertex;
-in vec4 normal;
 in vec2 texCoord;
 
-out vec4 inormal;
-out vec4 ilight;
-out vec4 iv;
-out vec2 iTexCoord;
+out vec4 waterTex0;
+out vec4 waterTex1;
+out vec4 waterTex2;
+out vec4 waterTex3;
+out vec4 waterTex4;
 
 void main(void){
 
-	vec4 n = normalize(V*M*normal);
-	vec4 l = normalize(V*M*vertex - lightPos);
+	vec4 mpos, temp;
+    vec4 tangent = vec4(1.0, 0.0, 0.0, 0.0);
+    vec4 norm = vec4(0.0, 1.0, 0.0, 0.0);
+    vec4 binormal = vec4(0.0, 0.0, 1.0, 0.0);
+
+	mat4 mvp = P*V*M;
+
+	temp = vec4(viewPos, 0) - vertex;
+	waterTex4 = vec4(
+		dot(temp, tangent),
+		dot(temp, binormal),
+		dot(temp, norm),
+		0	
+	);
+
+	temp = lightPos - vertex;
+	waterTex0 = vec4(
+		dot(temp, tangent),
+		dot(temp, binormal),
+		dot(temp, norm),
+		0
+	);
+
+	mpos = mvp * vertex;
+
+	vec4 t1 = vec4(0, -time, 0, 0);
+	vec4 t2 = vec4(0, -time2, 0, 0);
+
+	waterTex1 = vec4(texCoord, 0, 0) + t1; 
+	waterTex2 = vec4(texCoord, 0, 0) + t2;
+
+	waterTex3 = mpos;
 	
 	gl_Position = P*V*M*vertex;
-	
-	inormal = n;
-	ilight = l;
-	iv = normalize(V*M*vertex - vec4(lookAtPos, 1));
-	iTexCoord = texCoord;
 
 }
