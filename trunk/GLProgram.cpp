@@ -85,7 +85,7 @@ void Initialize(){
 	SetupFBO(refractionAndDepthFBO, refractionTex);
 	CreateDepthTex();
 
-	water ->SetNormalAndDUDVMapsTex(LoadTexture("Models/waterNormalMap.tga"), LoadTexture("Models/waterDUDVMap.tga"));
+	water ->SetNormalAndDUDVMapsTex(LoadTexture("Models/Water2/waterNormalMap.tga"), LoadTexture("Models/Water2/waterDUDVMap.tga"));
 
 }
 
