@@ -1,6 +1,5 @@
 #include "Boat.h"
 
-
 Boat::Boat(Model *boat, Cloth *sail): boat(boat), sail(sail){
 
 	//

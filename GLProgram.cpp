@@ -67,7 +67,6 @@ void Initialize(){
 		new Cloth("Models/sail.obj", P, V, M, "Shaders/vshader.txt", "Shaders/fshader.txt")
 		);
 	boat->SetWind(glm::vec4(0, 0, 10, 0));
-	Physics::instance()->initialize(boat);
 
 	int texCount = 4;
 	char *fileNames[] = { 
@@ -215,7 +214,11 @@ void Update(){
 
 	//TEST---------------------------------------
 	
-	arrow -> Update(P, V, M, lightPos);
+	//angle += 0.5f;
+	Physics::instance()->update();
+	boat->SetWind(Physics::instance()->getWind());
+
+	arrow -> Update(P, V,  M * Physics::instance()->getWindScaleMatrix() * Physics::instance()->getWindMatrix(), lightPos);
 	arrow ->SetLookAt(lookAtPos);
 	angle += 0.5f;
 }
