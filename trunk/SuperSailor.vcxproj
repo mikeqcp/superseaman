@@ -100,7 +100,6 @@
     <None Include="Shaders\vshader.txt" />
     <None Include="Shaders\waterfShader.txt" />
     <None Include="Shaders\watervShader.txt" />
-    <None Include="ClassDiagram1.cd" />
     <None Include="fshader.txt" />
     <None Include="vshader.txt" />
   </ItemGroup>
