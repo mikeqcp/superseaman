@@ -11,7 +11,7 @@ Physics::Physics(void)
 	srand(time(NULL));
 
 	sailAngle = 0;
-	wind = glm::vec4(0, 0, -1, 1);
+	wind = glm::vec4(0, 0, 10, 1);
 	speed = glm::vec4(1,0,0,1);
 	windStr = 1.0f;
 	windM = glm::mat4(1);
@@ -63,7 +63,7 @@ void Physics::updateWind()	//odpowiedzialne za wianie wiatru (kierunek i si³a)
 
 		temp = glm::length(wind);
 
-		if(temp <1 || temp>5)
+		if(temp <5 || temp>15)
 			throw "power extending bounds";
 		else 
 		{
@@ -73,7 +73,7 @@ void Physics::updateWind()	//odpowiedzialne za wianie wiatru (kierunek i si³a)
 	catch (...){}
 	
 	//cout << wind.x << '\t' << wind.y << '\t' << wind.z << '\t' << wind.w << "\n";
-	//cout << windStr << "\n";
+	cout << windStr << "\n";
 
 	wind = transform * wind;
 	//windM = glm::scale(glm::mat4(1), glm::vec3(windStr, 1, 1)) * transform * windM;

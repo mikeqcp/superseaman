@@ -11,7 +11,7 @@ public:
 	static Physics *instance();	//zwraca wskaünik (jeúli trzeba tworzy obiekt klasy)
 	
 	glm::vec4 getWind() { return wind; };
-	glm::mat4 getWindScaleMatrix() { return glm::scale(glm::mat4(1), glm::vec3(windStr, windStr, windStr)); };
+	glm::mat4 getWindScaleMatrix() { return glm::scale(glm::mat4(1), glm::vec3(windStr/5, windStr/5, windStr/5)); };
 	glm::mat4 getWindMatrix() { return windM; };
 
 	void setTargets(PhysicalObject *objArray, int size);
