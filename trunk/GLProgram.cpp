@@ -182,7 +182,7 @@ void InitGLEW(){
 #include "glm\gtx\rotate_vector.hpp" //TODO do wywalenia póŸniej
 void Update(){
 	
-	glm::vec3 basicWind(0, 0, 10);
+	//glm::vec3 basicWind(0, 0, 10);
 
 	skyDome ->Update(P, V, glm::mat4(1), lightPos);
 
@@ -195,11 +195,14 @@ void Update(){
 	//M = glm::rotate(glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)), angle, glm::vec3(0,1,0));
 	M = glm::mat4(1);
 
-	glm::detail::tvec3<GLfloat> a(basicWind.x, basicWind.y, basicWind.z);
+	//glm::detail::tvec3<GLfloat> a(basicWind.x, basicWind.y, basicWind.z);
 	//a = glm::rotateY(a, -angle);
-	glm::vec4 wind = glm::vec4(a.x, a.y, a.z, 1);
+	//glm::vec4 wind = glm::vec4(a.x, a.y, a.z, 1);
 
-	boat ->SetWind(wind);
+	//boat ->SetWind(wind);
+
+	Physics::instance()->update();
+	boat->SetWind(Physics::instance()->getWind());
 
 	boat->RotateSail(sailAngle);
 
@@ -215,10 +218,9 @@ void Update(){
 	//TEST---------------------------------------
 	
 	//angle += 0.5f;
-	Physics::instance()->update();
-	boat->SetWind(Physics::instance()->getWind());
+	
 
-	arrow -> Update(P, V,  M * Physics::instance()->getWindScaleMatrix() * Physics::instance()->getWindMatrix(), lightPos);
+	arrow -> Update(P, V,   M * Physics::instance()->getWindScaleMatrix() * Physics::instance()->getWindMatrix(), lightPos);
 	arrow ->SetLookAt(lookAtPos);
 	angle += 0.5f;
 }
