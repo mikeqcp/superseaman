@@ -51,14 +51,14 @@ void Physics::updateWind()	//odpowiedzialne za wianie wiatru (kierunek i si³a)
 
 	temp = RAND;
 
-	if(temp<0.05 && temp>=0) mult = 10;	//nag³e zmiany
+	if(temp<0.02 && temp>=0) mult = 50;	//nag³e zmiany
 
 	temp = RAND;
 	glm::mat4 transform = glm::rotate(glm::mat4(1), temp*mult, glm::vec3(0,1,0));	//obrót wiatru
 
 	try	//zmiana si³y (sprawdzenie czy nie przekracza dopuszczalnych norm
 	{
-		temp =(1 + (RAND/(100*mult)));
+		temp =(1 + (RAND/(100)*mult));
 		wind = glm::scale(glm::mat4(1), glm::vec3(temp, temp, temp))*wind;
 
 		temp = glm::length(wind);
