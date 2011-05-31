@@ -220,7 +220,7 @@ void Update(){
 	//angle += 0.5f;
 	
 
-	arrow -> Update(P, V,   M * Physics::instance()->getWindScaleMatrix() * Physics::instance()->getWindMatrix(), lightPos);
+	arrow -> Update(P, V,   glm::translate(glm::mat4(1), glm::vec3(-1, 1, 0)) * M * Physics::instance()->getWindScaleMatrix() * Physics::instance()->getWindMatrix(), lightPos);
 	arrow ->SetLookAt(lookAtPos);
 	angle += 0.5f;
 }

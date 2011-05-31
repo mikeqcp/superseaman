@@ -75,6 +75,6 @@ void main(void) {
 
 	 tmp = refr + refl;
 
-	pixelColor = tmp + specular;
+	pixelColor = 0.85*tmp + specular;
 
 }
