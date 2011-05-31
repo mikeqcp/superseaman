@@ -17,17 +17,20 @@ protected:
 
 	glm::vec3 lookAtPos, viewPos;
 
-	GLuint locP, locV, locM, locVertex, locNormal, locLighPos, locClipPlane, locTexCoord, locTextureMap0, locEnableTexturing;
+	GLuint locP, locV, locM, locVertex, locNormal, locLighPos, locClipPlane, locTexCoord , locEnableTexturing[4], locTBN[3];
 	GLuint locLookAtPos, locViewPos;
-	GLuint locMaterial[3];
+	GLuint locMaterial[7];
 	GLuint vertexShader, fragmentShader, shaderProgram;
 	GLuint bufVertices, bufIndices, bufNormals, bufTexCoords, vao;
+	GLuint bufTBNCol1, bufTBNCol2, bufTBNCol3;
 	GLuint verticesBufferType;
 	GLuint verticesCount, normalsCount, indicesCount;
 
 	glm::vec4 clipPlane;
 
 	GLfloat *vertices, *normals, *texturesCoords;
+	GLfloat *matTBNcol1, *matTBNcol2, *matTBNcol3;
+	glm::vec3 *tangent, *bitangent, *norm;
 
 	glm::vec4 *originalVertices;
 	unsigned originalVerticesCount;

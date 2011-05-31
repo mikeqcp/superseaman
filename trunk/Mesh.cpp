@@ -11,11 +11,17 @@ Mesh::Mesh(vector<MeshSegment> ms, string name) : name(name){
 	for(int i = 0; i < segmentsCount; i++){
 	
 		segments[i] = ms[i];
-		segments[i].texture = 0;
+		segments[i].textureA = 0;
+		segments[i].textureD = 0;
+		segments[i].textureS = 0;
+		segments[i].textureN = 0;
 
 	}
 
-	enableTexturing = 0;
+	for(int i = 0; i < 4; i++)
+		enableTexturing[i] = 0;
+
+	locEnableTexturing = new GLuint[4];
 
 }
 
@@ -29,14 +35,42 @@ void Mesh::Draw(){
 
 	for(int i = 0; i < segmentsCount; i++){
 
-		if(materials[segments[i].materialIndex].getMap_Kd() != ""){
+		if(materials[segments[i].materialIndex].getMap_Ka() != ""){
 
-			enableTexturing = 1;
+			enableTexturing[0] = 1;
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, segments[i].texture);
+			glBindTexture(GL_TEXTURE_2D, segments[i].textureA);
 			
 
-		} else enableTexturing = 0;
+		} else enableTexturing[0] = 0;
+
+		if(materials[segments[i].materialIndex].getMap_Kd() != ""){
+
+			enableTexturing[1] = 1;
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, segments[i].textureD);
+			
+
+		} else enableTexturing[1] = 0;
+
+		if(materials[segments[i].materialIndex].getMap_Ks() != ""){
+
+			enableTexturing[2] = 1;
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, segments[i].textureS);
+			
+
+		} else enableTexturing[2] = 0;
+
+		if(materials[segments[i].materialIndex].getMap_Kn() != ""){
+
+			enableTexturing[3] = 1;
+			glActiveTexture(GL_TEXTURE3);
+			glBindTexture(GL_TEXTURE_2D, segments[i].textureN);
+			
+
+		} else enableTexturing[3] = 0;
+
 
 		SetupUniformVariables(segments[i].materialIndex);
 
@@ -76,7 +110,10 @@ void Mesh::SetupUniformVariables(int index){
 	glm::vec4 specular = materials[index].getKs();
 	glUniform4f(locations[2], specular.r, specular.g, specular.b, specular.a);
 
-	glUniform1i(locEnableTexturing, enableTexturing);
+	if(locEnableTexturing[0] >= 0) glUniform1i(locEnableTexturing[0], enableTexturing[0]);
+	if(locEnableTexturing[1] >= 0) glUniform1i(locEnableTexturing[1], enableTexturing[1]);
+	if(locEnableTexturing[2] >= 0) glUniform1i(locEnableTexturing[2], enableTexturing[2]);
+	if(locEnableTexturing[3] >= 0) glUniform1i(locEnableTexturing[3], enableTexturing[3]);
 
 }
 
@@ -117,7 +154,7 @@ MeshSegment Mesh::GetSegment(string name){
 
 }
 
-void Mesh::SetTextures(Texture *textures, unsigned textureCount, GLuint locEnableTexturing){ 
+void Mesh::SetTextures(Texture *textures, unsigned textureCount, GLuint *locEnableTexturing){ 
 
 	this ->textures = textures;
 	this ->textureCount = textureCount;
@@ -129,7 +166,19 @@ void Mesh::SetTextures(Texture *textures, unsigned textureCount, GLuint locEnabl
 		
 			if(materials[segments[i].materialIndex].getMap_Kd() == textures[j].name){
 			
-				segments[i].texture = textures[j].tex;
+				segments[i].textureD = textures[j].tex;
+
+			} else if(materials[segments[i].materialIndex].getMap_Ks() == textures[j].name){
+			
+				segments[i].textureS = textures[j].tex;
+
+			} else if(materials[segments[i].materialIndex].getMap_Ka() == textures[j].name){
+			
+				segments[i].textureA = textures[j].tex;
+
+			} else if(materials[segments[i].materialIndex].getMap_Kn() == textures[j].name){
+			
+				segments[i].textureN = textures[j].tex;
 
 			}
 

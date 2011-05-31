@@ -7,7 +7,7 @@ private:
 
 	GLuint reflectionTex, refractionTex, depthTex, normalMapTex, dudvMapTex;
 	GLuint locTime, locTime2;
-	GLuint locTextureMap1, locTextureMap2, locTextureMap3, locTextureMap4;
+	GLuint locTextureMap0, locTextureMap1, locTextureMap2, locTextureMap3, locTextureMap4;
 	GLfloat time, time2;	
 
 	void SetupUniformVariables();

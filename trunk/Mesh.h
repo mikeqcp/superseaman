@@ -13,7 +13,7 @@ private:
 	glm::mat4 P, V, M;
 	glm::vec4 lightPos;
 
-	GLuint locP, locV, locM, locLighPos, locEnableTexturing;
+	GLuint locP, locV, locM, locLighPos, *locEnableTexturing;
 
 	string name;
 	int segmentsCount;
@@ -22,7 +22,7 @@ private:
 
 	Texture *textures;
 	unsigned textureCount;
-	int enableTexturing;
+	int enableTexturing[4];
 
 	void SetupUniformVariables(int index);
 
@@ -58,6 +58,6 @@ public:
 
 	glm::mat4 GetModelMatrix(){ return M; };
 
-	void SetTextures(Texture *textures, unsigned textureCount, GLuint locEnableTexturing);
+	void SetTextures(Texture *textures, unsigned textureCount, GLuint locEnableTexturing[4]);
 
 };

@@ -6,8 +6,6 @@ uniform sampler2D textureMap2;
 uniform sampler2D textureMap3;
 uniform sampler2D textureMap4;
 
-uniform int enableTexturing;
-
 in vec4 waterTex0;
 in vec4 waterTex1;
 in vec4 waterTex2;
