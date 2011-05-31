@@ -4,11 +4,7 @@ uniform vec4 ambient;
 uniform vec4 diffuse;
 uniform vec4 specular;
 
-uniform sampler2D textureMap0;
-uniform int enableTexturing;
-
 in vec4 inormal;
-in vec2 iTexCoord;
 in vec4 ilight;
 in vec4 iv;
 
@@ -24,12 +20,6 @@ void main(void) {
 	float nl = max(dot(n, l), 0);
 	float rv = pow(max(dot(r, v), 0), 12);
 
-	if(enableTexturing == 1){
-
-		vec4 texColor = texture(textureMap0, iTexCoord);
-		pixelColor = texColor*diffuse*nl + ambient + specular*rv;
-
-	} else if(enableTexturing == 0)
-		pixelColor = ambient + diffuse*nl  + specular*rv;
+	pixelColor = ambient + diffuse*nl  + specular*rv;
 
 }

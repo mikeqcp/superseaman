@@ -8,7 +8,7 @@ private:
 	GLfloat Ns, Ni, d;
 	glm::vec4 Ka, Kd, Ks;
 	int illum;
-	string map_Kd;
+	string map_Kd, map_Ka, map_Ks, map_Kn;
 
 public:
 
@@ -34,6 +34,12 @@ public:
 
 	void setMap_Kd(string map_Kd){ this -> map_Kd = map_Kd; }
 
+	void setMap_Ka(string map_Ka){ this -> map_Ka = map_Ka; }
+
+	void setMap_Ks(string map_Ks){ this -> map_Ks = map_Ks; }
+
+	void setMap_Kn(string map_Kn){ this -> map_Kn = map_Kn; }
+
 	string getName(){ return name; }
 
 	GLfloat getNs(){ return Ns; }
@@ -51,5 +57,11 @@ public:
 	int getIllum(){ return illum; }
 
 	string getMap_Kd(){ return map_Kd; }
+
+	string getMap_Ka(){ return map_Ka; }
+
+	string getMap_Ks(){ return map_Ks; }
+
+	string getMap_Kn(){ return map_Kn; }
 };
 

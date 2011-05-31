@@ -9,9 +9,15 @@ uniform vec3 lookAtPos;
 
 uniform vec4 clipPlane;
 
+uniform int enableTexturingN;
+
 in vec4 vertex;
 in vec4 normal;
 in vec2 texCoord;
+
+in vec3 tbnCol1;
+in vec3 tbnCol2;
+in vec3 tbnCol3;
 
 out vec4 inormal;
 out vec4 ilight;
@@ -21,17 +27,28 @@ out vec2 iTexCoord;
 void main(void){
 
 	vec4 n = normalize(V*M*normal);
-	vec4 l = normalize(V*M*vertex - lightPos);
-	
-	gl_Position = P*V*M*vertex;
+
 	//gl_ClipDistance[0] = dot(clipPlane, vertex);
 
 	if(vertex.y < clipPlane.y) gl_ClipVertex = vertex;
 	else gl_ClipVertex = vec4(0,0,0,0);
 
-	inormal = n;
-	ilight = l;
-	iv = normalize(V*M*vertex - vec4(lookAtPos, 1));
 	iTexCoord = texCoord;
+
+	if(enableTexturingN == 1){
+	
+		mat4 invTBN = mat4(vec4(tbnCol1, 0), vec4(tbnCol2, 0), vec4(tbnCol3, 0), vec4(0,0,0,1));
+		ilight = invTBN*normalize(vertex - lightPos);
+		iv = invTBN*normalize(vertex - vec4(lookAtPos, 1));
+
+	} else {
+
+		ilight = normalize(V*M*vertex - lightPos);
+		iv = normalize(V*M*vertex - vec4(lookAtPos, 1));
+		inormal = n;
+
+	}
+
+	gl_Position = P*V*M*vertex;
 
 }

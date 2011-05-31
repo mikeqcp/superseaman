@@ -57,8 +57,10 @@ void Model::SetupUniformVariables(){
 	glUniform3f(locLookAtPos, lookAtPos.x, lookAtPos.y, lookAtPos.z);
 	glUniform3f(locViewPos, viewPos.x, viewPos.y, viewPos.z);
 	glUniform4f(locClipPlane, clipPlane.x, clipPlane.y, clipPlane.z, clipPlane.w);
-	glUniform1i(locTextureMap0, 0);
-
+	glUniform1i(locMaterial[3], 0);
+	glUniform1i(locMaterial[4], 1);
+	glUniform1i(locMaterial[5], 2);
+	glUniform1i(locMaterial[6], 3);
 
 }
 
@@ -151,6 +153,31 @@ void Model::SetupBuffers(){
 		GL_STATIC_DRAW);
 
 	/*
+	* Model's TBN buffers
+	*/
+
+	glGenBuffers(1, &bufTBNCol1);
+	glBindBuffer(GL_ARRAY_BUFFER, bufTBNCol1);
+	glBufferData(GL_ARRAY_BUFFER,
+		verticesCount*sizeof(GLfloat)*3,
+		matTBNcol1,
+		GL_STATIC_DRAW);
+
+	glGenBuffers(1, &bufTBNCol2);
+	glBindBuffer(GL_ARRAY_BUFFER, bufTBNCol2);
+	glBufferData(GL_ARRAY_BUFFER,
+		verticesCount*sizeof(GLfloat)*3,
+		matTBNcol2,
+		GL_STATIC_DRAW);
+
+	glGenBuffers(1, &bufTBNCol3);
+	glBindBuffer(GL_ARRAY_BUFFER, bufTBNCol3);
+	glBufferData(GL_ARRAY_BUFFER,
+		verticesCount*sizeof(GLfloat)*3,
+		matTBNcol3,
+		GL_STATIC_DRAW);
+		
+	/*
 	*	Model's vao setup
 	*/
 
@@ -168,6 +195,18 @@ void Model::SetupBuffers(){
 	glBindBuffer(GL_ARRAY_BUFFER, bufTexCoords);
 	glEnableVertexAttribArray(locTexCoord);
 	glVertexAttribPointer(locTexCoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, bufTBNCol1);
+	glEnableVertexAttribArray(locTBN[0]);
+	glVertexAttribPointer(locTBN[0], 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, bufTBNCol2);
+	glEnableVertexAttribArray(locTBN[1]);
+	glVertexAttribPointer(locTBN[1], 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, bufTBNCol3);
+	glEnableVertexAttribArray(locTBN[2]);
+	glVertexAttribPointer(locTBN[2], 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	for(unsigned i = 0; i < meshCount; i++){
 
@@ -224,15 +263,27 @@ void Model::SetupShaders(string vshaderFile, string fshaderFile){
 	locMaterial[0] = glGetUniformLocation(shaderProgram, "ambient");
 	locMaterial[1] = glGetUniformLocation(shaderProgram, "diffuse");
 	locMaterial[2] = glGetUniformLocation(shaderProgram, "specular");
+	locMaterial[3] = glGetUniformLocation(shaderProgram, "map_Ka");
+	locMaterial[4] = glGetUniformLocation(shaderProgram, "map_Kd");
+	locMaterial[5] = glGetUniformLocation(shaderProgram, "map_Ks");
+	locMaterial[6] = glGetUniformLocation(shaderProgram, "map_N");
 
 	locClipPlane = glGetUniformLocation(shaderProgram, "clipPlane");
 
-	locTextureMap0 = glGetUniformLocation(shaderProgram, "textureMap0");
-	locEnableTexturing = glGetUniformLocation(shaderProgram, "enableTexturing");
+	locEnableTexturing[0] = glGetUniformLocation(shaderProgram, "enableTexturingA");
+	locEnableTexturing[1] = glGetUniformLocation(shaderProgram, "enableTexturingD");
+	locEnableTexturing[2] = glGetUniformLocation(shaderProgram, "enableTexturingS");
+	locEnableTexturing[3] = glGetUniformLocation(shaderProgram, "enableTexturingN");
+
 	locTexCoord = glGetAttribLocation(shaderProgram, "texCoord");
 
 	locVertex = glGetAttribLocation(shaderProgram, "vertex");
 	locNormal = glGetAttribLocation(shaderProgram, "normal");
+
+	locTBN[0] = glGetAttribLocation(shaderProgram, "tbnCol1");
+	locTBN[1] = glGetAttribLocation(shaderProgram, "tbnCol2");
+	locTBN[2] = glGetAttribLocation(shaderProgram, "tbnCol3");
+
 
 }
 
@@ -525,6 +576,18 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 
 					materials[currentMaterial].setMap_Kd(split[1].substr(0, split[1].find_last_of('.')));
 
+				} else if (split[0].compare("map_Ks") == 0){
+
+					materials[currentMaterial].setMap_Ks(split[1].substr(0, split[1].find_last_of('.')));
+
+				} else if (split[0].compare("map_Ka") == 0){
+
+					materials[currentMaterial].setMap_Ka(split[1].substr(0, split[1].find_last_of('.')));
+
+				} else if (split[0].compare("map_Kn") == 0){
+
+					materials[currentMaterial].setMap_Kn(split[1].substr(0, split[1].find_last_of('.')));
+
 				}
 			}
 		}
@@ -536,6 +599,7 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 	materials[materialCount - 1].setKd(glm::vec4(1));
 	materials[materialCount - 1].setKs(glm::vec4(0));
 
+	
 	//unsigned nov = vvertices.size();
 	//unsigned non = vnormalsIndices.size();
 	unsigned texCoordCount = vtextureCoords.size();
@@ -548,11 +612,25 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 	meshCount = vmeshes.size();
 
 	originalVertices = new glm::vec4[originalVerticesCount];
+	glm::vec2 *originalTexCoord = new glm::vec2[texCoordCount];
 	vertices = new GLfloat[iCount*4];
 	normals = new GLfloat[iCount*4];
 	texturesCoords = new GLfloat[iCount*2];
 	indices = new GLuint[iCount];
+	GLuint *texIndices = new GLuint[iCount];
 	meshes = new Mesh[meshCount];
+	matTBNcol1 = new GLfloat[iCount*3];
+	matTBNcol2 = new GLfloat[iCount*3];
+	matTBNcol3 = new GLfloat[iCount*3];
+	tangent = new glm::vec3[originalVerticesCount];
+	bitangent = new glm::vec3[originalVerticesCount];
+	norm = new glm::vec3[originalVerticesCount];
+
+	for(unsigned i = 0; i < originalVerticesCount; i++)
+		originalVertices[i] = vvertices[i];
+
+	for(unsigned i = 0; i < texCoordCount; i++)
+		originalTexCoord[i] = vtextureCoords[i];
 
 	glm::vec4 v, n;
 	glm::vec2 t;
@@ -579,6 +657,7 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 
 		}
 
+		texIndices[i] = vtextureCoordsIndices[0]-1;
 		indices[i] = vindices[0]-1;
 		
 		vnormalsIndices.erase(vnormalsIndices.begin());
@@ -586,12 +665,126 @@ void Model::Load(string fileName, Texture *textures, int textureCount){
 		vtextureCoordsIndices.erase(vtextureCoordsIndices.begin());
 	}
 
-	for(unsigned i = 0; i < originalVerticesCount; i++){
+	//liczenie tangent i bitangent
+
 	
-		originalVertices[i] = vvertices[0];
-		vvertices.erase(vvertices.begin());
+
+	for(int i = 0; i < originalVerticesCount; i++){
+
+		tangent[i] = glm::vec3(0);
+		bitangent[i] = glm::vec3(0);
 
 	}
+
+	if(texCoordCount > 0){
+		int ip1, ip2, ip3, it1, it2, it3;
+		glm::vec3 p1, p2, p3, v1, v2, T, B, N;
+		glm::vec2 t1, t2, t3, c1, c2;
+		GLfloat W;
+		for(int i = 0; i < indicesCount; i+=3){
+	
+			if(texIndices[i] >= 0){
+
+				ip1 = indices[i];
+				ip2 = indices[i+1];
+				ip3 = indices[i+2];
+
+				it1 = texIndices[i];
+				it2 = texIndices[i+1];
+				it3 = texIndices[i+2];
+
+				p1 = glm::vec3(originalVertices[ip1]);
+				p2 = glm::vec3(originalVertices[ip2]);
+				p3 = glm::vec3(originalVertices[ip3]);
+
+				t1 = originalTexCoord[it1];
+				t2 = originalTexCoord[it2];
+				t3 = originalTexCoord[it3];
+
+				v1 = p2 - p1;
+				v2 = p3 - p1;
+
+				c1 = t2 - t1;
+				c2 = t3 - t1;
+
+				W = c1.x * c2.y - c2.x * c1.y;
+
+				T = (v1*c2.y - v2*c1.y)/W;
+				B = (v2*c1.x - v1*c2.x)/W;
+
+				tangent[ip1] += T;
+				tangent[ip2] += T;
+				tangent[ip3] += T;
+
+				bitangent[ip1] += B;
+				bitangent[ip2] += B;
+				bitangent[ip3] += B;
+
+			}
+
+		}
+		glm::vec3 t, b, n;
+		glm::mat3 invTBN;
+		for(int i = 0; i < originalVerticesCount; i++){
+
+			tangent[i] = glm::normalize(tangent[i]);
+			bitangent[i] = glm::normalize(bitangent[i]);
+
+			norm[i] = glm::normalize(glm::cross(glm::vec3(tangent[i]), glm::vec3(bitangent[i])));
+
+			invTBN = glm::inverse(glm::mat3(tangent[i], bitangent[i], norm[i]));
+
+			tangent[i] = glm::vec3(invTBN[0][0], invTBN[1][0], invTBN[2][0]);
+			bitangent[i] = glm::vec3(invTBN[0][1], invTBN[1][1], invTBN[2][1]);
+			norm[i] = glm::vec3(invTBN[0][2], invTBN[1][2], invTBN[2][2]);
+		}
+
+		int index;
+		for(int i = 0; i < iCount; i++){
+
+			index = indices[i];
+		
+			t = tangent[index];
+			b = bitangent[index];
+			n = norm[index];
+			
+			matTBNcol1[i*3] = t.x;
+			matTBNcol1[i*3+1] = t.y;
+			matTBNcol1[i*3+2] = t.z;
+
+			matTBNcol2[i*3] = b.x;
+			matTBNcol2[i*3+1] = b.y;
+			matTBNcol2[i*3+2] = b.z;
+
+			matTBNcol3[i*3] = n.x;
+			matTBNcol3[i*3+1] = n.y;
+			matTBNcol3[i*3+2] = n.z;
+
+		}
+
+	} else {
+
+		int index;
+		for(int i = 0; i < iCount; i++){
+
+			matTBNcol1[i*3] = 0;
+			matTBNcol1[i*3+1] = 0;
+			matTBNcol1[i*3+2] = 0;
+
+			matTBNcol2[i*3] = 0;
+			matTBNcol2[i*3+1] = 0;
+			matTBNcol2[i*3+2] = 0;
+
+			matTBNcol3[i*3] = 0;
+			matTBNcol3[i*3+1] = 0;
+			matTBNcol3[i*3+2] = 0;
+
+		}
+
+	}
+	
+
+	//----------------------------
 
 	for(unsigned i = 0; i < meshCount; i++){
 	

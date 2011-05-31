@@ -21,6 +21,10 @@ Material::Material(void)
 	
 	illum = 0;
 	map_Kd = "";
+	map_Ka = "";
+	map_Ks = "";
+	map_Kn = "";
+
 }
 
 

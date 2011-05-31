@@ -21,9 +21,11 @@ Model *arrow; //strza³ka, która wskazuje, w któr¹ stronê wieje wiatr
 Boat *boat; // to wskazuje na ³odkê
 Water *water;
 Model *skyDome;
+Model *terrain;
+
 
 GLfloat cameraAngle; //k¹t obrotu kamery
-glm::vec3 observerPos(-15.0f, 5.0f, 0.0f); //Pozycja obserwatora - kamery
+glm::vec3 observerPos(-15.0f, 10.0f, 0.0f); //Pozycja obserwatora - kamery
 glm::vec3 lookAtPos(0, 1, 0); //na co patrzy kamera
 
 GLfloat adder = 1.0f;
@@ -61,6 +63,7 @@ void Initialize(){
 	arrow = new Model("Models/arrow.obj", P, V, M, "Shaders/arrowvshader.txt", "Shaders/arrowfshader.txt");
 	water = new Water("Models/waterPlane.obj", P, V, M, "Shaders/watervshader.txt", "Shaders/waterfshader.txt");
 	skyDome = new Model("Models/skyDome.obj", P, V, M, "Shaders/skyvshader.txt", "Shaders/skyfshader.txt");
+	terrain = new Model("Models/terrain.obj", P, V, M, "Shaders/vshader.txt", "Shaders/fshader.txt");
 
 	boat = new Boat( 
 		new Model("Models/boat.obj", P, V, M, "Shaders/vshader.txt", "Shaders/fshader.txt"),
@@ -68,17 +71,20 @@ void Initialize(){
 		);
 	boat->SetWind(glm::vec4(0, 0, 10, 0));
 
-	int texCount = 4;
+	int texCount = 6;
 	char *fileNames[] = { 
 		"Models/wood.tga", 
 		"Models/woodplanks.tga",
 		"Models/fabric.tga",
-		"Models/SkyDome-Cloud-Medium-MidMorning.tga"
+		"Models/SkyDome-Cloud-Medium-MidMorning.tga",
+		"Models/normal.tga",
+		"Models/ao.tga"
 	};										//nazwy plików tekstur w postaci tablicy lancuchów
 	SetUpTextures(fileNames, texCount);		//zaladowanie tekstur z plików
 
 	boat ->SetTextures(textures, texCount); //wys³anie uchwytow i nazw tekstur do modelu lodzi i zagla
 	skyDome ->SetTextures(textures, texCount);
+	terrain ->SetTextures(textures, texCount);
 
 	SetupFBO(reflectionFBO, reflectionTex);
 	SetupFBO(refractionAndDepthFBO, refractionTex);
@@ -183,6 +189,8 @@ void InitGLEW(){
 void Update(){
 	
 	//glm::vec3 basicWind(0, 0, 10);
+
+	terrain ->Update(P, V, glm::rotate(glm::translate(glm::mat4(1), glm::vec3(9, 0.25f, 0)), -90.0f, glm::vec3(0, 1, 0)), lightPos);
 
 	skyDome ->Update(P, V, glm::mat4(1), lightPos);
 
@@ -322,8 +330,8 @@ void Draw(){
 
 	RenderReflection();
 	RenderRefractionAndDepth();
-	//RenderWater();
 
+	terrain ->Draw();
 	water ->Draw();
 	skyDome ->Draw();
 	boat ->Draw();
@@ -349,6 +357,7 @@ void RenderReflection()
 
    	boat ->DrawReflection();
 	skyDome ->DrawReflection();
+	terrain ->DrawReflection();
    	glDisable(GL_CLIP_PLANE0);
 
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
@@ -371,11 +380,13 @@ void RenderRefractionAndDepth(){
 	glm::vec4 plane(0, -1, 0, 0);
 	double p[] = {0, -1, 0, 0};
 	boat->SetClipPlane(plane);
+	terrain ->SetClipPlane(plane);
    	glEnable(GL_CLIP_PLANE0);
 	glClipPlane(GL_CLIP_PLANE0, p);
 
    	boat ->Draw();
 	skyDome ->Draw();
+	terrain ->Draw();
    	glDisable(GL_CLIP_PLANE0);
 
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
@@ -385,6 +396,7 @@ void RenderRefractionAndDepth(){
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	boat ->Draw();
+	terrain ->Draw();
 
 	glBindTexture(GL_TEXTURE_2D, depthTex);
     glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, windowWidth, windowHeight);
@@ -484,15 +496,10 @@ void CreateDepthTex(){
     glBindTexture(GL_TEXTURE_2D, depthTex);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap generation included in OpenGL v1.4
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, windowWidth, windowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
 
 }
