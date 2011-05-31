@@ -73,7 +73,7 @@ void Physics::updateWind()	//odpowiedzialne za wianie wiatru (kierunek i si³a)
 	catch (...){}
 	
 	//cout << wind.x << '\t' << wind.y << '\t' << wind.z << '\t' << wind.w << "\n";
-	cout << windStr << "\n";
+	//cout << windStr << "\n";
 
 	wind = transform * wind;
 	//windM = glm::scale(glm::mat4(1), glm::vec3(windStr, 1, 1)) * transform * windM;
