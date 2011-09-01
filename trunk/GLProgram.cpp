@@ -71,14 +71,15 @@ void Initialize(){
 		);
 	boat->SetWind(glm::vec4(0, 0, 10, 0));
 
-	int texCount = 6;
+	int texCount = 7;
 	char *fileNames[] = { 
 		"Models/wood.tga", 
 		"Models/woodplanks.tga",
 		"Models/fabric.tga",
 		"Models/SkyDome-Cloud-Medium-MidMorning.tga",
 		"Models/normal.tga",
-		"Models/ao.tga"
+		"Models/ao.tga",
+		"Models/terrain.tga"
 	};										//nazwy plików tekstur w postaci tablicy lancuchów
 	SetUpTextures(fileNames, texCount);		//zaladowanie tekstur z plików
 
@@ -187,7 +188,9 @@ void InitGLEW(){
 
 #include "glm\gtx\rotate_vector.hpp" //TODO do wywalenia póŸniej
 void Update(){
-	
+
+	V = glm::lookAt(observerPos, lookAtPos, glm::vec3(0.0f,1.0f,0.0f));
+
 	//glm::vec3 basicWind(0, 0, 10);
 
 	terrain ->Update(P, V, glm::rotate(glm::translate(glm::mat4(1), glm::vec3(9, 0.25f, 0)), -90.0f, glm::vec3(0, 1, 0)), lightPos);
@@ -228,7 +231,7 @@ void Update(){
 	//angle += 0.5f;
 	
 
-	arrow -> Update(P, V,   glm::translate(glm::mat4(1), glm::vec3(-1, 1, 0)) * M * Physics::instance()->getWindScaleMatrix() * Physics::instance()->getWindMatrix(), lightPos);
+	arrow -> Update(P, V, glm::translate(glm::mat4(1), glm::vec3(-1, 1, 0)) * M * Physics::instance()->getWindScaleMatrix() * Physics::instance()->getWindMatrix(), lightPos);
 	arrow ->SetLookAt(lookAtPos);
 	angle += 0.5f;
 }
@@ -244,6 +247,36 @@ void KeyboardEvent(unsigned char c, int x, int y){
 
 	if(c == 'a' && sailAngle > -MAXANGLE) sailAngle -= 3;
 	if(c == 'd' && sailAngle < MAXANGLE) sailAngle += 3;
+	if(c == 'w'){
+		lookAtPos += glm::vec3(0.05f, 0, 0);
+		observerPos += glm::vec3(0.05f, 0, 0);
+	}
+	if(c == 's'){
+		lookAtPos += glm::vec3(-0.05f, 0, 0);
+		observerPos += glm::vec3(-0.05f, 0, 0);
+	}
+	if(c == 'd'){
+		lookAtPos += glm::vec3(0, 0, 0.05f);
+		observerPos += glm::vec3(0, 0, 0.05f);
+	}
+	if(c == 'a'){
+		lookAtPos += glm::vec3(0, 0, -0.05f);
+		observerPos += glm::vec3(0, 0, -0.05f);
+	}
+
+	if(c == 'i'){
+		lookAtPos += glm::vec3(0.05f, 0, 0);
+	}
+	if(c == 'k'){
+		lookAtPos += glm::vec3(-0.05f, 0, 0);
+	}
+	if(c == 'j'){
+		lookAtPos += glm::vec3(0, 0, 0.05f);
+	}
+	if(c == 'l'){
+		lookAtPos += glm::vec3(0, 0, -0.05f);
+	}
+
 	if(c == 27 ) exit(0);
 
 	printf("%d\n", c);
