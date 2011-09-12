@@ -19,6 +19,7 @@ void SetupProjection(GLfloat angle, int w, int h);
 void DisplayFrame();
 void NextFrame();
 void KeyboardEvent(unsigned char c, int x, int y);
+void KeyUpEvent(unsigned char c, int x, int y);
 
 void Draw();
 void Update();
