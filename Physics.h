@@ -5,6 +5,8 @@
 #include "PhysicalObject.h"
 #include <cmath>
 
+const double PI = 3.141592653589793;
+
 class Physics
 {
 public:
@@ -13,13 +15,15 @@ public:
 	glm::vec4 getWind() { return wind; };
 	glm::mat4 getWindScaleMatrix() 
 	{ 
-		//return glm::scale(glm::mat4(1), glm::vec3(windStr/5, windStr/5, windStr/5)); 
 		return glm::scale(glm::mat4(1), glm::vec3(0.7,0.7,0.7));
 	};
 	glm::mat4 getWindMatrix() { return windM; };
 
-	void setTargets(PhysicalObject *objArray, int size);
+	void setTargets(PhysicalObject **objArray, int size);
+	PhysicalObject **getTargets(){return targets; };
+
 	void update();
+	Result *getStates();
 
 protected:
 	Physics(void);
@@ -28,7 +32,8 @@ protected:
 private:
 	static Physics *instance_pointer;	//wskaünik na instacje singletona
 
-	PhysicalObject *targets;
+	PhysicalObject **targets;
+	Result *states;
 	int targetNum;
 
 	glm::vec4 speed;	//predkosc ≥Ûdki
@@ -44,3 +49,4 @@ private:
 };
 
 
+GLfloat degToRad(GLfloat val);

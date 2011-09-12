@@ -1,10 +1,14 @@
 #include "GLProgram.h"
 #include "Physics.h"
 #include "ModelStuctures.h"
+#include "SailingObject.h"
+#include <math.h>
 
 #pragma region Global variables
 
 #define MAXANGLE 60.0f
+
+
 
 char windowTitle[255]; //tablica do tytu³u okna
 int windowPositionX = 0, windowPositionY = 0; //pozycja okna, które zostanie stworzone
@@ -12,6 +16,7 @@ int windowWidth, windowHeight; //szerokoœæ i wysokoœæ okna
 long long frames = 0, time = 0, previousFPSChangeAt = 0, changeFPSAt = 1000; //do wyœwitlania FPSów
 
 glm::mat4 P, V, M; //kolejno macierz projekcji, widoku i modelu
+glm::mat4 Mboat, Mwind;
 glm::vec4 lightPos; //pozycja œwiat³a
 
 GLfloat angle = 0;
@@ -19,6 +24,7 @@ GLfloat sailAngle = 0;
 
 Model *arrow; //strza³ka, która wskazuje, w któr¹ stronê wieje wiatr
 Boat *boat; // to wskazuje na ³odkê
+SailingObject *boatPhysics;	//wskazuje na model fizyczny ³ódki (zostawiam jako osobna zmienna bo czesto sie do tego bedziemy odwo³ywaæ)
 Water *water;
 Model *skyDome;
 Model *terrain;
@@ -28,6 +34,7 @@ GLfloat cameraAngle; //k¹t obrotu kamery
 glm::vec3 observerPos(-15.0f, 10.0f, 0.0f); //Pozycja obserwatora - kamery
 glm::vec3 lookAtPos(0, 1, 0); //na co patrzy kamera
 
+GLint steer = 0;	//-1 ster w lewo, 1 w prawo, 0 luz 
 GLfloat adder = 1.0f;
 
 GLdouble clipPlane[4] = { 0.0, 1.0, 0.0, 0.0 };
@@ -93,6 +100,14 @@ void Initialize(){
 
 	water ->SetNormalAndDUDVMapsTex(LoadTexture("Models/Water2/waterNormalMap.tga"), LoadTexture("Models/Water2/waterDUDVMap.tga"));
 
+	//inicjalizacja fizyki
+	//PhysicalObject *boat = new PhysicalObject(1.0, glm::vec4(0,-1,0,0));
+	boatPhysics = new SailingObject(1.0, glm::vec4(0,-1,0,0));
+	PhysicalObject **allObjects = new PhysicalObject *[1];
+		allObjects[0] = boatPhysics;
+
+	Physics::instance()->setTargets(allObjects, 1);
+
 }
 
 /*
@@ -103,7 +118,7 @@ void Initialize(){
 
 void InitializeGame(int argc, char **argv){
 
-	InitOpenGL(45.0f, 800, 600);
+	InitOpenGL(45.0f, 500, 500);
 	InitGLUT(&argc, argv);
 	InitGLEW();
 	Initialize();
@@ -131,6 +146,8 @@ void InitGLUT(int *argc, char **argv){
 	glutDisplayFunc(DisplayFrame);
 	glutIdleFunc(NextFrame);
 	glutKeyboardFunc(KeyboardEvent);
+	glutKeyboardUpFunc(KeyUpEvent);
+	//glutSpecialFunc(KeyboardEvent);
 
 }
 
@@ -191,8 +208,7 @@ void Update(){
 
 	V = glm::lookAt(observerPos, lookAtPos, glm::vec3(0.0f,1.0f,0.0f));
 
-	//glm::vec3 basicWind(0, 0, 10);
-
+	//NA RAZIE WYSPA TYLKO PRZESZKADZA;P
 	terrain ->Update(P, V, glm::rotate(glm::translate(glm::mat4(1), glm::vec3(9, 0.25f, 0)), -90.0f, glm::vec3(0, 1, 0)), lightPos);
 
 	skyDome ->Update(P, V, glm::mat4(1), lightPos);
@@ -213,27 +229,34 @@ void Update(){
 	//boat ->SetWind(wind);
 
 	Physics::instance()->update();
-	boat->SetWind(Physics::instance()->getWind());
+
+	glm::vec4 windTemp = Physics::instance()->getWind();
+	boat->SetWind(windTemp);
 
 	boat->RotateSail(sailAngle);
+	//dynamic_cast<SailingObject*>(Physics::instance()->getTargets()[0])->setClothAngle(sailAngle);
+	boatPhysics->setClothAngle(sailAngle);
 
 	//TEST---------------------------------------
 
-	boat->Update(P, V, M, lightPos);
+	//M = Physics::instance()->getStates()[0].translation ;
+	Mboat = Physics::instance()->getStates()[0].translation * Physics::instance()->getStates()[0].rotation;
+
+	boat->Update(P, V, Mboat, lightPos);
 	boat->SetLookAtPos(lookAtPos);
 
 	//TODO wywalic------------------------------
 
-	M = M*glm::translate(glm::mat4(1), glm::vec3(-3, 0, 0))*glm::rotate(glm::mat4(1), -90.0f, glm::vec3(0, 1, 0))*glm::rotate(glm::mat4(1), 0.0f, glm::vec3(0, 1, 0));
+	//M = M*glm::translate(glm::mat4(1), glm::vec3(-3, 0, 0))*glm::rotate(glm::mat4(1), -90.0f, glm::vec3(0, 1, 0))*glm::rotate(glm::mat4(1), 0.0f, glm::vec3(0, 1, 0));
 
 	//TEST---------------------------------------
 	
 	//angle += 0.5f;
 	
-
-	arrow -> Update(P, V, glm::translate(glm::mat4(1), glm::vec3(-1, 1, 0)) * M * Physics::instance()->getWindScaleMatrix() * Physics::instance()->getWindMatrix(), lightPos);
+	Mwind = glm::mat4(1);
+	Mwind[3] = Mboat[3];
+	arrow -> Update(P, V, glm::translate(glm::mat4(1), glm::vec3(-1, 1, 0)) * Mwind * glm::rotate(glm::mat4(1), -90.0f, glm::vec3(0, 1, 0)) * Physics::instance()->getWindScaleMatrix() * Physics::instance()->getWindMatrix(), lightPos);
 	arrow ->SetLookAt(lookAtPos);
-	angle += 0.5f;
 }
 
 /*
@@ -277,13 +300,31 @@ void KeyboardEvent(unsigned char c, int x, int y){
 		lookAtPos += glm::vec3(0, 0, -0.05f);
 	}
 
+
+	if(c == 'b'){
+		boatPhysics->setSteer(-1);
+	}
+	if(c == 'm'){
+		boatPhysics->setSteer(1);
+	}
+	
 	if(c == 27 ) exit(0);
 
-	printf("%d\n", c);
+	//printf("%d\n", c);
 
 	glutPostRedisplay();
 
 }
+
+void KeyUpEvent(unsigned char c, int x, int y)
+{
+	if(c == 'b' || c == 'm')
+	{
+		boatPhysics->setSteer(0);
+	}
+
+}
+
 
 /*
 *
@@ -364,7 +405,8 @@ void Draw(){
 	RenderReflection();
 	RenderRefractionAndDepth();
 
-	terrain ->Draw();
+	//NA RAZIE OUT
+	//terrain ->Draw();
 	water ->Draw();
 	skyDome ->Draw();
 	boat ->Draw();

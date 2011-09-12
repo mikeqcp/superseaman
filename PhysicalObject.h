@@ -22,12 +22,13 @@ public:
 
 	void setForce(glm::vec4 f) { forceOuter = f; };
 	void setFloating(Floating in) { floating = in; };
-	Result update();
+	virtual Result update();
 
-private:
-
+protected:
 	glm::vec4 gravity;
 	GLfloat timeStep;
+
+	GLfloat axisAngle ;	//k¹t nachylenia masztu
 
 	Floating floating;	//si³a wyporu (ON/OFF)
 	glm::vec4 floatForce;	//si³a wyporu(wartoœæ, zawsze pionowo w górê)
@@ -36,8 +37,6 @@ private:
 
 	glm::mat4 M;	//pozycja w swiecie
 
-	glm::vec4 posCurr;
-	glm::vec4 posPrev;
 
 	glm::vec4 forceOuter;	//dzia³aj¹ca si³a zewnêtrzna
 	glm::vec4 forcesSum;	//suma si³
@@ -47,4 +46,12 @@ private:
 	void satisfyConstraints();
 	void init();
 	glm::vec4 getFloatingForce();
+
+	Result updateVertical();
+
+private:
+
+	glm::vec4 posCurr;
+	glm::vec4 posPrev;
+
 };

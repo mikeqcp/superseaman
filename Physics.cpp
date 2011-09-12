@@ -31,6 +31,11 @@ Physics *Physics::instance()	//metoda dostêpu do klasy
 	return instance_pointer;
 }
 
+GLfloat degToRad(GLfloat val)
+{
+	return val * PI/180;
+}
+
 void Physics::update()	//odœwie¿a œrodowisko
 {
 	updateWind();
@@ -38,7 +43,7 @@ void Physics::update()	//odœwie¿a œrodowisko
 	if(!targets) return;
 	for(int i=0; i<targetNum; i++)
 	{
-		targets[i].update();
+		states[i] = targets[i]->update();
 	}
 }
 
@@ -56,21 +61,25 @@ void Physics::updateWind()	//odpowiedzialne za wianie wiatru (kierunek i si³a)
 	temp = RAND;
 	glm::mat4 transform = glm::rotate(glm::mat4(1), temp*mult, glm::vec3(0,1,0));	//obrót wiatru
 
-	try	//zmiana si³y (sprawdzenie czy nie przekracza dopuszczalnych norm
+	
+	try	//zmiana si³y (sprawdzenie czy nie przekracza dopuszczalnych norm)
 	{
 		temp =(1 + (RAND/(100)*mult));
-		wind = glm::scale(glm::mat4(1), glm::vec3(temp, temp, temp))*wind;
+		glm::vec4 windTemp = glm::scale(glm::mat4(1), glm::vec3(temp, temp, temp))*wind;
 
-		temp = glm::length(wind);
+		temp = glm::length(glm::vec3(windTemp.x, windTemp.y, windTemp.z));
 
 		if(temp <5 || temp>15)
 			throw "power extending bounds";
 		else 
 		{
+			wind = windTemp;
 			windStr = temp;
+			wind.w = windStr;
 		}
 	}
 	catch (...){}
+	
 	
 	//cout << wind.x << '\t' << wind.y << '\t' << wind.z << '\t' << wind.w << "\n";
 	//cout << windStr << "\n";
@@ -81,8 +90,22 @@ void Physics::updateWind()	//odpowiedzialne za wianie wiatru (kierunek i si³a)
 
 }
 
-void Physics::setTargets(PhysicalObject *objArray, int size)
+void Physics::setTargets(PhysicalObject **objArray, int size)
 {
 	targets = objArray;
 	targetNum = size;
+	states = new Result[size];
+
+	for(int i=0; i<size; i++)
+	{
+		states[i].rotation = glm::mat4(1);
+		states[i].scale = glm::mat4(1);
+		states[i].translation = glm::mat4(1);
+	}
 }
+
+Result *Physics::getStates()
+{
+	return states;
+}
+

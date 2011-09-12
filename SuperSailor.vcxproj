@@ -72,6 +72,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="PhysicalObject.cpp" />
     <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="SailingObject.cpp" />
     <ClCompile Include="tga.cpp" />
     <ClCompile Include="Water.cpp" />
     <ClCompile Include="Result.cpp" />
@@ -88,6 +89,7 @@
     <ClInclude Include="ModelStuctures.h" />
     <ClInclude Include="PhysicalObject.h" />
     <ClInclude Include="Physics.h" />
+    <ClInclude Include="SailingObject.h" />
     <ClInclude Include="Water.h" />
     <ClInclude Include="Result.h" />
   </ItemGroup>

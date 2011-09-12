@@ -1,4 +1,6 @@
 #include "PhysicalObject.h"
+#include "Physics.h"
+#include <math.h>
 using namespace MyMaths;
 
 glm::vec4 vecMin(glm::vec4 v1, glm::vec4 v2)
@@ -44,6 +46,7 @@ void PhysicalObject::init()
 
 	gravity = glm::vec4(0,-4, 0, 0);
 	forceOuter = glm::vec4(0, 0, 0, 1);
+	floating = ON;
 
 	posCurr = glm::vec4(0);
 	posPrev = glm::vec4(0);
@@ -52,35 +55,56 @@ void PhysicalObject::init()
 
 Result PhysicalObject::update()
 {
+	return updateVertical();
+}
+
+Result PhysicalObject::updateVertical()
+{
 	Result res;
-	glm::vec4 newPos;
+	glm::vec4 newPos, newPos_temp;
+	
+	forcesSum = forceOuter + (floating==ON ? getFloatingForce() : glm::vec4(0,0,0,0));
 
-	forcesSum = forceOuter + (floating ? floatForce : glm::vec4(0,0,0,0));
+	newPos_temp = posCurr + posCurr - posPrev + mass * timeStep* timeStep * (forcesSum + gravity);
 
-	newPos = posCurr + posCurr - posPrev + mass * timeStep* timeStep * (forcesSum + gravity);
+	newPos = newPos_temp;
 
 	posPrev = posCurr;
 	posCurr = newPos;
 
-	res.translation = glm::translate(M, glm::vec3(posCurr));
+	res.translation = glm::translate(glm::mat4(1), glm::vec3(newPos.x, newPos.y, newPos.z));
 
 	return res;
 }
 
 GLint MyMaths::signOf(GLfloat in)
 {
-	 return (in<0 ? -1 : (in>0 ? 1 : 0));
+	 return (in<0 ? -1 :  1 );
 }
 
 glm::vec4 PhysicalObject::getFloatingForce()
 {
-	glm::vec4 cenPos = M * centerOfGravity;
-	GLfloat force = glm::length(cenPos);
+	
+	//glm::vec4 cenPos = M * centerOfGravity;
+	glm::vec4 cenPos = posCurr +  centerOfGravity;
+	GLfloat force = glm::length(glm::vec3(cenPos.x, cenPos.y, cenPos.z));
 
-	force =  -1 * (signOf(cenPos.y) * force *force);
+	if(signOf(cenPos.y)<=0)
+	{
+		force =  3.5 * force *force;
+		//force *= (2-cos(degToRad(axisAngle)));
+	}
+	else
+	{
+		force = 0;
+	}
 
-	floatForce = glm::inverse(M) * glm::vec4(0,force, 0, 1);
+	//floatForce = glm::inverse(M) * glm::vec4(0,force, 0, 1);
+	floatForce = glm::vec4(0,force, 0, 1);
 	return floatForce;
+	
+
+	//return glm::vec4(0,4, 0, 1);
 }
 
 void PhysicalObject::satisfyConstraints()
