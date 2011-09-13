@@ -216,7 +216,7 @@ void Update(){
 	//NA RAZIE WYSPA TYLKO PRZESZKADZA;P
 	terrain ->Update(P, V, glm::rotate(glm::translate(glm::mat4(1), glm::vec3(9, 0.25f, 0)), -90.0f, glm::vec3(0, 1, 0)), lightPos);
 
-	skyDome ->Update(P, V, glm::mat4(1), lightPos);
+	
 
 	water ->Update(P, V, glm::rotate(glm::mat4(1), 90.0f, glm::vec3(0, 1, 0)), lightPos);
 	water ->SetLookAt(lookAtPos);
@@ -262,6 +262,8 @@ void Update(){
 	Mwind[3] = Mboat[3];
 	arrow -> Update(P, V, glm::translate(glm::mat4(1), glm::vec3(-1, 1, 0)) * Mwind * glm::rotate(glm::mat4(1), -90.0f, glm::vec3(0, 1, 0)) * Physics::instance()->getWindScaleMatrix() * Physics::instance()->getWindMatrix(), lightPos);
 	arrow ->SetLookAt(lookAtPos);
+
+	skyDome ->Update(P, V, Mwind, lightPos);
 }
 
 /*
