@@ -23,6 +23,7 @@ public:
 	void setForce(glm::vec4 f) { forceOuter = f; };
 	void setFloating(Floating in) { floating = in; };
 	virtual Result update();
+	Result getCurrentPosition() {return currentPosition;};
 
 protected:
 	glm::vec4 gravity;
@@ -36,7 +37,7 @@ protected:
 	glm::vec4 centerOfGravity;	//wzglêdem œrodka uk³adu wspó³rzêdnych modelu
 
 	glm::mat4 M;	//pozycja w swiecie
-
+	Result currentPosition;
 
 	glm::vec4 forceOuter;	//dzia³aj¹ca si³a zewnêtrzna
 	glm::vec4 forcesSum;	//suma si³

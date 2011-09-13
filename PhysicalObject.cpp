@@ -55,7 +55,8 @@ void PhysicalObject::init()
 
 Result PhysicalObject::update()
 {
-	return updateVertical();
+	currentPosition = updateVertical();
+	return currentPosition;
 }
 
 Result PhysicalObject::updateVertical()
