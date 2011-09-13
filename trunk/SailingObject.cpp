@@ -30,6 +30,7 @@ Result SailingObject::update()
 	res.translation = resWind.translation * resVertical.translation;
 	res.rotation = resWind.rotation;
 
+	currentPosition = res;
 	return res;
 }
 
@@ -97,19 +98,23 @@ Result SailingObject::updateMovement(GLfloat force)
 	Result res;
 	glm::mat4 newM = glm::mat4(1);
 
-	glm::mat4 temp = M * glm::inverse(prevM);
+	//glm::mat4 temp = M * glm::inverse(prevM);
 
-	/*glm::vec3 diff = -glm::vec3(prevM[3].x, prevM[3].y, prevM[3].z) + glm::vec3(M[3].x, M[3].y, M[3].z);
-	glm::mat4 temp2 = glm::mat4(1);
-		temp2[3].x = diff.x;
-		temp2[3].y = diff.y;
-		temp2[3].z = diff.z;
-		temp = temp2;*/
+	glm::vec3 diff = -glm::vec3(prevM[3].x, prevM[3].y, prevM[3].z) + glm::vec3(M[3].x, M[3].y, M[3].z);
+	//glm::mat4 temp2 = glm::mat4(1);
+	//	temp2[3].x = diff.x;
+	//	temp2[3].y = diff.y;
+	//	temp2[3].z = diff.z;
+	GLfloat len = glm::length(diff);
+	force += len * 10;
+	force -= 0.003 * sin(10 * len);
+	force *= 0.1;
+
 
 	GLfloat steerAngle = steer * 0.1;
 	//dirAngle += steer * 0.1;
 
-	newM = M * glm::rotate(glm::mat4(1), steerAngle, glm::vec3(0,1,0)) * glm::translate(glm::mat4(1), glm::vec3(0.01,0,0)) * glm::inverse(M);
+	newM = M * glm::rotate(glm::mat4(1), steerAngle, glm::vec3(0,1,0)) * glm::translate(glm::mat4(1), glm::vec3(force ,0,0)) * glm::inverse(M);
 
 	prevM = M;
 	M = newM * M;	//w M trzymam tylko po³o¿enie poziome (tj miejsce po³ozenia i skrêt wokó³ osi pionowej)

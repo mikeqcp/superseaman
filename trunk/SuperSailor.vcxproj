@@ -63,6 +63,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Boat.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Cloth.cpp" />
     <ClCompile Include="GLProgram.cpp" />
     <ClCompile Include="Helper.cpp" />
@@ -79,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Boat.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Cloth.h" />
     <ClInclude Include="GLProgram.h" />
     <ClInclude Include="Helper.h" />

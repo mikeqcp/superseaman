@@ -2,6 +2,7 @@
 #include "Physics.h"
 #include "ModelStuctures.h"
 #include "SailingObject.h"
+#include "Camera.h"
 #include <math.h>
 
 #pragma region Global variables
@@ -18,6 +19,8 @@ long long frames = 0, time = 0, previousFPSChangeAt = 0, changeFPSAt = 1000; //d
 glm::mat4 P, V, M; //kolejno macierz projekcji, widoku i modelu
 glm::mat4 Mboat, Mwind;
 glm::vec4 lightPos; //pozycja œwiat³a
+
+Camera *camera;	//kamera
 
 GLfloat angle = 0;
 GLfloat sailAngle = 0;
@@ -107,6 +110,7 @@ void Initialize(){
 		allObjects[0] = boatPhysics;
 
 	Physics::instance()->setTargets(allObjects, 1);
+	camera = new Camera(boatPhysics, V);
 
 }
 
@@ -206,7 +210,8 @@ void InitGLEW(){
 #include "glm\gtx\rotate_vector.hpp" //TODO do wywalenia póŸniej
 void Update(){
 
-	V = glm::lookAt(observerPos, lookAtPos, glm::vec3(0.0f,1.0f,0.0f));
+	//V = glm::lookAt(observerPos, lookAtPos, glm::vec3(0.0f,1.0f,0.0f));
+	V = camera->update();
 
 	//NA RAZIE WYSPA TYLKO PRZESZKADZA;P
 	terrain ->Update(P, V, glm::rotate(glm::translate(glm::mat4(1), glm::vec3(9, 0.25f, 0)), -90.0f, glm::vec3(0, 1, 0)), lightPos);
