@@ -213,7 +213,7 @@ void Update(){
 	//V = glm::lookAt(observerPos, lookAtPos, glm::vec3(0.0f,1.0f,0.0f));
 	V = camera->update();
 
-	terrain ->Update(P, V, glm::rotate(glm::translate(glm::mat4(1), glm::vec3(9, 0.25f, 0)), -90.0f, glm::vec3(0, 1, 0)), lightPos);
+	terrain ->Update(P, V, glm::rotate(glm::translate(glm::mat4(1), glm::vec3(40, 0.05, 10)), -90.0f, glm::vec3(0, 1, 0)), lightPos);
 
 	//TODO wywalic------------------------------
 
@@ -429,11 +429,14 @@ void RenderReflection()
    	glEnable(GL_CLIP_PLANE0);
 	glClipPlane(GL_CLIP_PLANE0, p);
 
+	terrain ->Update(P, V, glm::rotate(glm::translate(glm::mat4(1), glm::vec3(40, -0.05, 10)), -90.0f, glm::vec3(0, 1, 0)), lightPos);
    	boat ->DrawReflection();
 	skyDome ->DrawReflection();
 	terrain ->DrawReflection();
    	glDisable(GL_CLIP_PLANE0);
 	
+
+	terrain ->Update(P, V, glm::rotate(glm::translate(glm::mat4(1), glm::vec3(40, 0.05, 10)), -90.0f, glm::vec3(0, 1, 0)), lightPos);
 	boat->Update(P, V, Mboat, lightPos);
 
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
