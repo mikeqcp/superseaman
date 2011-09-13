@@ -213,14 +213,7 @@ void Update(){
 	//V = glm::lookAt(observerPos, lookAtPos, glm::vec3(0.0f,1.0f,0.0f));
 	V = camera->update();
 
-	//NA RAZIE WYSPA TYLKO PRZESZKADZA;P
 	terrain ->Update(P, V, glm::rotate(glm::translate(glm::mat4(1), glm::vec3(9, 0.25f, 0)), -90.0f, glm::vec3(0, 1, 0)), lightPos);
-
-	
-
-	water ->Update(P, V, glm::rotate(glm::mat4(1), 90.0f, glm::vec3(0, 1, 0)), lightPos);
-	water ->SetLookAt(lookAtPos);
-	water ->SetViewPos(observerPos);
 
 	//TODO wywalic------------------------------
 
@@ -235,9 +228,6 @@ void Update(){
 
 	Physics::instance()->update();
 
-	glm::vec4 windTemp = Physics::instance()->getWind();
-	boat->SetWind(windTemp);
-
 	boat->RotateSail(sailAngle);
 	//dynamic_cast<SailingObject*>(Physics::instance()->getTargets()[0])->setClothAngle(sailAngle);
 	boatPhysics->setClothAngle(sailAngle);
@@ -246,22 +236,23 @@ void Update(){
 
 	//M = Physics::instance()->getStates()[0].translation ;
 	Mboat = Physics::instance()->getStates()[0].translation * Physics::instance()->getStates()[0].rotation;
+	
+	Mwind = glm::rotate(glm::mat4(1), boatPhysics->getDirAngle(), glm::vec3(0,1,0));
+	glm::vec4 windTemp = Physics::instance()->getWind();
+	boat->SetWind(glm::inverse(Mwind) * windTemp);
 
 	boat->Update(P, V, Mboat, lightPos);
 	boat->SetLookAtPos(lookAtPos);
-
-	//TODO wywalic------------------------------
-
-	//M = M*glm::translate(glm::mat4(1), glm::vec3(-3, 0, 0))*glm::rotate(glm::mat4(1), -90.0f, glm::vec3(0, 1, 0))*glm::rotate(glm::mat4(1), 0.0f, glm::vec3(0, 1, 0));
-
-	//TEST---------------------------------------
-	
-	//angle += 0.5f;
 	
 	Mwind = glm::mat4(1);
 	Mwind[3] = Mboat[3];
 	arrow -> Update(P, V, glm::translate(glm::mat4(1), glm::vec3(-1, 1, 0)) * Mwind * glm::rotate(glm::mat4(1), -90.0f, glm::vec3(0, 1, 0)) * Physics::instance()->getWindScaleMatrix() * Physics::instance()->getWindMatrix(), lightPos);
 	arrow ->SetLookAt(lookAtPos);
+
+	//water ->Update(P, V, glm::rotate(glm::mat4(1), 90.0f, glm::vec3(0, 1, 0)), lightPos);
+	water ->Update(P, V, Mwind * glm::rotate(glm::mat4(1), 90.0f, glm::vec3(0, 1, 0)), lightPos);
+	water ->SetLookAt(lookAtPos);
+	water ->SetViewPos(observerPos);
 
 	skyDome ->Update(P, V, Mwind, lightPos);
 }
@@ -412,8 +403,7 @@ void Draw(){
 	RenderReflection();
 	RenderRefractionAndDepth();
 
-	//NA RAZIE OUT
-	//terrain ->Draw();
+	terrain ->Draw();
 	water ->Draw();
 	skyDome ->Draw();
 	boat ->Draw();
