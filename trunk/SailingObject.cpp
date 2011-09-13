@@ -113,6 +113,7 @@ Result SailingObject::updateMovement(GLfloat force)
 
 	GLfloat steerAngle = steer * 0.1;
 	dirAngle += steer * 0.1;
+	dirAngle = fmod(dirAngle, 360.0f);
 
 	newM = M * glm::rotate(glm::mat4(1), steerAngle, glm::vec3(0,1,0)) * glm::translate(glm::mat4(1), glm::vec3(force ,0,0)) * glm::inverse(M);
 

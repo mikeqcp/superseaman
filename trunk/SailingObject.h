@@ -15,6 +15,7 @@ public:
 
 	void setClothAngle(GLfloat angle) {sailAngle = -angle;};
 	void setSteer(GLint val) {steer= val;};
+	GLfloat getDirAngle() {return dirAngle;};
 
 private:
 
