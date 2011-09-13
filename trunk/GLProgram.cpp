@@ -423,7 +423,9 @@ void RenderReflection()
 
 	glm::vec4 plane(0, 1, 0, 0);
 	double p[] = {0, 1, 0, 0};
+	boat->Update(P, V, glm::inverse(boatPhysics->getCurrentPosition().rotation), lightPos);
 	boat->SetClipPlane(plane);
+	
    	glEnable(GL_CLIP_PLANE0);
 	glClipPlane(GL_CLIP_PLANE0, p);
 
@@ -439,7 +441,7 @@ void RenderReflection()
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	water ->SetReflectionTex(reflectionTex);
-   	
+   	boat->Update(P, V, boatPhysics->getCurrentPosition().rotation, lightPos);
 }
 
 void RenderRefractionAndDepth(){
