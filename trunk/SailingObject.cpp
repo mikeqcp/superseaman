@@ -75,7 +75,7 @@ Result SailingObject::updateWind()
 	reactionForce = -0.01*cos(degToRad(axisAngle-90));
 	
 
-	angle = axisAngle + axisAngle - prevAxisAngle + sideForce + reactionForce - 0.01 * steer;
+	angle = axisAngle + axisAngle - prevAxisAngle + sideForce + reactionForce - 0.001 * steer;
 
 		if(angle > 30 )	angle = 30;
 			else if(angle <-30 ) angle = -30;
@@ -112,7 +112,7 @@ Result SailingObject::updateMovement(GLfloat force)
 
 
 	GLfloat steerAngle = steer * 0.1;
-	//dirAngle += steer * 0.1;
+	dirAngle += steer * 0.1;
 
 	newM = M * glm::rotate(glm::mat4(1), steerAngle, glm::vec3(0,1,0)) * glm::translate(glm::mat4(1), glm::vec3(force ,0,0)) * glm::inverse(M);
 
